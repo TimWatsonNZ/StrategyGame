@@ -27,25 +27,112 @@ const origin = new Point(0, 0);
 
 const waterType = {
   borders: {
-    
+    grass: 0.1,
+    water: 0.9,
   }
 }
 const grassType = {
-
   borders: {
-
+    grass: 0.9,
+    water: 0.1,
   }
 }
 
-const grid = [];
+let grid = [];
 
 for(let h=0;h<squareNumber;h++) {
   const row = [];
   for(let w=0;w<squareNumber;w++) {
-    row.push(new Cell(w * cellSize, h * cellSize));
+    row.push(new Cell(w * cellSize, h * cellSize, 'blank'));
   }
   grid.push(row);
 }
+
+const seedTileCount = 30;
+for (let i=0;i < seedTileCount;i++) {
+  const randomCell = grid[Math.floor(Math.random() * grid.length)][Math.floor(Math.random() * grid.length)];
+  randomCell.type = 'grass';
+}
+
+function getNeigbours(index, grid) {
+  const cell = grid[index.y][index.x];
+  const deltas = [
+    { x:-1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1},
+    { x:-1, y: 0},               , {x: 1, y: 0},
+    { x:-1, y: 1},  {x: 0, y: 1},  {x: 1, y: 1},
+  ];
+
+  const neighbours = [];
+  if (!cell) {
+    return neighbours;
+  }
+
+  deltas.forEach(delta => {
+    const indexX = index.x + delta.x;
+    const indexY = index.y + delta.y;
+
+    if (indexX < 0 || indexX > grid.length-1 ||
+        indexY < 0 || indexY > grid.length-1) {
+        return;
+    } else {
+      neighbours.push(grid[indexY][indexX]);
+    }
+  });
+
+  return neighbours;
+}
+
+const cellToIndex = (cell) => {
+  return new Point(cell.point.x/cellSize, cell.point.y/cellSize);
+}
+
+function bfs(start) {
+  const stack = [start];
+
+  while (stack.length > 0) {
+    const cell = stack.pop();
+    const neighbours = getNeigbours(cellToIndex(cell), grid);
+    const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
+    const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
+    
+    if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {
+      cell.type = 'grass';
+    } else {
+      cell.type = 'water';
+    }
+    neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));
+  }
+}
+
+grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = 'grass';
+bfs(grid[Math.round(grid.length/2)][Math.round(grid.length/2)]);
+
+const dfa = (grid) => {
+  const newGrid = [];
+
+  for(let h=0;h<squareNumber;h++) {
+    const newRow = [];
+    for(let w=0;w<squareNumber;w++) {
+      const cell = grid[h][w];
+      const neighbours = getNeigbours(cellToIndex(cell), grid);
+
+      const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
+      const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
+
+      const copy = { ...cell };
+      if (cell.type === 'water' && grassNeighbours > 3) {
+        copy.type = 'grass';
+      }
+
+      newRow.push(copy);
+    }
+    newGrid.push(newRow);
+  }
+  return newGrid;
+}
+
+grid = dfa(grid);
+grid = dfa(grid);
 
 const viewPortRight = viewPortOrigin.x + size;
 const viewPortBottom = viewPortOrigin.y + size;
@@ -74,7 +161,6 @@ function createClippedGrid() {
     }  
     newgrid.push(newrow);
   }
-
   return newgrid;
 }
 
@@ -87,11 +173,16 @@ function draw() {
     for(let w=0;w<squareNumber;w++) {
       const cell = clippedGrid[h][w];
       if (cell && cell.point.x >= origin.x && cell.point.x < viewPortRight && cell.point.y >= origin.y && cell.point.y < viewPortBottom) {
-        if (cell.selected) {
-          context.fillRect(cell.point.x, cell.point.y, cellSize, cellSize);
-        } else {
-          context.strokeRect(cell.point.x, cell.point.y, cellSize, cellSize);
+        if (cell.type === 'grass') {
+          context.fillStyle = '#00FF00';
         }
+        if (cell.type === 'water') {
+          context.fillStyle = '#0000FF';
+        }
+        if (cell.type === 'blank') {
+          context.fillStyle = '#FFFFFF';
+        }
+        context.fillRect(cell.point.x, cell.point.y, cellSize, cellSize);
       }
     }
   }
