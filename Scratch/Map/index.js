@@ -20,7 +20,7 @@ function Cell(x,y, type) {
   this.type = type;
 }
 //  Draw grid of squares
-const cellSize = 20;
+const cellSize = 100;
 const squareNumber = size / cellSize;
 const viewPortOrigin = new Point(0, 40);
 const origin = new Point(0, 0);
@@ -48,7 +48,7 @@ for(let h=0;h<squareNumber;h++) {
   grid.push(row);
 }
 
-const seedTileCount = 30;
+const seedTileCount = 80;
 for (let i=0;i < seedTileCount;i++) {
   const randomCell = grid[Math.floor(Math.random() * grid.length)][Math.floor(Math.random() * grid.length)];
   randomCell.type = 'grass';
@@ -86,7 +86,7 @@ const cellToIndex = (cell) => {
   return new Point(cell.point.x/cellSize, cell.point.y/cellSize);
 }
 
-function bfs(start) {
+function dfs(start) {
   const stack = [start];
 
   while (stack.length > 0) {
@@ -105,9 +105,7 @@ function bfs(start) {
 }
 
 grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = 'grass';
-bfs(grid[Math.round(grid.length/2)][Math.round(grid.length/2)]);
-
-const dfa = (grid) => {
+const dfa = (grid, rule) => {
   const newGrid = [];
 
   for(let h=0;h<squareNumber;h++) {
@@ -120,10 +118,8 @@ const dfa = (grid) => {
       const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
 
       const copy = { ...cell };
-      if (cell.type === 'water' && grassNeighbours > 3) {
-        copy.type = 'grass';
-      }
-
+      copy.type = rule(copy, waterNeighbours, grassNeighbours);
+      
       newRow.push(copy);
     }
     newGrid.push(newRow);
@@ -131,8 +127,30 @@ const dfa = (grid) => {
   return newGrid;
 }
 
-grid = dfa(grid);
-grid = dfa(grid);
+const smoothRule = (cell, waterNeighbours, grassNeighbours) => {
+  if (cell.type === 'water' && grassNeighbours > 3) {
+    return 'grass';
+  }
+  if (cell.type === 'grass' && waterNeighbours > 7) {
+    return 'water';
+  }
+  return cell.type;
+}
+const growGrass = (cell, waterNeighbours, grassNeighbours) => {
+  if (cell.type === 'water' && grassNeighbours > 0) {
+    return 'grass';
+  }
+  return cell.type;
+}
+
+grid = dfa(grid, growGrass);
+grid = dfa(grid, growGrass);
+dfs(grid[Math.round(grid.length/2)][Math.round(grid.length/2)]);
+
+grid = dfa(grid, smoothRule);
+grid = dfa(grid, smoothRule);
+
+console.log(grid.reduce((sum, row) => sum + row.filter(y => y.type === 'water').length, 0));
 
 const viewPortRight = viewPortOrigin.x + size;
 const viewPortBottom = viewPortOrigin.y + size;
@@ -144,12 +162,12 @@ function createClippedGrid() {
   const startPoint = new Point(viewPortOrigin.x, viewPortOrigin.y);
   const endPoint = new Point(startPoint.x + size, startPoint.y + size);
   
-  for (let y = startPoint.y;y < endPoint.y;y += cellSize) {
+  for (let y = startPoint.y;y <= endPoint.y;y += cellSize) {
     const newrow = [];
-    for (let x = startPoint.x; x < endPoint.x; x += cellSize) {
-      const row = grid[Math.round(y/cellSize)];
-      if (row) {
-        const cell = {...row[Math.round(x/cellSize)]};
+    const row = grid[Math.round(y/cellSize)];
+    if (row) {
+      for (let x = startPoint.x; x <= endPoint.x; x += cellSize) {
+       const cell = {...row[Math.round(x/cellSize)]};
 
         if (cell && cell.point) {
           cell.point.x -= viewPortOrigin.x;
@@ -157,7 +175,6 @@ function createClippedGrid() {
           newrow.push(cell);
         }
       }
-      
     }  
     newgrid.push(newrow);
   }
@@ -169,23 +186,24 @@ function draw() {
   context.fillStyle = '#FFFFFF';
   context.fillRect(0, 0, size, size);
   context.fillStyle = '#000000';
-  for(let h=0;h<squareNumber;h++) {
-    for(let w=0;w<squareNumber;w++) {
+  for(let h=0;h<grid.length;h++) {
+    context.fillStyle = `rgb(${255/squareNumber*h},0, 0)`;
+    for(let w=0;w<grid[h].length;w++) {
       const cell = clippedGrid[h][w];
-      if (cell && cell.point.x >= origin.x && cell.point.x < viewPortRight && cell.point.y >= origin.y && cell.point.y < viewPortBottom) {
-        if (cell.type === 'grass') {
-          context.fillStyle = '#00FF00';
-        }
-        if (cell.type === 'water') {
-          context.fillStyle = '#0000FF';
-        }
-        if (cell.type === 'blank') {
-          context.fillStyle = '#FFFFFF';
-        }
+      if (cell && (cell.point.x + cellSize) <= viewPortRight && (cell.point.x + cellSize) > 0 && (cell.point.y + cellSize) >= 0 && cell.point.y < viewPortBottom) {
+        // if (cell.type === 'grass') {
+        //   context.fillStyle = '#00FF00';
+        // }
+        // if (cell.type === 'water') {
+        //   context.fillStyle = '#0000FF';
+        // }
+        // if (cell.type === 'blank') {
+        //   context.fillStyle = '#FFFFFF';
+        // }
         context.fillRect(cell.point.x, cell.point.y, cellSize, cellSize);
       }
     }
-  }
+  }//  
 }
 draw();
 
@@ -225,11 +243,11 @@ canvas.addEventListener("mousemove", () => {
 }, false);
 
 canvas.addEventListener("mouseup", (e) => {
+  const minDrag = 5;
   if(dragState === dragStates.STARTED){
     console.log("click");
   }
-  else if(dragState === dragStates.DRAGGING){
-    console.log("drag");
+  else if(dragState === dragStates.DRAGGING) {
     let { clientX , clientY } = e;
     clientX -= bodyMargin;
     clientY -= bodyMargin;
@@ -237,16 +255,31 @@ canvas.addEventListener("mouseup", (e) => {
     const diffX = startDrag.x - clientX;
     const diffY = startDrag.y - clientY;
 
-    viewPortOrigin.x += Math.round(diffX);
-    viewPortOrigin.y += Math.round(diffY);
-    startDrag.x = 0;
-    startDrag.y = 0;
+    if (diffX > minDrag || diffY > minDrag) {
+      viewPortOrigin.x += Math.round(diffX);
+      viewPortOrigin.y += Math.round(diffY);
+      startDrag.x = 0;
+      startDrag.y = 0;
+  
+      clippedGrid = createClippedGrid();
+      draw();
+    }
 
-    clippedGrid = createClippedGrid();
-    draw();
   }
   dragState = dragStates.ENDED;
 }, false);
+
+window.addEventListener('keyup', e => {
+  if (e.keyCode === 37) {
+    viewPortOrigin.x++;
+  }
+
+  if (e.keyCode === 39) {
+    viewPortOrigin.x--;
+  }
+  clippedGrid = createClippedGrid();
+  draw();
+});
 
 //  Given an array of squares and a view port, find the squares in the viewport
 //  Zooming changes how large you want to draw the squares but also the viewport
