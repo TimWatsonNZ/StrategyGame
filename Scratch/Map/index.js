@@ -20,7 +20,7 @@ function Cell(x,y, type) {
   this.type = type;
 }
 //  Draw grid of squares
-const cellSize = 100;
+const cellSize = 10;
 const squareNumber = size / cellSize;
 const viewPortOrigin = new Point(0, 40);
 const origin = new Point(0, 0);
@@ -167,12 +167,14 @@ function createClippedGrid() {
     const row = grid[Math.round(y/cellSize)];
     if (row) {
       for (let x = startPoint.x; x <= endPoint.x; x += cellSize) {
-       const cell = {...row[Math.round(x/cellSize)]};
+       const cell = row[Math.round(x/cellSize)];
 
         if (cell && cell.point) {
-          cell.point.x -= viewPortOrigin.x;
-          cell.point.y -= viewPortOrigin.y;
-          newrow.push(cell);
+          const cellCopy = {...cell};
+          cellCopy.point = new Point(cell.point.x, cell.point.y);
+          cellCopy.point.x -= viewPortOrigin.x;
+          cellCopy.point.y -= viewPortOrigin.y;
+          newrow.push(cellCopy);
         }
       }
     }  
@@ -186,20 +188,19 @@ function draw() {
   context.fillStyle = '#FFFFFF';
   context.fillRect(0, 0, size, size);
   context.fillStyle = '#000000';
-  for(let h=0;h<grid.length;h++) {
-    context.fillStyle = `rgb(${255/squareNumber*h},0, 0)`;
-    for(let w=0;w<grid[h].length;w++) {
+  for(let h=0;h<clippedGrid.length;h++) {
+    for(let w=0;w<clippedGrid[h].length;w++) {
       const cell = clippedGrid[h][w];
-      if (cell && (cell.point.x + cellSize) <= viewPortRight && (cell.point.x + cellSize) > 0 && (cell.point.y + cellSize) >= 0 && cell.point.y < viewPortBottom) {
-        // if (cell.type === 'grass') {
-        //   context.fillStyle = '#00FF00';
-        // }
-        // if (cell.type === 'water') {
-        //   context.fillStyle = '#0000FF';
-        // }
-        // if (cell.type === 'blank') {
-        //   context.fillStyle = '#FFFFFF';
-        // }
+      if (cell && (cell.point.x) <= viewPortRight && (cell.point.x + cellSize) > 0 && (cell.point.y + cellSize) >= 0 && cell.point.y < viewPortBottom) {
+        if (cell.type === 'grass') {
+          context.fillStyle = '#00FF00';
+        }
+        if (cell.type === 'water') {
+          context.fillStyle = '#0000FF';
+        }
+        if (cell.type === 'blank') {
+          context.fillStyle = '#FFFFFF';
+        }
         context.fillRect(cell.point.x, cell.point.y, cellSize, cellSize);
       }
     }
@@ -273,10 +274,18 @@ window.addEventListener('keyup', e => {
   if (e.keyCode === 37) {
     viewPortOrigin.x++;
   }
+  if (e.keyCode === 38) {
+    viewPortOrigin.y++;
+  }
 
   if (e.keyCode === 39) {
     viewPortOrigin.x--;
   }
+
+  if (e.keyCode === 40) {
+    viewPortOrigin.y--;
+  }
+  console.log(e.keyCode);
   clippedGrid = createClippedGrid();
   draw();
 });
