@@ -1,0 +1,15 @@
+Fix drag scrolling and set a minimum requirement on scrolling.
+Add arrow key scrolling as well.
+Add zooming in and out - the difficult part here will be to zoom based on where the mouse is.
+
+Implement adding entities to the tiles.
+Implement clicking on entities and seeing information.
+Implement movement and an A* algorithm to move things.
+Implement turn button.
+Implement cities and roads.
+Implement a connection algorithm - for a given city find what it's connected to by roads.
+Implement a farm tile.
+Implement resource flow to the city.
+Implement population growth based on food.
+
+Implement transactions - food for cash.
