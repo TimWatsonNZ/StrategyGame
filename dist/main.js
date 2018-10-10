@@ -1,1 +1,137 @@
-!function(t){var e={};function n(o){if(e[o])return e[o].exports;var r=e[o]={i:o,l:!1,exports:{}};return t[o].call(r.exports,r,r.exports,n),r.l=!0,r.exports}n.m=t,n.c=e,n.d=function(t,e,o){n.o(t,e)||Object.defineProperty(t,e,{enumerable:!0,get:o})},n.r=function(t){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(t,"__esModule",{value:!0})},n.t=function(t,e){if(1&e&&(t=n(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var o=Object.create(null);if(n.r(o),Object.defineProperty(o,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var r in t)n.d(o,r,function(e){return t[e]}.bind(null,r));return o},n.n=function(t){var e=t&&t.__esModule?function(){return t.default}:function(){return t};return n.d(e,"a",e),e},n.o=function(t,e){return Object.prototype.hasOwnProperty.call(t,e)},n.p="",n(n.s=0)}([function(t,e){const n=document.createElement("canvas"),o=500;n.width=o,n.height=o,document.getElementById("root").appendChild(n);const r=n.getContext("2d");function l(t,e){this.x=t,this.y=e}function i(t,e,n){this.point=new l(t,e),this.selected=!1,this.type=n}const s=10,y=o/s,c=new l(0,40);new l(0,0);let a=null;let u=[];for(let t=0;t<y;t++){const e=[];for(let n=0;n<y;n++)e.push(new i(n*s,t*s,"blank"));u.push(e)}for(let t=0;t<80;t++){u[Math.floor(Math.random()*u.length)][Math.floor(Math.random()*u.length)].type="grass"}function p(t,e){const n=[];return e[t.y][t.x]?([{x:-1,y:-1},{x:0,y:-1},{x:1,y:-1},{x:-1,y:0},,{x:1,y:0},{x:-1,y:1},{x:0,y:1},{x:1,y:1}].forEach(o=>{const r=t.x+o.x,l=t.y+o.y;r<0||r>e.length-1||l<0||l>e.length-1||n.push(e[l][r])}),n):n}const f=t=>new l(t.point.x/s,t.point.y/s);u[Math.round(u.length/2)][Math.round(u.length/2)].type="grass";const d=(t,e)=>{const n=[];for(let o=0;o<y;o++){const r=[];for(let n=0;n<y;n++){const l=t[o][n],i=p(f(l),t),s=i.filter(t=>"water"===t.type).length,y=i.filter(t=>"grass"===t.type).length,c={...l};c.type=e(c,s,y),r.push(c)}n.push(r)}return n},h=(t,e,n)=>"water"===t.type&&n>3?"grass":"grass"===t.type&&e>7?"water":t.type,x=(t,e,n)=>"water"===t.type&&n>0?"grass":t.type;(function(t){const e=[t];for(;e.length>0;){const t=e.pop(),n=p(f(t),u),o=n.filter(t=>"water"===t.type).length,r=n.filter(t=>"grass"===t.type).length;Math.round(Math.random()*(o+r))>o?t.type="grass":t.type="water",n.filter(t=>"blank"===t.type).forEach(t=>e.push(t))}})((u=d(u=d(u,x),x))[Math.round(u.length/2)][Math.round(u.length/2)]),u=d(u=d(u,h),h),console.log(u.reduce((t,e)=>t+e.filter(t=>"water"===t.type).length,0));const g=c.x+o,w=c.y+o;let F=M();function M(){const t=[],e=new l(c.x,c.y),n=new l(e.x+o,e.y+o);for(let o=e.y;o<=n.y;o+=s){const r=[],i=u[Math.round(o/s)];if(i)for(let t=e.x;t<=n.x;t+=s){const e=i[Math.round(t/s)];if(e&&e.point){const t={...e};t.point=new l(e.point.x,e.point.y),t.point.x-=c.x,t.point.y-=c.y,r.push(t)}}t.push(r)}return t}function b(){r.fillStyle="#FFFFFF",r.fillRect(0,0,o,o),r.fillStyle="#000000";for(let t=0;t<F.length;t++)for(let e=0;e<F[t].length;e++){const n=F[t][e];n&&n.point.x<=g&&n.point.x+s>0&&n.point.y+s>=0&&n.point.y<w&&("grass"===n.type&&(r.fillStyle="#00FF00"),"water"===n.type&&(r.fillStyle="#0000FF"),"blank"===n.type&&(r.fillStyle="#FFFFFF"),r.fillRect(n.point.x,n.point.y,s,s),n.selected&&(r.strokeStyle="#000000",r.strokeRect(n.point.x,n.point.y,s,s),r.strokeStyle="#FFFFFF"))}}b(),n.addEventListener("click",t=>{let{clientX:e,clientY:n}=t;e-=8,n-=8;const o=Math.floor(e/s),r=Math.floor(n/s),l=F[r][o];document.querySelector("#selectedTile").textContent=`${o}, ${r}, ${l.type}`,l&&(a&&(a.selected=!1),a=l,l.selected=!0,b())});let m=0;const k=new l(0,0),v=0,S=1,C=2;n.addEventListener("mousedown",t=>{m=v;let{clientX:e,clientY:n}=t;e-=8,n-=8,k.x=e,k.y=n},!1),n.addEventListener("mousemove",()=>{m===v&&(m=S)},!1),n.addEventListener("mouseup",t=>{if(m===v);else if(m===S){let{clientX:e,clientY:n}=t;e-=8,n-=8;const o=k.x-e,r=k.y-n;(Math.abs(o)>1||Math.abs(r)>1)&&(c.x+=Math.round(o),c.y+=Math.round(r),k.x=0,k.y=0,F=M(),b())}m=C},!1),window.addEventListener("keyup",t=>{37===t.keyCode&&c.x++,38===t.keyCode&&c.y++,39===t.keyCode&&c.x--,40===t.keyCode&&c.y--,t.keyCode,t.keyCode,console.log(t.keyCode),F=M(),b()})}]);
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./index.js");
+/******/ })
+/************************************************************************/
+/******/ ({
+
+/***/ "./Cell.js":
+/*!*****************!*\
+  !*** ./Cell.js ***!
+  \*****************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Point */ \"./Point.js\");\n\r\n\r\nclass Cell {\r\n  constructor(x,y, type) {\r\n    this.point = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](x,y);\r\n    this.selected = false;\r\n  \r\n    this.type = type;\r\n  }\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__[\"default\"] = (Cell);\r\n\n\n//# sourceURL=webpack:///./Cell.js?");
+
+/***/ }),
+
+/***/ "./Map.js":
+/*!****************!*\
+  !*** ./Map.js ***!
+  \****************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Point__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Point */ \"./Point.js\");\n/* harmony import */ var _Cell__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Cell */ \"./Cell.js\");\n\r\n\r\n\r\nconst waterType = {\r\n  borders: {\r\n    grass: 0.1,\r\n    water: 0.9,\r\n  }\r\n}\r\nconst grassType = {\r\n  borders: {\r\n    grass: 0.9,\r\n    water: 0.1,\r\n  }\r\n}\r\n\r\nclass Map {\r\n  \r\n  constructor(size) {\r\n    //  Draw grid of squares\r\n    this.size = size;\r\n    this.cellSize = 10;\r\n    this.squareNumber = size / this.cellSize;\r\n    this.viewPortOrigin = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](0, 40);\r\n    this.origin = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](0, 0);\r\n    this.selectedCell = null;\r\n    this.grid = [];\r\n    this.clippedGrid = [];\r\n    this.viewPortRight = this.viewPortOrigin.x + size;\r\n    this.viewPortBottom = this.viewPortOrigin.y + size;\r\n    this.init();\r\n  }\r\n\r\n  init() {\r\n    for(let h=0;h<this.squareNumber;h++) {\r\n      const row = [];\r\n      for(let w=0;w<this.squareNumber;w++) {\r\n        row.push(new _Cell__WEBPACK_IMPORTED_MODULE_1__[\"default\"](w * this.cellSize, h *this.cellSize, 'blank'));\r\n      }\r\n      this.grid.push(row);\r\n    }\r\n    \r\n    const seedTileCount = 80;\r\n    for (let i=0;i < seedTileCount;i++) {\r\n      const randomCell = this.grid[Math.floor(Math.random() * this.grid.length)][Math.floor(Math.random() * this.grid.length)];\r\n      randomCell.type = 'grass';\r\n    }\r\n    \r\n    this.grid[Math.round(this.grid.length/2)][Math.round(this.grid.length/2)].type = 'grass';\r\n      \r\n    this.grid = this.dfa(this.grid, this.growGrass);\r\n    this.grid = this.dfa(this.grid, this.growGrass);\r\n    this.dfs(this.grid[Math.round(this.grid.length/2)][Math.round(this.grid.length/2)]);\r\n\r\n    this.grid = this.dfa(this.grid, this.smoothRule);\r\n    this.grid = this.dfa(this.grid, this.smoothRule);\r\n\r\n    this.clippedGrid = this.createClippedGrid();\r\n  }\r\n\r\n  clickCell(x, y, context) {\r\n    const cellX = Math.floor(x / this.cellSize);\r\n    const cellY = Math.floor(y / this.cellSize);\r\n\r\n    const cell = this.clippedGrid[cellY][cellX];\r\n\r\n    if (cell) {  \r\n      if (this.selectedCell) {\r\n        this.selectedCell.selected = false;\r\n      }\r\n      this.selectedCell = cell;\r\n      cell.selected = true;\r\n      this.draw(context);\r\n    }\r\n\r\n    return cell;\r\n  }\r\n\r\n  drag(diffX, diffY, context) {\r\n\r\n    const minDrag = 1;\r\n    if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {\r\n      this.viewPortOrigin.x += Math.round(diffX);\r\n      this.viewPortOrigin.y += Math.round(diffY);\r\n  \r\n      this.update(context);\r\n    }\r\n  }\r\n\r\n  getNeigbours(index, grid) {\r\n    const cell = grid[index.y][index.x];\r\n    const deltas = [\r\n      { x:-1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1},\r\n      { x:-1, y: 0},               , {x: 1, y: 0},\r\n      { x:-1, y: 1},  {x: 0, y: 1},  {x: 1, y: 1},\r\n    ];\r\n\r\n    const neighbours = [];\r\n    if (!cell) {\r\n      return neighbours;\r\n    }\r\n\r\n    deltas.forEach(delta => {\r\n      const indexX = index.x + delta.x;\r\n      const indexY = index.y + delta.y;\r\n\r\n      if (indexX < 0 || indexX > grid.length-1 ||\r\n          indexY < 0 || indexY > grid.length-1) {\r\n          return;\r\n      } else {\r\n        neighbours.push(grid[indexY][indexX]);\r\n      }\r\n    });\r\n\r\n    return neighbours;\r\n  }\r\n\r\n  cellToIndex (cell) {\r\n    return new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](cell.point.x/this.cellSize, cell.point.y/this.cellSize);\r\n  }\r\n\r\n  dfs(start) {\r\n    const stack = [start];\r\n\r\n    while (stack.length > 0) {\r\n      const cell = stack.pop();\r\n      const neighbours = this.getNeigbours(this.cellToIndex(cell), this.grid);\r\n      const waterNeighbours = neighbours.filter(x => x.type === 'water').length;\r\n      const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;\r\n      \r\n      if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {\r\n        cell.type = 'grass';\r\n      } else {\r\n        cell.type = 'water';\r\n      }\r\n      neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));\r\n    }\r\n  }\r\n\r\n  dfa (grid, rule) {\r\n    const newGrid = [];\r\n\r\n    for(let h=0;h<this.squareNumber;h++) {\r\n      const newRow = [];\r\n      for(let w=0;w<this.squareNumber;w++) {\r\n        const cell = grid[h][w];\r\n        const neighbours = this.getNeigbours(this.cellToIndex(cell), grid);\r\n\r\n        const waterNeighbours = neighbours.filter(x => x.type === 'water').length;\r\n        const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;\r\n\r\n        const copy = { ...cell };\r\n        copy.type = rule(copy, waterNeighbours, grassNeighbours);\r\n        \r\n        newRow.push(copy);\r\n      }\r\n      newGrid.push(newRow);\r\n    }\r\n    return newGrid;\r\n  }\r\n\r\n  smoothRule (cell, waterNeighbours, grassNeighbours) {\r\n    if (cell.type === 'water' && grassNeighbours > 3) {\r\n      return 'grass';\r\n    }\r\n    if (cell.type === 'grass' && waterNeighbours > 7) {\r\n      return 'water';\r\n    }\r\n    return cell.type;\r\n  }\r\n\r\n  growGrass (cell, waterNeighbours, grassNeighbours) {\r\n    if (cell.type === 'water' && grassNeighbours > 0) {\r\n      return 'grass';\r\n    }\r\n    return cell.type;\r\n  }\r\n\r\n  createClippedGrid() {\r\n    const newgrid = [];\r\n    const startPoint = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](this.viewPortOrigin.x, this.viewPortOrigin.y);\r\n    const endPoint = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](startPoint.x + this.size, startPoint.y + this.size);\r\n    \r\n    for (let y = startPoint.y;y <= endPoint.y;y += this.cellSize) {\r\n      const newrow = [];\r\n      const row = this.grid[Math.round(y/this.cellSize)];\r\n      if (row) {\r\n        for (let x = startPoint.x; x <= endPoint.x; x += this.cellSize) {\r\n        const cell = row[Math.round(x/this.cellSize)];\r\n\r\n          if (cell && cell.point) {\r\n            const cellCopy = {...cell};\r\n            cellCopy.point = new _Point__WEBPACK_IMPORTED_MODULE_0__[\"default\"](cell.point.x, cell.point.y);\r\n            cellCopy.point.x -= this.viewPortOrigin.x;\r\n            cellCopy.point.y -= this.viewPortOrigin.y;\r\n            newrow.push(cellCopy);\r\n          }\r\n        }\r\n      }  \r\n      newgrid.push(newrow);\r\n    }\r\n    return newgrid;\r\n  }\r\n\r\n  panUp(context) {\r\n    this.viewPortOrigin.y--;\r\n    this.update(context);\r\n  }\r\n\r\n  panDown(context) {\r\n    this.viewPortOrigin.y++;\r\n    this.update(context);\r\n  }\r\n\r\n  panLeft(context) {\r\n    this.viewPortOrigin.x--;\r\n    this.update(context);\r\n  }\r\n\r\n  panRight(context) {\r\n    this.viewPortOrigin.x++;\r\n    this.update(context);\r\n  }\r\n\r\n  update(context) {\r\n    this.clippedGrid = this.createClippedGrid();\r\n    this.draw(context);\r\n  }\r\n\r\n  draw(context) {\r\n    context.fillStyle = '#FFFFFF';\r\n    context.fillRect(0, 0, this.size, this.size);\r\n    context.fillStyle = '#000000';\r\n    for(let h=0;h<this.clippedGrid.length;h++) {\r\n      for(let w=0;w<this.clippedGrid[h].length;w++) {\r\n        const cell = this.clippedGrid[h][w];\r\n        if (cell && (cell.point.x) <= this.viewPortRight && (cell.point.x + this.cellSize) > 0 && (cell.point.y + this.cellSize) >= 0 && cell.point.y < this.viewPortBottom) {\r\n          if (cell.type === 'grass') {\r\n            context.fillStyle = '#00FF00';\r\n          }\r\n          if (cell.type === 'water') {\r\n            context.fillStyle = '#0000FF';\r\n          }\r\n          if (cell.type === 'blank') {\r\n            context.fillStyle = '#FFFFFF';\r\n          }\r\n          context.fillRect(cell.point.x, cell.point.y, this.cellSize, this.cellSize);\r\n\r\n          if (cell.selected) {\r\n            context.strokeStyle = '#000000';\r\n            context.strokeRect(cell.point.x, cell.point.y, this.cellSize, this.cellSize);\r\n            context.strokeStyle = '#FFFFFF';\r\n          }\r\n        }\r\n      }\r\n    }//  \r\n  }\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__[\"default\"] = (Map);\r\n\n\n//# sourceURL=webpack:///./Map.js?");
+
+/***/ }),
+
+/***/ "./Point.js":
+/*!******************!*\
+  !*** ./Point.js ***!
+  \******************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n\r\nclass Point {\r\n  constructor(x, y) {\r\n    this.x = x;\r\n    this.y = y;\r\n  }\r\n}\r\n\r\n/* harmony default export */ __webpack_exports__[\"default\"] = (Point);\n\n//# sourceURL=webpack:///./Point.js?");
+
+/***/ }),
+
+/***/ "./index.js":
+/*!******************!*\
+  !*** ./index.js ***!
+  \******************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Map__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Map */ \"./Map.js\");\n/* harmony import */ var _Point__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Point */ \"./Point.js\");\n\r\n\r\n\r\nconst canvas = document.createElement('canvas');\r\nconst size = 500;\r\nconst bodyMargin = 8;\r\n\r\ncanvas.width=size;\r\ncanvas.height=size;\r\n\r\ndocument.getElementById('root').appendChild(canvas);\r\nconst context = canvas.getContext('2d');\r\n\r\nconst map = new _Map__WEBPACK_IMPORTED_MODULE_0__[\"default\"](size);\r\nmap.draw(context);\r\n\r\n//  Color in clicked square\r\ncanvas.addEventListener('click', (e) => {\r\n  let { clientX , clientY } = e;\r\n  clientX -= bodyMargin;\r\n  clientY -= bodyMargin;\r\n  \r\n  const cell = map.clickCell(clientX, clientY, context);\r\n  document.querySelector('#selectedTile').textContent = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;\r\n    \r\n});\r\n\r\n//  Zoom in and out and drag\r\nlet dragState = 0;\r\nconst startDrag = new _Point__WEBPACK_IMPORTED_MODULE_1__[\"default\"](0, 0);\r\n\r\nconst dragStates = { STARTED: 0, DRAGGING: 1, ENDED: 2}\r\n\r\ncanvas.addEventListener(\"mousedown\", (e) => {\r\n  dragState = dragStates.STARTED;\r\n  let { clientX , clientY } = e;\r\n  clientX -= bodyMargin;\r\n  clientY -= bodyMargin;\r\n\r\n  startDrag.x = clientX;\r\n  startDrag.y = clientY;\r\n}, false);\r\n\r\ncanvas.addEventListener(\"mousemove\", () => {\r\n  if (dragState === dragStates.STARTED) dragState = dragStates.DRAGGING;\r\n}, false);\r\n\r\ncanvas.addEventListener(\"mouseup\", (e) => {\r\n  if(dragState === dragStates.STARTED){\r\n  }\r\n  else if(dragState === dragStates.DRAGGING) {\r\n    let { clientX , clientY } = e;\r\n    clientX -= bodyMargin;\r\n    clientY -= bodyMargin;\r\n\r\n    const diffX = startDrag.x - clientX;\r\n    const diffY = startDrag.y - clientY;\r\n\r\n    map.drag(diffX, diffY, context);\r\n    startDrag.x = 0;\r\n    startDrag.y = 0;\r\n  }\r\n  dragState = dragStates.ENDED;\r\n}, false);\r\n\r\nwindow.addEventListener('keyup', e => {\r\n  if (e.keyCode === 37) {\r\n    map.panRight(context);\r\n  }\r\n  if (e.keyCode === 38) {\r\n    map.panDown(context);\r\n    viewPortOrigin.y++;\r\n  }\r\n\r\n  if (e.keyCode === 39) {\r\n    map.panLeft(context);\r\n    viewPortOrigin.x--;\r\n  }\r\n\r\n  if (e.keyCode === 40) {\r\n    map.panUp(context);\r\n    viewPortOrigin.y--;\r\n  }\r\n\r\n  if (e.keyCode === 107) {\r\n\r\n  }\r\n  if (e.keyCode === 107) {\r\n    \r\n  }\r\n  console.log(e.keyCode);\r\n});\r\n\r\n\r\n//  Given an array of squares and a view port, find the squares in the viewport\r\n//  Zooming changes how large you want to draw the squares but also the viewport\r\n//  Dragging changes the viewport start.\n\n//# sourceURL=webpack:///./index.js?");
+
+/***/ })
+
+/******/ });
