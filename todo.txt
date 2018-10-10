@@ -1,7 +1,5 @@
-Need to do a rewrite to separate out the map functionality from controls.
 Rewrite grid to remove cellSize - this is so that zooming will be easier...need to think about this one
 Add zooming in and out - the difficult part here will be to zoom based on where the mouse is.
-
 
 Implement adding entities to the tiles.
 Implement cities and roads.

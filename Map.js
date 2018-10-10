@@ -21,7 +21,7 @@ class Map {
     this.size = size;
     this.cellSize = 10;
     this.squareNumber = size / this.cellSize;
-    this.viewPortOrigin = new Point(0, 40);
+    this.viewPortOrigin = new Point(0, 0);
     this.origin = new Point(0, 0);
     this.selectedCell = null;
     this.grid = [];
@@ -35,7 +35,7 @@ class Map {
     for(let h=0;h<this.squareNumber;h++) {
       const row = [];
       for(let w=0;w<this.squareNumber;w++) {
-        row.push(new Cell(w * this.cellSize, h *this.cellSize, 'blank'));
+        row.push(new Cell(w, h, 'blank'));
       }
       this.grid.push(row);
     }
@@ -116,7 +116,7 @@ class Map {
   }
 
   cellToIndex (cell) {
-    return new Point(cell.point.x/this.cellSize, cell.point.y/this.cellSize);
+    return new Point(cell.point.x, cell.point.y);
   }
 
   dfs(start) {
@@ -179,20 +179,20 @@ class Map {
   createClippedGrid() {
     const newgrid = [];
     const startPoint = new Point(this.viewPortOrigin.x, this.viewPortOrigin.y);
-    const endPoint = new Point(startPoint.x + this.size, startPoint.y + this.size);
+    const endPoint = new Point(startPoint.x + this.size/this.cellSize, startPoint.y + this.size/this.cellSize);
     
-    for (let y = startPoint.y;y <= endPoint.y;y += this.cellSize) {
+    for (let y = startPoint.y;y <= endPoint.y;y++) {
       const newrow = [];
-      const row = this.grid[Math.round(y/this.cellSize)];
+      const row = this.grid[y];
       if (row) {
-        for (let x = startPoint.x; x <= endPoint.x; x += this.cellSize) {
-        const cell = row[Math.round(x/this.cellSize)];
+        for (let x = startPoint.x; x <= endPoint.x; x++) {
+        const cell = row[x];
 
           if (cell && cell.point) {
             const cellCopy = {...cell};
             cellCopy.point = new Point(cell.point.x, cell.point.y);
-            cellCopy.point.x -= this.viewPortOrigin.x;
-            cellCopy.point.y -= this.viewPortOrigin.y;
+            cellCopy.point.x -= this.viewPortOrigin.x/this.cellSize;
+            cellCopy.point.y -= this.viewPortOrigin.y/this.cellSize;
             newrow.push(cellCopy);
           }
         }
@@ -234,7 +234,7 @@ class Map {
     for(let h=0;h<this.clippedGrid.length;h++) {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const cell = this.clippedGrid[h][w];
-        if (cell && (cell.point.x) <= this.viewPortRight && (cell.point.x + this.cellSize) > 0 && (cell.point.y + this.cellSize) >= 0 && cell.point.y < this.viewPortBottom) {
+        if (true || cell && (cell.point.x) <= this.viewPortRight && (cell.point.x) > 0 && (cell.point.y) >= 0 && cell.point.y < this.viewPortBottom) {
           if (cell.type === 'grass') {
             context.fillStyle = '#00FF00';
           }
@@ -244,11 +244,11 @@ class Map {
           if (cell.type === 'blank') {
             context.fillStyle = '#FFFFFF';
           }
-          context.fillRect(cell.point.x, cell.point.y, this.cellSize, this.cellSize);
+          context.fillRect(cell.point.x * this.cellSize, cell.point.y * this.cellSize, this.cellSize, this.cellSize);
 
           if (cell.selected) {
             context.strokeStyle = '#000000';
-            context.strokeRect(cell.point.x, cell.point.y, this.cellSize, this.cellSize);
+            context.strokeRect(cell.point.x * this.cellSize, cell.point.y * this.cellSize, this.cellSize, this.cellSize);
             context.strokeStyle = '#FFFFFF';
           }
         }
