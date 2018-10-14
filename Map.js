@@ -21,13 +21,14 @@ class Map {
     this.size = size;
     this.cellSize = 10;
     this.squareNumber = size / this.cellSize;
-    this.viewPortOrigin = new Point(0, 0);
+    this.viewPortOrigin = new Point(Math.floor(this.squareNumber/2), Math.floor(this.squareNumber/2));
     this.origin = new Point(0, 0);
     this.selectedCell = null;
     this.grid = [];
     this.clippedGrid = [];
-    this.viewPortRight = this.viewPortOrigin.x + size;
-    this.viewPortBottom = this.viewPortOrigin.y + size;
+    this.viewPortSize = 10;
+    this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.viewPortSize, this.viewPortOrigin.y +  this.viewPortSize);
+     
     this.init();
   }
 
@@ -62,7 +63,7 @@ class Map {
     const cellX = Math.floor(x / this.cellSize);
     const cellY = Math.floor(y / this.cellSize);
 
-    const cell = this.clippedGrid[cellY][cellX];
+    const cell = this.clippedGrid[cellY] && this.clippedGrid[cellY][cellX];
 
     if (cell) {  
       if (this.selectedCell) {
@@ -80,9 +81,26 @@ class Map {
 
     const minDrag = 1;
     if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {
-      this.viewPortOrigin.x += Math.round(diffX);
-      this.viewPortOrigin.y += Math.round(diffY);
-  
+      if (diffX > 0) {
+        const sum = this.viewPortOrigin.x + Math.round(diffX);
+        this.viewPortOrigin.x = Math.min(sum, this.squareNumber);
+        this.viewPortEnd.x = this.viewPortOrigin.x + this.viewPortSize;
+      } else {
+        const sum = this.viewPortOrigin.x + Math.round(diffX);
+        this.viewPortOrigin.x = Math.max(sum, 0);
+        this.viewPortOrigin.x = this.viewPortOrigin.x + this.viewPortSize;
+      }
+
+      if (diffY > 0) {
+        const sum = this.viewPortOrigin.y + Math.round(diffY);
+        this.viewPortOrigin.y = Math.min(sum, this.squareNumber);
+        this.viewPortOrigin.y = this.viewPortOrigin.y + this.viewPortSize;
+      } else {
+        const sum = this.viewPortOrigin.x + Math.round(diffY);
+        this.viewPortOrigin.y = Math.max(sum, 0);
+        this.viewPortOrigin.y = this.viewPortOrigin.y + this.viewPortSize;
+      }
+      
       this.update(context);
     }
   }
@@ -179,7 +197,7 @@ class Map {
   createClippedGrid() {
     const newgrid = [];
     const startPoint = new Point(this.viewPortOrigin.x, this.viewPortOrigin.y);
-    const endPoint = new Point(startPoint.x + this.size/this.cellSize, startPoint.y + this.size/this.cellSize);
+    const endPoint = new Point(this.viewPortEnd.x, this.viewPortEnd.y);
     
     for (let y = startPoint.y;y <= endPoint.y;y++) {
       const newrow = [];
@@ -191,8 +209,8 @@ class Map {
           if (cell && cell.point) {
             const cellCopy = {...cell};
             cellCopy.point = new Point(cell.point.x, cell.point.y);
-            cellCopy.point.x -= this.viewPortOrigin.x/this.cellSize;
-            cellCopy.point.y -= this.viewPortOrigin.y/this.cellSize;
+            cellCopy.point.x = x - startPoint.x;
+            cellCopy.point.y = y - startPoint.y;
             newrow.push(cellCopy);
           }
         }
@@ -203,23 +221,35 @@ class Map {
   }
 
   panUp(context) {
-    this.viewPortOrigin.y--;
-    this.update(context);
+    if (this.viewPortOrigin.y > 0) {
+      this.viewPortOrigin.y--;
+      this.viewPortEnd.y--;
+      this.update(context);  
+    }
   }
 
   panDown(context) {
-    this.viewPortOrigin.y++;
-    this.update(context);
+    if (this.viewPortOrigin.y + this.viewPortSize < this.squareNumber) {
+      this.viewPortOrigin.y++;
+      this.viewPortEnd.y++;
+      this.update(context);
+    }
   }
 
   panLeft(context) {
-    this.viewPortOrigin.x--;
-    this.update(context);
+    if (this.viewPortOrigin.x > 0) {
+      this.viewPortOrigin.x--;
+      this.viewPortEnd.x--;
+      this.update(context);
+    }
   }
 
   panRight(context) {
-    this.viewPortOrigin.x++;
-    this.update(context);
+    if (this.viewPortOrigin.x + this.viewPortSize < this.squareNumber) {
+      this.viewPortOrigin.x++;
+      this.viewPortEnd.x++;
+      this.update(context);
+    }
   }
 
   update(context) {
@@ -234,7 +264,7 @@ class Map {
     for(let h=0;h<this.clippedGrid.length;h++) {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const cell = this.clippedGrid[h][w];
-        if (true || cell && (cell.point.x) <= this.viewPortRight && (cell.point.x) > 0 && (cell.point.y) >= 0 && cell.point.y < this.viewPortBottom) {
+        if (cell && (cell.point.x) <= this.viewPortEnd.x && (cell.point.x) >= 0 && (cell.point.y) >= 0 && cell.point.y <= this.viewPortEnd.y) {
           if (cell.type === 'grass') {
             context.fillStyle = '#00FF00';
           }
@@ -253,7 +283,7 @@ class Map {
           }
         }
       }
-    }//  
+    }
   }
 }
 

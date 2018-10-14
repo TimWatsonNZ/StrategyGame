@@ -21,7 +21,12 @@ canvas.addEventListener('click', (e) => {
   clientY -= bodyMargin;
   
   const cell = map.clickCell(clientX, clientY, context);
-  document.querySelector('#selectedTile').textContent = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
+
+  if (cell) {
+    document.querySelector('#selectedTile').textContent = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
+  } else {
+    document.querySelector('#selectedTile').textContent = '';
+  }
     
 });
 
@@ -65,21 +70,18 @@ canvas.addEventListener("mouseup", (e) => {
 
 window.addEventListener('keyup', e => {
   if (e.keyCode === 37) {
-    map.panRight(context);
+    map.panLeft(context);
   }
   if (e.keyCode === 38) {
-    map.panDown(context);
-    viewPortOrigin.y++;
+    map.panUp(context);
   }
 
   if (e.keyCode === 39) {
-    map.panLeft(context);
-    viewPortOrigin.x--;
+    map.panRight(context);
   }
 
   if (e.keyCode === 40) {
-    map.panUp(context);
-    viewPortOrigin.y--;
+    map.panDown(context);
   }
 
   if (e.keyCode === 107) {
