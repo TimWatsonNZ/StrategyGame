@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack",
+    "build": "cpx \"./index.html\" \"./dist\" | webpack",
     "start": "webpack --watch"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
     "webpack": "^4.20.2"
   },
   "devDependencies": {
+    "cpx": "^1.5.0",
     "nodemon-webpack-plugin": "^4.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.9"

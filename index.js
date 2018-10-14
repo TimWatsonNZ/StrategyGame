@@ -11,8 +11,8 @@ canvas.height=size;
 document.getElementById('root').appendChild(canvas);
 const context = canvas.getContext('2d');
 
-const map = new Map(size, 40);
-map.draw(context);
+const map = new Map(size, 40, context);
+map.draw();
 
 //  Color in clicked square
 canvas.addEventListener('click', (e) => {
@@ -20,10 +20,15 @@ canvas.addEventListener('click', (e) => {
   clientX -= bodyMargin;
   clientY -= bodyMargin;
   
-  const cell = map.clickCell(clientX, clientY, context);
+  const cell = map.clickCell(clientX, clientY);
 
   if (cell) {
-    document.querySelector('#selectedTile').textContent = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
+    const cellDetails = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
+    let cityDetails = '';
+    if (cell.city) {
+      cityDetails = `${cell.city.name}: ${cell.city.population}`;
+    }
+    document.querySelector('#selectedTile').textContent = `${cellDetails} - ${cityDetails}`;
   } else {
     document.querySelector('#selectedTile').textContent = '';
   }
@@ -60,7 +65,7 @@ canvas.addEventListener("mouseup", (e) => {
     const diffX = startDrag.x - clientX;
     const diffY = startDrag.y - clientY;
 
-   // map.drag(diffX, diffY, context);
+   // map.drag(diffX, diffY);
     startDrag.x = 0;
     startDrag.y = 0;
   }
@@ -70,31 +75,33 @@ canvas.addEventListener("mouseup", (e) => {
 
 window.addEventListener('keydown', e => {
   if (e.keyCode === 37) {
-    map.panLeft(context);
+    map.panLeft();
   }
 
   if (e.keyCode === 38) {
-    map.panUp(context);
+    map.panUp();
   }
 
   if (e.keyCode === 39) {
-    map.panRight(context);
+    map.panRight();
   }
 
   if (e.keyCode === 40) {
-    map.panDown(context);
+    map.panDown();
   }
 
   if (e.keyCode === 107) {
-    map.zoomIn(context);
+    map.zoomIn();
   }
 
   if (e.keyCode === 109) {
-    map.zoomOut(context);
+    map.zoomOut();
   }
-  console.log(e.keyCode);
 });
 
+document.querySelector('#addCity').addEventListener('click', () => {
+  map.addCityToSelectedTile();
+})
 
 //  Given an array of squares and a view port, find the squares in the viewport
 //  Zooming changes how large you want to draw the squares but also the viewport

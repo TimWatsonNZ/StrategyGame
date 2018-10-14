@@ -1,5 +1,6 @@
 import Point from './Point';
 import Cell from './Cell';
+import City from './City';
 
 const waterType = {
   borders: {
@@ -16,8 +17,9 @@ const grassType = {
 
 class Map {
   
-  constructor(size, cellNumber) {
+  constructor(size, cellNumber, context) {
     //  Draw grid of squares
+    this.context = context;
     this.size = size;
     this.cellNumber = cellNumber;
     this.viewPortOrigin = new Point(0, 0);
@@ -32,13 +34,6 @@ class Map {
     this.cellSize = this.viewPortSize / this.zoomLevel; //  should be view port size / view port content size
     this.init();
   }
-
-
-
-  //   Zoom out - view port stays the same size...need some kind of scale number.
-  //  View port size is different actually...
-  //  can change view port size, recalculate view port end and work out cellsize again.
-  //  cell size = viewport size / number of cells in view port.
 
   init() {
     for(let h=0;h<this.cellNumber;h++) {
@@ -181,11 +176,10 @@ class Map {
         const cell = row[x];
 
           if (cell && cell.point) {
-            const cellCopy = {...cell};
-            cellCopy.point = new Point(cell.point.x, cell.point.y);
-            cellCopy.point.x = x - startPoint.x;
-            cellCopy.point.y = y - startPoint.y;
-            newrow.push(cellCopy);
+            cell.drawingPoint = new Point(cell.point.x, cell.point.y);
+            cell.drawingPoint.x = x - startPoint.x;
+            cell.drawingPoint.y = y - startPoint.y;
+            newrow.push(cell);
           }
         }
       }  
@@ -194,7 +188,7 @@ class Map {
     return newgrid;
   }
 
-  clickCell(x, y, context) {
+  clickCell(x, y) {
     const cellX = Math.floor(x / this.cellSize);
     const cellY = Math.floor(y / this.cellSize);
 
@@ -206,13 +200,13 @@ class Map {
       }
       this.selectedCell = cell;
       cell.selected = true;
-      this.draw(context);
+      this.draw();
     }
 
     return cell;
   }
 
-  drag(diffX, diffY, context) {
+  drag(diffX, diffY) {
 
     const minDrag = 1;
     if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {
@@ -236,94 +230,110 @@ class Map {
         this.viewPortOrigin.y = this.viewPortOrigin.y + this.zoomLevel;
       }
       
-      this.update(context);
+      this.update();
     }
   }
 
-  panUp(context) {
+  panUp() {
     if (this.viewPortOrigin.y > 0) {
       this.viewPortOrigin.y--;
       this.viewPortEnd.y--;
-      this.update(context);  
+      this.update();  
     }
   }
 
-  panDown(context) {
+  panDown() {
     if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.y++;
       this.viewPortEnd.y++;
-      this.update(context);
+      this.update();
     }
   }
 
-  panLeft(context) {
+  panLeft() {
     if (this.viewPortOrigin.x > 0) {
       this.viewPortOrigin.x--;
       this.viewPortEnd.x--;
-      this.update(context);
+      this.update();
     }
   }
 
-  panRight(context) {
+  panRight() {
     if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.x++;
       this.viewPortEnd.x++;
-      this.update(context);
+      this.update();
     }
   }
 
-  zoomOut(context) {
+  zoomOut() {
     if (this.zoomLevel < 100) {
       this.zoomLevel++;
-      this.zoom(context);
+      this.zoom();
     }
   }
 
-  zoomIn(context) {
+  zoomIn() {
     if (this.zoomLevel > 1) {
       this.zoomLevel--;
-      this.zoom(context);
+      this.zoom();
     }
   }
 
-  zoom(context) {
+  zoom() {
     this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.zoomLevel, this.viewPortOrigin.y +  this.zoomLevel);
     this.cellSize = this.viewPortSize / this.zoomLevel;
-    this.update(context);
+    this.update();
   }
 
-  update(context) {
+  update() {
     this.clippedGrid = this.createClippedGrid();
-    this.draw(context);
+    this.draw();
   }
 
-  draw(context) {
-    context.fillStyle = '#FFFFFF';
-    context.fillRect(0, 0, this.size, this.size);
-    context.fillStyle = '#000000';
+  draw() {
+    this.context.fillStyle = '#FFFFFF';
+    this.context.fillRect(0, 0, this.size, this.size);
+    this.context.fillStyle = '#000000';
     for(let h=0;h<this.clippedGrid.length;h++) {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const cell = this.clippedGrid[h][w];
-        if (cell && (cell.point.x) <= this.viewPortEnd.x && (cell.point.x) >= 0 && (cell.point.y) >= 0 && cell.point.y <= this.viewPortEnd.y) {
+        if (cell && (cell.drawingPoint.x) <= this.viewPortEnd.x && (cell.drawingPoint.x) >= 0 && (cell.drawingPoint.y) >= 0 && cell.drawingPoint.y <= this.viewPortEnd.y) {
           if (cell.type === 'grass') {
-            context.fillStyle = '#00FF00';
+            this.context.fillStyle = '#00FF00';
           }
           if (cell.type === 'water') {
-            context.fillStyle = '#0000FF';
+            this.context.fillStyle = '#0000FF';
           }
           if (cell.type === 'blank') {
-            context.fillStyle = '#FFFFFF';
+            this.context.fillStyle = '#FFFFFF';
           }
-          context.fillRect(cell.point.x * this.cellSize, cell.point.y * this.cellSize, this.cellSize, this.cellSize);
+          this.context.fillRect(cell.drawingPoint.x * this.cellSize, cell.drawingPoint.y * this.cellSize, this.cellSize, this.cellSize);
 
           if (cell.selected) {
-            context.strokeStyle = '#000000';
-            context.strokeRect(cell.point.x * this.cellSize, cell.point.y * this.cellSize, this.cellSize, this.cellSize);
-            context.strokeStyle = '#FFFFFF';
+            this.context.strokeStyle = '#000000';
+            this.context.strokeRect(cell.drawingPoint.x * this.cellSize, cell.drawingPoint.y * this.cellSize, this.cellSize, this.cellSize);
+            this.context.strokeStyle = '#FFFFFF';
+          }
+
+          if (cell.city) {
+            this.context.fillStyle = '#000000';
+            this.context.fillRect(cell.drawingPoint.x * this.cellSize + this.cellSize/4, cell.drawingPoint.y * this.cellSize + this.cellSize/4, this.cellSize/2, this.cellSize/2);
           }
         }
       }
     }
+  }
+
+  addCityToSelectedTile() {
+    if (!this.selectedCell) return;
+
+    if (this.selectedCell.city) return;
+
+    if (this.selectedCell.type === 'water') return;
+    this.selectedCell.city = new City(this.selectedCell, 'New City', 1);
+
+    this.draw();
   }
 }
 

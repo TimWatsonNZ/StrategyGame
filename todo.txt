@@ -1,6 +1,4 @@
 
-Add zooming in and out - the difficult part here will be to zoom based on where the mouse is.
-
 Implement adding entities to the tiles.
 Implement cities and roads.
 Implement a connection algorithm - for a given city find what it's connected to by roads.
@@ -11,3 +9,8 @@ Implement resource flow to the city.
 Implement population growth based on food.
 
 Implement transactions - food for cash.
+
+Refactor out controls to somewhere else
+Refactor out map creation.
+
+
