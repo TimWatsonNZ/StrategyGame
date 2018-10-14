@@ -11,7 +11,7 @@ canvas.height=size;
 document.getElementById('root').appendChild(canvas);
 const context = canvas.getContext('2d');
 
-const map = new Map(size);
+const map = new Map(size, 40);
 map.draw(context);
 
 //  Color in clicked square
@@ -27,7 +27,6 @@ canvas.addEventListener('click', (e) => {
   } else {
     document.querySelector('#selectedTile').textContent = '';
   }
-    
 });
 
 //  Zoom in and out and drag
@@ -61,17 +60,19 @@ canvas.addEventListener("mouseup", (e) => {
     const diffX = startDrag.x - clientX;
     const diffY = startDrag.y - clientY;
 
-    map.drag(diffX, diffY, context);
+   // map.drag(diffX, diffY, context);
     startDrag.x = 0;
     startDrag.y = 0;
   }
   dragState = dragStates.ENDED;
 }, false);
 
-window.addEventListener('keyup', e => {
+
+window.addEventListener('keydown', e => {
   if (e.keyCode === 37) {
     map.panLeft(context);
   }
+
   if (e.keyCode === 38) {
     map.panUp(context);
   }
@@ -85,10 +86,11 @@ window.addEventListener('keyup', e => {
   }
 
   if (e.keyCode === 107) {
-
+    map.zoomIn(context);
   }
-  if (e.keyCode === 107) {
-    
+
+  if (e.keyCode === 109) {
+    map.zoomOut(context);
   }
   console.log(e.keyCode);
 });

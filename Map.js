@@ -16,26 +16,34 @@ const grassType = {
 
 class Map {
   
-  constructor(size) {
+  constructor(size, cellNumber) {
     //  Draw grid of squares
     this.size = size;
-    this.cellSize = 10;
-    this.squareNumber = size / this.cellSize;
-    this.viewPortOrigin = new Point(Math.floor(this.squareNumber/2), Math.floor(this.squareNumber/2));
+    this.cellNumber = cellNumber;
+    this.viewPortOrigin = new Point(0, 0);
     this.origin = new Point(0, 0);
     this.selectedCell = null;
     this.grid = [];
     this.clippedGrid = [];
-    this.viewPortSize = 10;
-    this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.viewPortSize, this.viewPortOrigin.y +  this.viewPortSize);
+    this.viewPortSize = size; //  how large the view port is
+    this.zoomLevel = 40;  //  how many cells are in view port
+    this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.zoomLevel, this.viewPortOrigin.y +  this.zoomLevel);
      
+    this.cellSize = this.viewPortSize / this.zoomLevel; //  should be view port size / view port content size
     this.init();
   }
 
+
+
+  //   Zoom out - view port stays the same size...need some kind of scale number.
+  //  View port size is different actually...
+  //  can change view port size, recalculate view port end and work out cellsize again.
+  //  cell size = viewport size / number of cells in view port.
+
   init() {
-    for(let h=0;h<this.squareNumber;h++) {
+    for(let h=0;h<this.cellNumber;h++) {
       const row = [];
-      for(let w=0;w<this.squareNumber;w++) {
+      for(let w=0;w<this.cellNumber;w++) {
         row.push(new Cell(w, h, 'blank'));
       }
       this.grid.push(row);
@@ -56,53 +64,9 @@ class Map {
     this.grid = this.dfa(this.grid, this.smoothRule);
     this.grid = this.dfa(this.grid, this.smoothRule);
 
+    this.fillInHoles(this.grid);
+
     this.clippedGrid = this.createClippedGrid();
-  }
-
-  clickCell(x, y, context) {
-    const cellX = Math.floor(x / this.cellSize);
-    const cellY = Math.floor(y / this.cellSize);
-
-    const cell = this.clippedGrid[cellY] && this.clippedGrid[cellY][cellX];
-
-    if (cell) {  
-      if (this.selectedCell) {
-        this.selectedCell.selected = false;
-      }
-      this.selectedCell = cell;
-      cell.selected = true;
-      this.draw(context);
-    }
-
-    return cell;
-  }
-
-  drag(diffX, diffY, context) {
-
-    const minDrag = 1;
-    if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {
-      if (diffX > 0) {
-        const sum = this.viewPortOrigin.x + Math.round(diffX);
-        this.viewPortOrigin.x = Math.min(sum, this.squareNumber);
-        this.viewPortEnd.x = this.viewPortOrigin.x + this.viewPortSize;
-      } else {
-        const sum = this.viewPortOrigin.x + Math.round(diffX);
-        this.viewPortOrigin.x = Math.max(sum, 0);
-        this.viewPortOrigin.x = this.viewPortOrigin.x + this.viewPortSize;
-      }
-
-      if (diffY > 0) {
-        const sum = this.viewPortOrigin.y + Math.round(diffY);
-        this.viewPortOrigin.y = Math.min(sum, this.squareNumber);
-        this.viewPortOrigin.y = this.viewPortOrigin.y + this.viewPortSize;
-      } else {
-        const sum = this.viewPortOrigin.x + Math.round(diffY);
-        this.viewPortOrigin.y = Math.max(sum, 0);
-        this.viewPortOrigin.y = this.viewPortOrigin.y + this.viewPortSize;
-      }
-      
-      this.update(context);
-    }
   }
 
   getNeigbours(index, grid) {
@@ -158,9 +122,9 @@ class Map {
   dfa (grid, rule) {
     const newGrid = [];
 
-    for(let h=0;h<this.squareNumber;h++) {
+    for(let h=0;h<this.cellNumber;h++) {
       const newRow = [];
-      for(let w=0;w<this.squareNumber;w++) {
+      for(let w=0;w<this.cellNumber;w++) {
         const cell = grid[h][w];
         const neighbours = this.getNeigbours(this.cellToIndex(cell), grid);
 
@@ -194,6 +158,16 @@ class Map {
     return cell.type;
   }
 
+  fillInHoles(grid) {
+    for(let y = 0; y < grid.length; y++) {
+      for (let h = 0; h < grid[y].length; h++) {
+        if (grid[y][h].type === 'blank') {
+          grid[y][h].type = 'water';
+        }
+      }
+    }
+  }
+
   createClippedGrid() {
     const newgrid = [];
     const startPoint = new Point(this.viewPortOrigin.x, this.viewPortOrigin.y);
@@ -220,6 +194,52 @@ class Map {
     return newgrid;
   }
 
+  clickCell(x, y, context) {
+    const cellX = Math.floor(x / this.cellSize);
+    const cellY = Math.floor(y / this.cellSize);
+
+    const cell = this.clippedGrid[cellY] && this.clippedGrid[cellY][cellX];
+
+    if (cell) {  
+      if (this.selectedCell) {
+        this.selectedCell.selected = false;
+      }
+      this.selectedCell = cell;
+      cell.selected = true;
+      this.draw(context);
+    }
+
+    return cell;
+  }
+
+  drag(diffX, diffY, context) {
+
+    const minDrag = 1;
+    if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {
+      if (diffX > 0) {
+        const sum = this.viewPortOrigin.x + Math.round(diffX);
+        this.viewPortOrigin.x = Math.min(sum, this.cellNumber);
+        this.viewPortEnd.x = this.viewPortOrigin.x + this.zoomLevel;
+      } else {
+        const sum = this.viewPortOrigin.x + Math.round(diffX);
+        this.viewPortOrigin.x = Math.max(sum, 0);
+        this.viewPortOrigin.x = this.viewPortOrigin.x + this.zoomLevel;
+      }
+
+      if (diffY > 0) {
+        const sum = this.viewPortOrigin.y + Math.round(diffY);
+        this.viewPortOrigin.y = Math.min(sum, this.cellNumber);
+        this.viewPortOrigin.y = this.viewPortOrigin.y + this.zoomLevel;
+      } else {
+        const sum = this.viewPortOrigin.x + Math.round(diffY);
+        this.viewPortOrigin.y = Math.max(sum, 0);
+        this.viewPortOrigin.y = this.viewPortOrigin.y + this.zoomLevel;
+      }
+      
+      this.update(context);
+    }
+  }
+
   panUp(context) {
     if (this.viewPortOrigin.y > 0) {
       this.viewPortOrigin.y--;
@@ -229,7 +249,7 @@ class Map {
   }
 
   panDown(context) {
-    if (this.viewPortOrigin.y + this.viewPortSize < this.squareNumber) {
+    if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.y++;
       this.viewPortEnd.y++;
       this.update(context);
@@ -245,11 +265,31 @@ class Map {
   }
 
   panRight(context) {
-    if (this.viewPortOrigin.x + this.viewPortSize < this.squareNumber) {
+    if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.x++;
       this.viewPortEnd.x++;
       this.update(context);
     }
+  }
+
+  zoomOut(context) {
+    if (this.zoomLevel < 100) {
+      this.zoomLevel++;
+      this.zoom(context);
+    }
+  }
+
+  zoomIn(context) {
+    if (this.zoomLevel > 1) {
+      this.zoomLevel--;
+      this.zoom(context);
+    }
+  }
+
+  zoom(context) {
+    this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.zoomLevel, this.viewPortOrigin.y +  this.zoomLevel);
+    this.cellSize = this.viewPortSize / this.zoomLevel;
+    this.update(context);
   }
 
   update(context) {
