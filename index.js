@@ -26,9 +26,13 @@ canvas.addEventListener('click', (e) => {
     const cellDetails = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
     let cityDetails = '';
     if (cell.city) {
-      cityDetails = `${cell.city.name}: ${cell.city.population}`;
+      cityDetails = `- ${cell.city.name}: ${cell.city.population}`;
     }
-    document.querySelector('#selectedTile').textContent = `${cellDetails} - ${cityDetails}`;
+    let roadDetails = '';
+    if (cell.road) {
+      roadDetails = `- ${cell.road.type}: ${cell.road.shape}`;
+    }
+    document.querySelector('#selectedTile').textContent = `${cellDetails} ${cityDetails ? cityDetails : ''} ${roadDetails ? roadDetails : ''}`;
   } else {
     document.querySelector('#selectedTile').textContent = '';
   }
@@ -102,6 +106,10 @@ window.addEventListener('keydown', e => {
 document.querySelector('#addCity').addEventListener('click', () => {
   map.addCityToSelectedTile();
 })
+
+document.querySelector('#addRoad').addEventListener('click', () => {
+  map.addRoadToSelectedTile();
+});
 
 //  Given an array of squares and a view port, find the squares in the viewport
 //  Zooming changes how large you want to draw the squares but also the viewport

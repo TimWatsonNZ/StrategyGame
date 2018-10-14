@@ -1,6 +1,7 @@
 import Point from './Point';
 import Cell from './Cell';
 import City from './City';
+import { Road, Shapes } from './Road';
 
 const waterType = {
   borders: {
@@ -64,12 +65,12 @@ class Map {
     this.clippedGrid = this.createClippedGrid();
   }
 
-  getNeigbours(index, grid) {
-    const cell = grid[index.y][index.x];
+  getNeighbours(index, preserveOrder = false) {
+    const cell = this.grid[index.y][index.x];
     const deltas = [
-      { x:-1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1},
-      { x:-1, y: 0},               , {x: 1, y: 0},
-      { x:-1, y: 1},  {x: 0, y: 1},  {x: 1, y: 1},
+      { x:-1, y: -1 }, {x: 0, y: -1},  { x: 1, y: -1},
+      { x:-1, y:  0 },              ,  { x: 1, y:  0},
+      { x:-1, y:  1 }, {x: 0, y:  1 }, { x: 1, y:  1},
     ];
 
     const neighbours = [];
@@ -81,11 +82,11 @@ class Map {
       const indexX = index.x + delta.x;
       const indexY = index.y + delta.y;
 
-      if (indexX < 0 || indexX > grid.length-1 ||
-          indexY < 0 || indexY > grid.length-1) {
-          return;
+      if (indexX < 0 || indexX > this.grid.length-1 ||
+          indexY < 0 || indexY > this.grid.length-1) {
+          if (preserveOrder) neighbours.push(null);
       } else {
-        neighbours.push(grid[indexY][indexX]);
+        neighbours.push(this.grid[indexY][indexX]);
       }
     });
 
@@ -101,7 +102,7 @@ class Map {
 
     while (stack.length > 0) {
       const cell = stack.pop();
-      const neighbours = this.getNeigbours(this.cellToIndex(cell), this.grid);
+      const neighbours = this.getNeighbours(this.cellToIndex(cell));
       const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
       const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
       
@@ -121,7 +122,7 @@ class Map {
       const newRow = [];
       for(let w=0;w<this.cellNumber;w++) {
         const cell = grid[h][w];
-        const neighbours = this.getNeigbours(this.cellToIndex(cell), grid);
+        const neighbours = this.getNeighbours(this.cellToIndex(cell));
 
         const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
         const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
@@ -320,6 +321,10 @@ class Map {
             this.context.fillStyle = '#000000';
             this.context.fillRect(cell.drawingPoint.x * this.cellSize + this.cellSize/4, cell.drawingPoint.y * this.cellSize + this.cellSize/4, this.cellSize/2, this.cellSize/2);
           }
+
+          if (cell.road) {
+            cell.road.draw(this.context, this.cellSize);
+          }
         }
       }
     }
@@ -328,10 +333,78 @@ class Map {
   addCityToSelectedTile() {
     if (!this.selectedCell) return;
 
-    if (this.selectedCell.city) return;
+    if (this.selectedCell.city || this.selectedCell.road) return;
 
     if (this.selectedCell.type === 'water') return;
     this.selectedCell.city = new City(this.selectedCell, 'New City', 1);
+
+    this.draw();
+  }
+
+  addRoadToSelectedTile() {
+    if (!this.selectedCell) return;
+
+    if (this.selectedCell.city || this.selectedCell.road) return;
+
+    if (this.selectedCell.type === 'water') return;
+
+    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true);
+
+    const topNeighbour = (neighbours[1] && neighbours[1].road) || null;
+    const leftNeighbour = (neighbours[3] && neighbours[3].road) || null;
+    const rightNeighbour = (neighbours[4] && neighbours[4].road) || null;
+    const bottomNeighbour = (neighbours[6] && neighbours[6].road) || null;
+
+    let shape = Shapes.isolated;
+    
+    if (topNeighbour) {
+      if (leftNeighbour) {
+        if (rightNeighbour && bottomNeighbour) {
+          shape = Shapes.cross;
+          // [topNeighbour, leftNeighbour, rightNeighbour, bottomNeighbour].forEach(updateRoad);
+        } else if (rightNeighbour) {
+          shape = Shapes.horizontalTop;
+        } else if (bottomNeighbour) {
+          shape = Shapes.verticalLeft;
+        } else {
+          shape = Shapes.topLeft;
+        }
+      } else if (rightNeighbour) {
+        if (bottomNeighbour) {
+          shape = Shapes.verticalRight;
+        } else {
+          shape = Shapes.topRight;
+        }
+      } else {
+        if (bottomNeighbour) {
+          shape = Shapes.vertical;
+        } else {
+          shape = Shapes.top;
+        }
+      }
+    } else if (bottomNeighbour) {
+    if (leftNeighbour) {
+      if (rightNeighbour) {
+        shape = Shapes.horizontalBottom;
+      } else {
+        shape = Shapes.bottomLeft;
+      }
+    } else if (rightNeighbour) {
+      shape = Shapes.bottomRight;
+    } else {
+      shape = Shapes.bottom;
+    }
+    } else if (leftNeighbour) {
+      if (rightNeighbour) {
+        shape = Shapes.horizontal;
+      } else {
+        shape = Shapes.left;
+      }
+    } else if (rightNeighbour) {
+      shape = Shapes.right;
+    }
+
+    this.selectedCell.road = new Road('Dirt', this.selectedCell, shape);
 
     this.draw();
   }
