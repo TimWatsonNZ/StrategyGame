@@ -1,14 +1,14 @@
 
-Implement adding entities to the tiles.
-Implement cities and roads.
 Implement a connection algorithm - for a given city find what it's connected to by roads.
 Implement movement and an A* algorithm to move things.
 Implement turn button.
 Implement a farm tile.
 Implement resource flow to the city.
 Implement population growth based on food.
-
+Implement a forest tile and a wood resource.
 Implement transactions - food for cash.
+Implement basic pop system.
+Implement a basic combat system.
 
 Refactor out controls to somewhere else
 Refactor out map creation.

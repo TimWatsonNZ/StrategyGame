@@ -109,15 +109,22 @@ window.addEventListener('keydown', e => {
   if (e.keyCode === 67) {
     map.addCityToSelectedTile();
   }
+
+  if (e.keyCode === 85) {
+    map.addUnitToSelectedTile();
+  }
+
+  console.log(e.keyCode);
 });
 
 document.querySelector('#addCity').addEventListener('click', () => {
   map.addCityToSelectedTile();
-})
+});
 
 document.querySelector('#addRoad').addEventListener('click', () => {
   map.addRoadToSelectedTile();
 });
+
 
 //  Given an array of squares and a view port, find the squares in the viewport
 //  Zooming changes how large you want to draw the squares but also the viewport

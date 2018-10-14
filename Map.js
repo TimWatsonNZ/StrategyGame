@@ -1,6 +1,8 @@
 import Point from './Point';
 import Cell from './Cell';
 import City from './City';
+import Unit from './Unit';
+
 import { Road, findShape } from './Road';
 
 const waterType = {
@@ -296,6 +298,7 @@ class Map {
     this.context.fillStyle = '#FFFFFF';
     this.context.fillRect(0, 0, this.size, this.size);
     this.context.fillStyle = '#000000';
+
     for(let h=0;h<this.clippedGrid.length;h++) {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const cell = this.clippedGrid[h][w];
@@ -318,25 +321,28 @@ class Map {
           }
 
           if (cell.city) {
-            this.context.fillStyle = '#000000';
-            this.context.fillRect(cell.drawingPoint.x * this.cellSize + this.cellSize/4, cell.drawingPoint.y * this.cellSize + this.cellSize/4, this.cellSize/2, this.cellSize/2);
+            cell.city.draw(this.context, this.cellSize);
           }
 
           if (cell.road) {
             cell.road.draw(this.context, this.cellSize);
+          }
+
+          if (cell.unit) {
+            cell.unit.draw(this.context, this.cellSize);
           }
         }
       }
     }
   }
 
-  addCityToSelectedTile() {
+  addUnitToSelectedTile() {
     if (!this.selectedCell) return;
 
-    if (this.selectedCell.city || this.selectedCell.road) return;
+    if (this.selectedCell.city || this.selectedCell.road || this.selectedCell.unit) return;
 
     if (this.selectedCell.type === 'water') return;
-    this.selectedCell.city = new City(this.selectedCell, 'New City', 1);
+    this.selectedCell.unit = new Unit(this.selectedCell, 'New Unit');
 
     this.draw();
   }
@@ -352,12 +358,23 @@ class Map {
 
     this.selectedCell.road = new Road('Dirt', this.selectedCell, neighbours);
     
-    neighbours.filter(x => x.road).forEach(neighbour => {
+    neighbours.filter(x => x && x.road).forEach(neighbour => {
       const n = this.getNeighbours(this.cellToIndex(neighbour));
       neighbour.road.shape = findShape(n);
     })
 
     this.draw();
+  }
+
+  addCityToSelectedTile() {
+    if (!this.selectedCell) return;
+
+    if (this.selectedCell.city || this.selectedCell.road) return;
+
+    if (this.selectedCell.type === 'water') return;
+    this.selectedCell.city = new City(this.selectedCell, 'New City', 1);
+
+    this.selectedCell.city.draw(this.context, this.cellSize);
   }
 }
 
