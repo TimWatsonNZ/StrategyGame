@@ -1,7 +1,7 @@
 import Point from './Point';
 import Cell from './Cell';
 import City from './City';
-import { Road, Shapes } from './Road';
+import { Road, findShape } from './Road';
 
 const waterType = {
   borders: {
@@ -350,61 +350,12 @@ class Map {
 
     const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true);
 
-    const topNeighbour = (neighbours[1] && neighbours[1].road) || null;
-    const leftNeighbour = (neighbours[3] && neighbours[3].road) || null;
-    const rightNeighbour = (neighbours[4] && neighbours[4].road) || null;
-    const bottomNeighbour = (neighbours[6] && neighbours[6].road) || null;
-
-    let shape = Shapes.isolated;
+    this.selectedCell.road = new Road('Dirt', this.selectedCell, neighbours);
     
-    if (topNeighbour) {
-      if (leftNeighbour) {
-        if (rightNeighbour && bottomNeighbour) {
-          shape = Shapes.cross;
-          // [topNeighbour, leftNeighbour, rightNeighbour, bottomNeighbour].forEach(updateRoad);
-        } else if (rightNeighbour) {
-          shape = Shapes.horizontalTop;
-        } else if (bottomNeighbour) {
-          shape = Shapes.verticalLeft;
-        } else {
-          shape = Shapes.topLeft;
-        }
-      } else if (rightNeighbour) {
-        if (bottomNeighbour) {
-          shape = Shapes.verticalRight;
-        } else {
-          shape = Shapes.topRight;
-        }
-      } else {
-        if (bottomNeighbour) {
-          shape = Shapes.vertical;
-        } else {
-          shape = Shapes.top;
-        }
-      }
-    } else if (bottomNeighbour) {
-    if (leftNeighbour) {
-      if (rightNeighbour) {
-        shape = Shapes.horizontalBottom;
-      } else {
-        shape = Shapes.bottomLeft;
-      }
-    } else if (rightNeighbour) {
-      shape = Shapes.bottomRight;
-    } else {
-      shape = Shapes.bottom;
-    }
-    } else if (leftNeighbour) {
-      if (rightNeighbour) {
-        shape = Shapes.horizontal;
-      } else {
-        shape = Shapes.left;
-      }
-    } else if (rightNeighbour) {
-      shape = Shapes.right;
-    }
-
-    this.selectedCell.road = new Road('Dirt', this.selectedCell, shape);
+    neighbours.filter(x => x.road).forEach(neighbour => {
+      const n = this.getNeighbours(this.cellToIndex(neighbour));
+      neighbour.road.shape = findShape(n);
+    })
 
     this.draw();
   }

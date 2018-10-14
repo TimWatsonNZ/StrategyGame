@@ -101,6 +101,14 @@ window.addEventListener('keydown', e => {
   if (e.keyCode === 109) {
     map.zoomOut();
   }
+
+  if (e.keyCode === 82) {
+    map.addRoadToSelectedTile();
+  }
+
+  if (e.keyCode === 67) {
+    map.addCityToSelectedTile();
+  }
 });
 
 document.querySelector('#addCity').addEventListener('click', () => {
