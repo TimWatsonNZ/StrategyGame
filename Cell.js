@@ -7,6 +7,10 @@ class Cell {
   
     this.type = type;
   }
+
+  equals(otherCell) {
+    return this.point.equals(otherCell.point);
+  }
 }
 
 export default Cell;

@@ -9,6 +9,7 @@ Implement a forest tile and a wood resource.
 Implement transactions - food for cash.
 Implement basic pop system.
 Implement a basic combat system.
+Implement an enemy player.
 
 Refactor out controls to somewhere else
 Refactor out map creation.
