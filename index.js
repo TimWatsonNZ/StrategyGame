@@ -23,16 +23,7 @@ canvas.addEventListener('click', (e) => {
   const cell = map.clickCell(clientX, clientY);
 
   if (cell) {
-    const cellDetails = `${cell.point.x}, ${cell.point.y}, ${cell.type}`;
-    let cityDetails = '';
-    if (cell.city) {
-      cityDetails = `- ${cell.city.name}: ${cell.city.population}`;
-    }
-    let roadDetails = '';
-    if (cell.road) {
-      roadDetails = `- ${cell.road.type}: ${cell.road.shape}`;
-    }
-    document.querySelector('#selectedTile').textContent = `${cellDetails} ${cityDetails ? cityDetails : ''} ${roadDetails ? roadDetails : ''}`;
+    document.querySelector('#selectedTile').textContent = cell.toString();
   } else {
     document.querySelector('#selectedTile').textContent = '';
   }

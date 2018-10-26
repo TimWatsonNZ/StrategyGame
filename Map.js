@@ -67,12 +67,18 @@ class Map {
     this.clippedGrid = this.createClippedGrid();
   }
 
-  getNeighbours(index, preserveOrder = false) {
+  getNeighbours(index, preserveOrder = false, noDiagonals = false) {
     const cell = this.grid[index.y][index.x];
-    const deltas = [
+    const allDeltas = [
       { x:-1, y: -1 }, {x: 0, y: -1},  { x: 1, y: -1},
       { x:-1, y:  0 },              ,  { x: 1, y:  0},
       { x:-1, y:  1 }, {x: 0, y:  1 }, { x: 1, y:  1},
+    ];
+
+    const noDiagonalsDeltas = [
+                     , { x: 0, y: -1 },  
+      { x:-1, y:  0 },              ,  { x: 1, y:  0},
+                       { x: 0, y:  1 },
     ];
 
     const neighbours = [];
@@ -80,6 +86,7 @@ class Map {
       return neighbours;
     }
 
+    const deltas = noDiagonals ? noDiagonalsDeltas : allDeltas;
     deltas.forEach(delta => {
       const indexX = index.x + delta.x;
       const indexY = index.y + delta.y;
@@ -129,7 +136,7 @@ class Map {
         const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
         const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
 
-        const copy = { ...cell };
+        const copy = Cell.copy(cell);
         copy.type = rule(copy, waterNeighbours, grassNeighbours);
         
         newRow.push(copy);
@@ -354,12 +361,12 @@ class Map {
 
     if (this.selectedCell.type === 'water') return;
 
-    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true);
+    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true, true);
 
     this.selectedCell.road = new Road('Dirt', this.selectedCell, neighbours);
     
     neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = this.getNeighbours(this.cellToIndex(neighbour));
+      const n = this.getNeighbours(this.cellToIndex(neighbour), true, true);
       neighbour.road.shape = findShape(n);
     })
 
@@ -372,9 +379,16 @@ class Map {
     if (this.selectedCell.city || this.selectedCell.road) return;
 
     if (this.selectedCell.type === 'water') return;
-    this.selectedCell.city = new City(this.selectedCell, 'New City', 1);
+    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true, true);
+    this.selectedCell.city = new City(this.selectedCell, 'New City', 1, neighbours);
+
+    neighbours.filter(x => x && x.road).forEach(neighbour => {
+      const n = this.getNeighbours(this.cellToIndex(neighbour), true, true);
+      neighbour.road.shape = findShape(n);
+    })
 
     this.selectedCell.city.draw(this.context, this.cellSize);
+    this.draw();
   }
 }
 
