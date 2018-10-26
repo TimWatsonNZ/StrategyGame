@@ -1,17 +1,50 @@
+Version 1 - World Creation 
+          Implement camera controls, basic map generation.
 
-Implement a connection algorithm - for a given city find what it's connected to by roads.
-Implement movement and an A* algorithm to move things.
-Implement turn button.
-Implement a farm tile.
-Implement resource flow to the city.
-Implement population growth based on food.
-Implement a forest tile and a wood resource.
-Implement transactions - food for cash.
-Implement basic pop system.
-Implement a basic combat system.
-Implement an enemy player.
+All done.
 
+Version 2  - Entity Update
+          - Implement entities in the world and the ability to create, edit, remove and give orders to entities.
+          - Implement connectivity of entities and being able to give move orders to these.
+            - Add some kind of soldier entity. - done
+            - Add cities. - done
+            - Add roads. - done
+            - Road connection algorithm - for a given city find what it's connected to by roads. - done
+            - City to city distance.
+            - Entity movement and an A* algorithm to move things - control by key and by mouse.
+            - turn button, update positions of moving entities.
+            - Buttons/keys to remove entities.
+
+Version 3 - Resources/Economics update
+            - create a farm tile.
+            - basic pop system, farmers to work the farms.
+            - resource flow to the city - food should end up in the city center, food should decay over time.
+            - population growth based on food, find a way to grow but also limit growth.
+            - forest tile and a wood resource - add a woodcutter pop?
+            - implement some basic transactions - food for food or gold?
+           
+Version 4 - Combat/Basic AI update
+      - basic combat system.
+      - an enemy player.
+      - hostile player who tries to defeat player.
+      - implement some basic diplomacy.
+      - implement some kind of attrition system.
+      
+Version 5 - Intercity update
+      - Trade between cities
+      - Population flow between cities.
+      - Loyalty system.
+      - Creating new cities - settlers.
+      - Some kind of influence/claim system.
+      
+ 
+Improve map generation - add mountains, rivers, coast.
+Add seasons and harvests.
+Add different buildings like a granary.
+Add government types.
+Add raiding.
+Improve pop system - add more pop kinds.
+Add research.
 Refactor out controls to somewhere else
 Refactor out map creation.
-
-
+Improve graphics.
