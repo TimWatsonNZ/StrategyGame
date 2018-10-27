@@ -3,17 +3,30 @@ import generateGuid from './generateGuid';
 import RoadNetwork from './RoadNetwork';
 class City {
   constructor(cell, name, population, neighbours) {
+    this.type = 'city';
     this.id = generateGuid();
     this.cell = cell;
     this.name = name;
     this.population = population;
 
-    this.neigbours = neighbours.filter(neighbour => neighbour.city || neighbour.road);
+    this.distances = [];
+
+    this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
+      .map(x => x.road || x.city);
+
+    this.neighbours.forEach(n => {
+      if (n.city) {
+        n.city.neighbours.push(this);
+      }
+      if (n.road) {
+        n.road.neighbours.push(this);
+      }
+    });
 
     this.roadNetwork = new RoadNetwork(this);
     this.roadNetwork.addCity(this);
 
-    this.neigbours.forEach(neighbour => {
+    this.neighbours.forEach(neighbour => {
       if (neighbour.road) {
         this.mergeNetworks(neighbour.road);
       }
@@ -22,8 +35,7 @@ class City {
 
   mergeNetworks(otherRoad) {
     if (otherRoad.roadNetwork.id !== this.roadNetwork.id) {
-      otherRoad.roadNetwork.merge(this.roadNetwork);
-      this.roadNetwork = otherRoad.roadNetwork;
+      otherRoad.roadNetwork.merge(this.roadNetwork, { type: 'city', entity: this });
     }
   }
 
@@ -41,7 +53,8 @@ class City {
   }
 
   toString() {
-    return `${this.name}: ${this.population}`;
+    const distances = this.distances.map(x => `Id: ${x.city.id} distance: ${x.distance}\n`);
+    return `${this.id}: ${this.population}\n ${distances}`;
   }
 }
 

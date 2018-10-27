@@ -21,7 +21,7 @@ class RoadNetwork {
     city.roadNetwork = this;
   }
 
-  merge(network) {
+  merge(network, entity) {
     network.cities.forEach(x => {
       if (!this.cities.find(city => city.equals(x))) {
         this.cities.push(x);
@@ -35,6 +35,34 @@ class RoadNetwork {
         x.roadNetwork = this;
       }
     });
+
+    entity.roadNetwork = this;
+
+    //  For each city to a bfs and find neighbours.
+    this.cities.forEach(city => {
+      this.bfs(city);
+    });
+    console.log();
+  }
+
+  bfs(city) {
+    const distances = [];
+    let neighbours = city.neighbours.map(node => ({node, distance: 0 }));
+    const visited = [];
+    while(neighbours.length !== 0) {
+      //  visit each neighbour
+      const neighbour = neighbours.pop();
+      if (neighbour.node.type === 'city') {
+        distances.push({city, distance: neighbour.distance });
+      } else {
+        const neighboursNeighbours = neighbour.node.neighbours
+          .filter(x => !visited[x.node])
+          .map(x => ({ node: x, distance: neighbour.distance + 1 }));
+        neighbours = neighbours.concat(neighboursNeighbours);
+        visited.push(neighbour.node.id);
+      }
+    }
+    city.distances = distances;
   }
 }
 

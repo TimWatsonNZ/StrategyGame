@@ -4,7 +4,7 @@ class Cell {
   constructor(x,y, type) {
     this.point = new Point(x,y);
     this.selected = false;
-  
+    this.id = `${x}-${y}`;
     this.type = type;
   }
 

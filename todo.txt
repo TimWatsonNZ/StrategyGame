@@ -11,9 +11,7 @@ Version 2  - Entity Update
             - Add roads. - done
             - Road connection algorithm - for a given city find what it's connected to by roads. - done
             - City to city distance.
-            - Entity movement and an A* algorithm to move things - control by key and by mouse.
-            - turn button, update positions of moving entities.
-            - Buttons/keys to remove entities.
+            - Remove roads and recalculate distances.
 
 Version 3 - Resources/Economics update
             - create a farm tile.
@@ -24,6 +22,9 @@ Version 3 - Resources/Economics update
             - implement some basic transactions - food for food or gold?
            
 Version 4 - Combat/Basic AI update
+      - Entity movement and an A* algorithm to move things - control by key and by mouse.
+      - turn button, update positions of moving entities.
+      - Buttons/keys to remove entities.
       - basic combat system.
       - an enemy player.
       - hostile player who tries to defeat player.

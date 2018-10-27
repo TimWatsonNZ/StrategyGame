@@ -1,5 +1,6 @@
 import Cell from './Cell';
 import RoadNetwork from './RoadNetwork';
+import generateGuid from './generateGuid';
 
 const Shapes = {
   isolated: 'isolated',
@@ -79,22 +80,33 @@ function findShape(neighbours) {
 }
 
 class Road {
-  constructor(type, cell, neighbours) {
-    this.type = type;
+  constructor(cell, neighbours) {
+    this.type = 'road';
+    this.id = generateGuid();
     this.cell = cell;
     this.shape = findShape(neighbours);
-    this.neigbours = neighbours.filter(neighbour => neighbour.city || neighbour.road);
+    this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
+      .map(x => x.road || x.city);
+
+    this.neighbours.forEach(n => {
+      if (n.city) {
+        n.city.neighbours.push(this);
+      }
+      if (n.road) {
+        n.road.neighbours.push(this);
+      }
+    });
 
     this.roadNetwork = new RoadNetwork(this);
     this.roadNetwork.addRoad(this);
 
-    this.neigbours.forEach(neighbour => {
-      if (neighbour.road) {
-        this.mergeNetworks(neighbour.road);
+    this.neighbours.forEach(neighbour => {
+      if (neighbour.type === 'road') {
+        this.mergeNetworks(neighbour);
       }
 
-      if (neighbour.city) {
-        this.mergeNetworks(neighbour.city);
+      if (neighbour.type === 'city') {
+        this.mergeNetworks(neighbour);
       }
     });
   }
@@ -109,8 +121,7 @@ class Road {
 
   mergeNetworks(otherRoad) {
     if (otherRoad.roadNetwork.id !== this.roadNetwork.id) {
-      this.roadNetwork.merge(otherRoad.roadNetwork);
-      otherRoad.roadNetwork = this.roadNetwork;
+      this.roadNetwork.merge(otherRoad.roadNetwork, { type: 'road', entity: this });
     }
   }
 

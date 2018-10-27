@@ -363,7 +363,7 @@ class Map {
 
     const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true, true);
 
-    this.selectedCell.road = new Road('Dirt', this.selectedCell, neighbours);
+    this.selectedCell.road = new Road(this.selectedCell, neighbours);
     
     neighbours.filter(x => x && x.road).forEach(neighbour => {
       const n = this.getNeighbours(this.cellToIndex(neighbour), true, true);
