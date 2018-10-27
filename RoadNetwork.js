@@ -13,7 +13,7 @@ class RoadNetwork {
   }
 
   toString() {
-    return `Cities: ${this.cities.length}, Roads: ${this.roads.length}`;
+    return `Id: ${this.id}, Cities: ${this.cities.length}, Roads: ${this.roads.length}`;
   }
 
   addCity(city) {
@@ -25,12 +25,14 @@ class RoadNetwork {
     network.cities.forEach(x => {
       if (!this.cities.find(city => city.equals(x))) {
         this.cities.push(x);
+        x.roadNetwork = this;
       }
     });
 
     network.roads.forEach(x => {
       if (!this.roads.find(road => road.equals(x))) {
         this.roads.push(x);
+        x.roadNetwork = this;
       }
     });
   }
