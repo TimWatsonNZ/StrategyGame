@@ -23,9 +23,11 @@ canvas.addEventListener('click', (e) => {
   const cell = map.clickCell(clientX, clientY);
 
   if (cell) {
-    document.querySelector('#selectedTile').textContent = cell.toString();
+    document.querySelector('#selectedTile').innerHTML = cell.toString()
+      .split('')
+      .map(x => x === '\n' ? '<br />' : x).join('');
   } else {
-    document.querySelector('#selectedTile').textContent = '';
+    document.querySelector('#selectedTile').innerHTML = '';
   }
 });
 

@@ -22,7 +22,9 @@ class Cell {
     if (this.road) {
       roadDetails = `${this.road.toString()}\n${this.road.roadNetwork.toString()}`
     }
-    return `${cellDetails} ${cityDetails} ${roadDetails}`;
+
+    const unitDetails = this.unit ? this.unit.toString() : '';
+    return `${cellDetails} ${cityDetails} ${roadDetails} ${unitDetails}`;
   }
 }
 

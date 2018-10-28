@@ -28,6 +28,7 @@ class Map {
     this.viewPortOrigin = new Point(0, 0);
     this.origin = new Point(0, 0);
     this.selectedCell = null;
+    this.selectedUnit = null;
     this.grid = [];
     this.clippedGrid = [];
     this.viewPortSize = size; //  how large the view port is
@@ -208,6 +209,11 @@ class Map {
       if (this.selectedCell) {
         this.selectedCell.selected = false;
       }
+      if (cell.unit) {
+        this.selectedUnit = cell.unit;
+      } else {
+        this.selectedUnit = null;
+      }
       this.selectedCell = cell;
       cell.selected = true;
       this.draw();
@@ -244,35 +250,71 @@ class Map {
     }
   }
 
+  moveUnit(unit, neighbour) {
+    const originalCell = unit.cell;
+    unit.cell = this.grid[neighbour.point.y][neighbour.point.x];
+    this.grid[neighbour.point.y][neighbour.point.x].unit = unit;
+    originalCell.unit = null;
+    this.update(); 
+  }
+
   panUp() {
-    if (this.viewPortOrigin.y > 0) {
-      this.viewPortOrigin.y--;
-      this.viewPortEnd.y--;
-      this.update();  
+    if (this.selectedUnit) {
+      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[0];
+      if (neighbour && neighbour.type !== 'water') {
+        this.moveUnit(this.selectedUnit, neighbour);
+      }
+    } else {
+      if (this.viewPortOrigin.y > 0) {
+        this.viewPortOrigin.y--;
+        this.viewPortEnd.y--;
+        this.update();  
+      }
     }
   }
 
   panDown() {
-    if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
-      this.viewPortOrigin.y++;
-      this.viewPortEnd.y++;
-      this.update();
+    if (this.selectedUnit) {
+      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[3];
+      if (neighbour && neighbour.type !== 'water') {
+        this.moveUnit(this.selectedUnit, neighbour);
+      }
+    } else {
+      if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
+        this.viewPortOrigin.y++;
+        this.viewPortEnd.y++;
+        this.update();
+      }
     }
   }
 
   panLeft() {
-    if (this.viewPortOrigin.x > 0) {
-      this.viewPortOrigin.x--;
-      this.viewPortEnd.x--;
-      this.update();
+    if (this.selectedUnit) {
+      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[1];
+      if (neighbour && neighbour.type !== 'water') {
+        this.moveUnit(this.selectedUnit, neighbour);
+      }
+    } else {
+      if (this.viewPortOrigin.x > 0) {
+        this.viewPortOrigin.x--;
+        this.viewPortEnd.x--;
+        this.update();
+      }
     }
   }
 
   panRight() {
-    if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
-      this.viewPortOrigin.x++;
-      this.viewPortEnd.x++;
-      this.update();
+    if (this.selectedUnit) {
+      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[2];
+      if (neighbour && neighbour.type !== 'water') {
+        this.moveUnit(this.selectedUnit, neighbour); 
+      }
+    } else {
+      if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
+        this.viewPortOrigin.x++;
+        this.viewPortEnd.x++;
+        this.update();
+      }
     }
   }
 

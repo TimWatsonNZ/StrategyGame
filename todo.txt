@@ -10,9 +10,9 @@ Version 2  - Entity Update
             - Add cities. - done
             - Add roads. - done
             - Road connection algorithm - for a given city find what it's connected to by roads. - done
-            - City to city distance.
+            - City to city distance. - done
             - Remove roads and recalculate distances.
-            - turn button, update positions of moving entities.
+                  - Do a bfs on each neighbouring road...if any connect up.
             - Buttons/keys to remove entities.
 
 Version 3 - Resources/Economics update
