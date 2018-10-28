@@ -48,18 +48,20 @@ class RoadNetwork {
   bfs(city) {
     const distances = [];
     let neighbours = city.neighbours.map(node => ({node, distance: 0 }));
-    const visited = [];
+    const visited = {};
+    visited[city.id] = true;
+    
     while(neighbours.length !== 0) {
       //  visit each neighbour
       const neighbour = neighbours.pop();
       if (neighbour.node.type === 'city') {
         distances.push({city, distance: neighbour.distance });
       } else {
+        visited[neighbour.node.id] = true;
         const neighboursNeighbours = neighbour.node.neighbours
-          .filter(x => !visited[x.node])
+          .filter(x => !visited[x.id])
           .map(x => ({ node: x, distance: neighbour.distance + 1 }));
         neighbours = neighbours.concat(neighboursNeighbours);
-        visited.push(neighbour.node.id);
       }
     }
     city.distances = distances;

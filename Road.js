@@ -89,12 +89,7 @@ class Road {
       .map(x => x.road || x.city);
 
     this.neighbours.forEach(n => {
-      if (n.city) {
-        n.city.neighbours.push(this);
-      }
-      if (n.road) {
-        n.road.neighbours.push(this);
-      }
+      n.neighbours.push(this);
     });
 
     this.roadNetwork = new RoadNetwork(this);

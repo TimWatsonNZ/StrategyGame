@@ -14,21 +14,18 @@ class City {
     this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
 
+    
     this.neighbours.forEach(n => {
-      if (n.city) {
-        n.city.neighbours.push(this);
-      }
-      if (n.road) {
-        n.road.neighbours.push(this);
-      }
+      n.neighbours.push(this);
     });
+  
 
     this.roadNetwork = new RoadNetwork(this);
     this.roadNetwork.addCity(this);
 
     this.neighbours.forEach(neighbour => {
-      if (neighbour.road) {
-        this.mergeNetworks(neighbour.road);
+      if (neighbour.type === 'road') {
+        this.mergeNetworks(neighbour);
       }
     });
   }
