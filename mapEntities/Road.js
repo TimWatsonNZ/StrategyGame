@@ -1,6 +1,6 @@
-import Cell from './Cell';
+
 import RoadNetwork from './RoadNetwork';
-import generateGuid from './generateGuid';
+import generateGuid from '../generateGuid';
 
 const Shapes = {
   isolated: 'isolated',

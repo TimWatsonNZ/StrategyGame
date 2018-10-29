@@ -1,9 +1,12 @@
-import Point from './Point';
-import Cell from './Cell';
-import City from './City';
-import Unit from './Unit';
+import Point from '../mapEntities/Point';
+import Cell from '../mapEntities/Cell';
+import City from '../mapEntities/City';
+import Unit from '../mapEntities/Unit';
 
-import { Road, findShape } from './Road';
+import { Road, findShape } from '../mapEntities/Road';
+import mapGenerator from './MapGenerator';
+import { cellToIndex, getNeighbours } from './gridUtils';
+
 
 const waterType = {
   borders: {
@@ -40,138 +43,8 @@ class Map {
   }
 
   init() {
-    for(let h=0;h<this.cellNumber;h++) {
-      const row = [];
-      for(let w=0;w<this.cellNumber;w++) {
-        row.push(new Cell(w, h, 'blank'));
-      }
-      this.grid.push(row);
-    }
-    
-    const seedTileCount = 80;
-    for (let i=0;i < seedTileCount;i++) {
-      const randomCell = this.grid[Math.floor(Math.random() * this.grid.length)][Math.floor(Math.random() * this.grid.length)];
-      randomCell.type = 'grass';
-    }
-    
-    this.grid[Math.round(this.grid.length/2)][Math.round(this.grid.length/2)].type = 'grass';
-      
-    this.grid = this.dfa(this.grid, this.growGrass);
-    this.grid = this.dfa(this.grid, this.growGrass);
-    this.dfs(this.grid[Math.round(this.grid.length/2)][Math.round(this.grid.length/2)]);
-
-    this.grid = this.dfa(this.grid, this.smoothRule);
-    this.grid = this.dfa(this.grid, this.smoothRule);
-
-    this.fillInHoles(this.grid);
-
+    this.grid = mapGenerator.generate(this.cellNumber);
     this.clippedGrid = this.createClippedGrid();
-  }
-
-  getNeighbours(index, preserveOrder = false, noDiagonals = false) {
-    const cell = this.grid[index.y][index.x];
-    const allDeltas = [
-      { x:-1, y: -1 }, {x: 0, y: -1},  { x: 1, y: -1},
-      { x:-1, y:  0 },              ,  { x: 1, y:  0},
-      { x:-1, y:  1 }, {x: 0, y:  1 }, { x: 1, y:  1},
-    ];
-
-    const noDiagonalsDeltas = [
-                     , { x: 0, y: -1 },  
-      { x:-1, y:  0 },              ,  { x: 1, y:  0},
-                       { x: 0, y:  1 },
-    ];
-
-    const neighbours = [];
-    if (!cell) {
-      return neighbours;
-    }
-
-    const deltas = noDiagonals ? noDiagonalsDeltas : allDeltas;
-    deltas.forEach(delta => {
-      const indexX = index.x + delta.x;
-      const indexY = index.y + delta.y;
-
-      if (indexX < 0 || indexX > this.grid.length-1 ||
-          indexY < 0 || indexY > this.grid.length-1) {
-          if (preserveOrder) neighbours.push(null);
-      } else {
-        neighbours.push(this.grid[indexY][indexX]);
-      }
-    });
-
-    return neighbours;
-  }
-
-  cellToIndex (cell) {
-    return new Point(cell.point.x, cell.point.y);
-  }
-
-  dfs(start) {
-    const stack = [start];
-
-    while (stack.length > 0) {
-      const cell = stack.pop();
-      const neighbours = this.getNeighbours(this.cellToIndex(cell));
-      const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
-      const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
-      
-      if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {
-        cell.type = 'grass';
-      } else {
-        cell.type = 'water';
-      }
-      neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));
-    }
-  }
-
-  dfa (grid, rule) {
-    const newGrid = [];
-
-    for(let h=0;h<this.cellNumber;h++) {
-      const newRow = [];
-      for(let w=0;w<this.cellNumber;w++) {
-        const cell = grid[h][w];
-        const neighbours = this.getNeighbours(this.cellToIndex(cell));
-
-        const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
-        const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
-
-        const copy = Cell.copy(cell);
-        copy.type = rule(copy, waterNeighbours, grassNeighbours);
-        
-        newRow.push(copy);
-      }
-      newGrid.push(newRow);
-    }
-    return newGrid;
-  }
-
-  smoothRule (cell, waterNeighbours, grassNeighbours) {
-    if (cell.type === 'water' && grassNeighbours > 3) {
-      return 'grass';
-    }
-    if (cell.type === 'grass' && waterNeighbours > 7) {
-      return 'water';
-    }
-    return cell.type;
-  }
-
-  growGrass (cell, waterNeighbours, grassNeighbours) {
-    if (cell.type === 'water' && grassNeighbours > 0) {
-      return 'grass';
-    }
-    return cell.type;
-  }
-
-  fillInHoles(grid) {
-    for(let y = 0; y < grid.length; y++) {
-      for (let h = 0; h < grid[y].length; h++) {
-        if (grid[y][h].type === 'blank') {
-          grid[y][h].type = 'water';
-        }
-      }
-    }
   }
 
   createClippedGrid() {
@@ -260,7 +133,7 @@ class Map {
 
   panUp() {
     if (this.selectedUnit) {
-      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[0];
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[0];
       if (neighbour && neighbour.type !== 'water') {
         this.moveUnit(this.selectedUnit, neighbour);
       }
@@ -275,7 +148,7 @@ class Map {
 
   panDown() {
     if (this.selectedUnit) {
-      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[3];
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[3];
       if (neighbour && neighbour.type !== 'water') {
         this.moveUnit(this.selectedUnit, neighbour);
       }
@@ -290,7 +163,7 @@ class Map {
 
   panLeft() {
     if (this.selectedUnit) {
-      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[1];
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[1];
       if (neighbour && neighbour.type !== 'water') {
         this.moveUnit(this.selectedUnit, neighbour);
       }
@@ -305,7 +178,7 @@ class Map {
 
   panRight() {
     if (this.selectedUnit) {
-      const neighbour = this.getNeighbours(this.cellToIndex(this.selectedUnit.cell), true, true)[2];
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[2];
       if (neighbour && neighbour.type !== 'water') {
         this.moveUnit(this.selectedUnit, neighbour); 
       }
@@ -403,12 +276,12 @@ class Map {
 
     if (this.selectedCell.type === 'water') return;
 
-    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true, true);
+    const neighbours = getNeighbours(this.grid, cellToIndex(this.selectedCell), true, true);
 
     this.selectedCell.road = new Road(this.selectedCell, neighbours);
     
     neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = this.getNeighbours(this.cellToIndex(neighbour), true, true);
+      const n = getNeighbours(this.grid, cellToIndex(neighbour), true, true);
       neighbour.road.shape = findShape(n);
     })
 
@@ -421,16 +294,20 @@ class Map {
     if (this.selectedCell.city || this.selectedCell.road) return;
 
     if (this.selectedCell.type === 'water') return;
-    const neighbours = this.getNeighbours(this.cellToIndex(this.selectedCell), true, true);
+    const neighbours = getNeighbours(this.grid, cellToIndex(this.selectedCell), true, true);
     this.selectedCell.city = new City(this.selectedCell, 'New City', 1, neighbours);
 
     neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = this.getNeighbours(this.cellToIndex(neighbour), true, true);
+      const n = getNeighbours(this.grid, cellToIndex(neighbour), true, true);
       neighbour.road.shape = findShape(n);
     })
 
     this.selectedCell.city.draw(this.context, this.cellSize);
     this.draw();
+  }
+
+  removeEntityAtSelectedCell() {
+
   }
 }
 

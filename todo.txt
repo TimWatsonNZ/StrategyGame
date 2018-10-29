@@ -12,11 +12,12 @@ Version 2  - Entity Update
             - Add cities. - done
             - Add roads. - done
             - Road connection algorithm - for a given city find what it's connected to by roads. - done
-            - City to city distance. - done
+            - City to city distance. - donerr
             - Moving entities - done
             - Remove roads and recalculate distances.
             - Buttons/keys to remove entities. - done
 
+            - Remove roads and rebuild sub networks.
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations.
 
 Refactor

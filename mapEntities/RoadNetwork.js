@@ -1,4 +1,4 @@
-import generateGuid from './generateGuid';
+import generateGuid from '../generateGuid';
 
 class RoadNetwork {
   constructor(road = null, city = null) {
@@ -42,7 +42,6 @@ class RoadNetwork {
     this.cities.forEach(city => {
       this.findDistances(city);
     });
-    console.log();
   }
 
   findDistances(city) {
@@ -70,8 +69,25 @@ class RoadNetwork {
   findConnectivity(roads) {
     // Idea is to perform a seperate bfs in step on each peace of road and check connectivity at each step
     // If two networks contain the same node then they are connected.
+
+    const searches = roads.map(x => {
+      const visited = {};
+      visited[x.id] = true;
+      return { isFinished: false, edgeSet: x.neighbours, visited, connected: [] };
+    });
+
+    while (searches.find(x => x.isFinished).length > 0) {
+      console.log('Iteration 1');
+      searches.forEach(x => x.finished = true);
+    }
+    //  Continue until all searches are complete.
+    //  Test each iteration and stop search if necessary.
   }
 
+  //  Save state 
+  incrementalBfs() {
+
+  }
 
 }
 

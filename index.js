@@ -1,5 +1,5 @@
-import Map from './Map';
-import Point from './Point';
+import Map from './Map/Map';
+import Point from './mapEntities/Point';
 
 const canvas = document.createElement('canvas');
 const size = 500;
@@ -71,6 +71,7 @@ canvas.addEventListener("mouseup", (e) => {
 
 
 window.addEventListener('keydown', e => {
+  console.log(e.keyCode);
   if (e.keyCode === 37) {
     map.panLeft();
   }
@@ -107,6 +108,9 @@ window.addEventListener('keydown', e => {
     map.addUnitToSelectedTile();
   }
 
+  if (e.keyCode === 8 || e.keyCode === 46) {
+    map.removeEntityAtSelectedCell();
+  }
   console.log(e.keyCode);
 });
 

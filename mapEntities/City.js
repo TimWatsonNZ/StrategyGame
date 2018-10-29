@@ -1,5 +1,5 @@
 import Cell from './Cell';
-import generateGuid from './generateGuid';
+import generateGuid from '../generateGuid';
 import RoadNetwork from './RoadNetwork';
 class City {
   constructor(cell, name, population, neighbours) {
