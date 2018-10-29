@@ -31,7 +31,7 @@ class Map {
     this.viewPortOrigin = new Point(0, 0);
     this.origin = new Point(0, 0);
     this.selectedCell = null;
-    this.selectedUnit = null;
+    this.selectedEntity = null;
     this.grid = [];
     this.clippedGrid = [];
     this.viewPortSize = size; //  how large the view port is
@@ -82,10 +82,10 @@ class Map {
       if (this.selectedCell) {
         this.selectedCell.selected = false;
       }
-      if (cell.unit) {
-        this.selectedUnit = cell.unit;
+      if (cell.unit || cell.road || cell.city) {
+        this.selectedEntity = cell.unit || cell.road || cell.city;
       } else {
-        this.selectedUnit = null;
+        this.selectedEntity = null;
       }
       this.selectedCell = cell;
       cell.selected = true;
@@ -128,14 +128,14 @@ class Map {
     unit.cell = this.grid[neighbour.point.y][neighbour.point.x];
     this.grid[neighbour.point.y][neighbour.point.x].unit = unit;
     originalCell.unit = null;
-    this.update(); 
+    this.update();
   }
 
   panUp() {
-    if (this.selectedUnit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[0];
+    if (this.selectedEntit && this.selectedEntity instanceof Unit) {
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[0];
       if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedUnit, neighbour);
+        this.moveUnit(this.selectedEntity, neighbour);
       }
     } else {
       if (this.viewPortOrigin.y > 0) {
@@ -147,10 +147,10 @@ class Map {
   }
 
   panDown() {
-    if (this.selectedUnit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[3];
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[3];
       if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedUnit, neighbour);
+        this.moveUnit(this.selectedEntity, neighbour);
       }
     } else {
       if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
@@ -162,10 +162,10 @@ class Map {
   }
 
   panLeft() {
-    if (this.selectedUnit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[1];
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[1];
       if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedUnit, neighbour);
+        this.moveUnit(this.selectedEntity, neighbour);
       }
     } else {
       if (this.viewPortOrigin.x > 0) {
@@ -177,10 +177,10 @@ class Map {
   }
 
   panRight() {
-    if (this.selectedUnit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedUnit.cell), true, true)[2];
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[2];
       if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedUnit, neighbour); 
+        this.moveUnit(this.selectedEntity, neighbour); 
       }
     } else {
       if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
@@ -297,6 +297,7 @@ class Map {
     const neighbours = getNeighbours(this.grid, cellToIndex(this.selectedCell), true, true);
     this.selectedCell.city = new City(this.selectedCell, 'New City', 1, neighbours);
 
+    //   TODO - move this into road.
     neighbours.filter(x => x && x.road).forEach(neighbour => {
       const n = getNeighbours(this.grid, cellToIndex(neighbour), true, true);
       neighbour.road.shape = findShape(n);
@@ -306,8 +307,36 @@ class Map {
     this.draw();
   }
 
-  removeEntityAtSelectedCell() {
+  removeSelectedEntity() {
+    if (!this.selectedEntity) {
+      return;
+    }
 
+    const cell = this.selectedEntity.cell;
+    const gridCell = this.grid[cell.point.y][cell.point.x];
+
+    if (this.selectedEntity instanceof Unit) {
+      cell.unit = null;
+      gridCell.unit = null;
+    }
+
+    const neighbours = this.selectedEntity.neighbours;
+    if (this.selectedEntity instanceof Road) {
+      //  Find network that the road is connected to and it's neighbours and remove
+      
+      //  For each neighbour do a connectivity check and update connectedness
+      //  Update networks roads.
+      cell.road = null;
+      gridCell.road = null;
+    }
+    
+    if (this.selectedEntity instanceof City) {
+      cell.city = null;
+      gridCell.city = null;
+    }
+
+    this.selectedEntity = null;
+    this.update();
   }
 }
 

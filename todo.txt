@@ -16,7 +16,7 @@ Version 2  - Entity Update
             - Moving entities - done
             - Remove roads and recalculate distances.
             - Buttons/keys to remove entities. - done
-
+            - Button to remove entities. - done 
             - Remove roads and rebuild sub networks.
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations.
 

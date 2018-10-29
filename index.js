@@ -109,7 +109,7 @@ window.addEventListener('keydown', e => {
   }
 
   if (e.keyCode === 8 || e.keyCode === 46) {
-    map.removeEntityAtSelectedCell();
+    map.removeSelectedEntity();
   }
   console.log(e.keyCode);
 });
