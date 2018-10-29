@@ -4,18 +4,32 @@ Version 1 - World Creation
 All done.
 
 Version 2  - Entity Update
-          - Implement entities in the world and the ability to create, edit, remove and give orders to entities.
-          - Implement connectivity of entities and being able to give move orders to these.
+                    - Goal is to be able to place entities into tiles and interact with them and for them to connect with each other.
+                    - Implement entities in the world and the ability to create, edit, remove and give orders to entities.
+                    - Implement connectivity of entities and being able to give move orders to these.
+                    
             - Add some kind of soldier entity. - done
             - Add cities. - done
             - Add roads. - done
             - Road connection algorithm - for a given city find what it's connected to by roads. - done
             - City to city distance. - done
+            - Moving entities - done
             - Remove roads and recalculate distances.
                   - Do a bfs on each neighbouring road...if any connect up.
             - Buttons/keys to remove entities.
+            - Separate road networks by terminating them at cities - I think this should simplify some things and speed up calcuations.
+
+Refactor
 
 Version 3 - Resources/Economics update
+                    - Goal is to get a basic pop, needs and resources system in place.
+                    - Pops are divided by strata and also by job
+                    - Pops desire and trade for goods locally.
+                    - Some goods are take as tax.
+                    - Access to goods will upgrade the area occupied by the pop.
+                    
+            - turn button.
+            - city to city population flow.
             - create a farm tile.
             - basic pop system, farmers to work the farms.
             - resource flow to the city - food should end up in the city center, food should decay over time.
@@ -24,6 +38,12 @@ Version 3 - Resources/Economics update
             - implement some basic transactions - food for food or gold?
            
 Version 4 - Combat/Basic AI update
+          - Goal is to be able to set destinations for units.
+          - Create and destroy units.
+          - Have units interact with each other
+          - Have an antagonistic ai in place.
+          - Be able to create own units based on population.
+          
       - Entity movement and an A* algorithm to move things - control by key and by mouse.
       - basic combat system.
       - an enemy player.
@@ -32,13 +52,19 @@ Version 4 - Combat/Basic AI update
       - implement some kind of attrition system.
       
 Version 5 - Intercity update
+          - Be able to settle new towns/settlements.
+          - Be able to set up trade routes and markets.
+          - Have a border displayed.
+          - Expand on ai so they also found cities.
+          
       - Trade between cities
       - Population flow between cities.
       - Loyalty system.
       - Creating new cities - settlers.
       - Some kind of influence/claim system.
       
- 
+Migrate to typescript.
+Isometric view?
 Improve map generation - add mountains, rivers, coast.
 Add seasons and harvests.
 Add different buildings like a granary.
