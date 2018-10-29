@@ -15,9 +15,9 @@ Version 2  - Entity Update
             - City to city distance. - done
             - Moving entities - done
             - Remove roads and recalculate distances.
-                  - Do a bfs on each neighbouring road...if any connect up.
-            - Buttons/keys to remove entities.
-            - Separate road networks by terminating them at cities - I think this should simplify some things and speed up calcuations.
+            - Buttons/keys to remove entities. - done
+
+            - Redo road networks so that they are terminated by cities, this will speed up distance calculations.
 
 Refactor
 
@@ -32,6 +32,7 @@ Version 3 - Resources/Economics update
             - city to city population flow.
             - create a farm tile.
             - basic pop system, farmers to work the farms.
+            - pops have needs and own resources.
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth.
             - forest tile and a wood resource - add a woodcutter pop?

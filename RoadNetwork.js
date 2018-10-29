@@ -40,17 +40,17 @@ class RoadNetwork {
 
     //  For each city to a bfs and find neighbours.
     this.cities.forEach(city => {
-      this.bfs(city);
+      this.findDistances(city);
     });
     console.log();
   }
 
-  bfs(city) {
+  findDistances(city) {
     const distances = [];
     let neighbours = city.neighbours.map(node => ({node, distance: 0 }));
     const visited = {};
     visited[city.id] = true;
-    
+
     while(neighbours.length !== 0) {
       //  visit each neighbour
       const neighbour = neighbours.pop();
@@ -66,6 +66,13 @@ class RoadNetwork {
     }
     city.distances = distances;
   }
+
+  findConnectivity(roads) {
+    // Idea is to perform a seperate bfs in step on each peace of road and check connectivity at each step
+    // If two networks contain the same node then they are connected.
+  }
+
+
 }
 
 export default RoadNetwork;
