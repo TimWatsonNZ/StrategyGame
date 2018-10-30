@@ -20,12 +20,11 @@ class City {
     });
   
 
-    this.roadNetwork = new RoadNetwork(this);
-    this.roadNetwork.addCity(this);
-
+    this.roadNetworks = [];
+    
     this.neighbours.forEach(neighbour => {
       if (neighbour.type === 'road') {
-        this.mergeNetworks(neighbour);
+        this.addNetwork(neighbour.roadNetwork);
       }
     });
   }
@@ -52,6 +51,13 @@ class City {
   toString() {
     const distances = this.distances.map(x => `Id: ${x.city.id} distance: ${x.distance}\n`);
     return `${this.id}: ${this.population}\n ${distances}`;
+  }
+
+  addNetwork(network) {
+    if (!this.roadNetworks.includes(x => x.id === network.id)) {
+      this.roadNetworks.push(network);
+      network.cities.push(this);
+    }
   }
 }
 

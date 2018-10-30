@@ -101,7 +101,7 @@ class Road {
       }
 
       if (neighbour.type === 'city') {
-        this.mergeNetworks(neighbour);
+        neighbour.addNetwork(this.roadNetwork);
       }
     });
   }

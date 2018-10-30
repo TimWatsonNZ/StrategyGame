@@ -131,63 +131,96 @@ class Map {
     this.update();
   }
 
-  panUp() {
-    if (this.selectedEntit && this.selectedEntity instanceof Unit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[0];
-      if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedEntity, neighbour);
-      }
+
+  leftKey(){
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      this.entityLeft();
     } else {
-      if (this.viewPortOrigin.y > 0) {
-        this.viewPortOrigin.y--;
-        this.viewPortEnd.y--;
-        this.update();  
-      }
+      this.panLeft();
     }
   }
 
-  panDown() {
+  rightKey(){
     if (this.selectedEntity && this.selectedEntity instanceof Unit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[3];
-      if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedEntity, neighbour);
-      }
+      this.entityRight();
     } else {
-      if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
-        this.viewPortOrigin.y++;
-        this.viewPortEnd.y++;
-        this.update();
-      }
+      this.panRight();
+    }
+  }
+
+  upKey(){
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      this.entityUp();
+    } else {
+      this.panUp();
+    }
+  }
+
+  downKey(){
+    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
+      this.entityDown();
+    } else {
+      this.panDown();
+    }
+  }
+
+  entityLeft() {
+    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[1];
+    if (neighbour && neighbour.type !== 'water') {
+      this.moveUnit(this.selectedEntity, neighbour);
+    }
+  }
+  
+  entityRight() {
+    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[2];
+    if (neighbour && neighbour.type !== 'water') {
+      this.moveUnit(this.selectedEntity, neighbour);
+    }
+  }
+  
+  entityUp() {
+    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[0];
+    if (neighbour && neighbour.type !== 'water') {
+      this.moveUnit(this.selectedEntity, neighbour);
+    }
+  }
+
+  entityDown() {
+    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[3];
+    if (neighbour && neighbour.type !== 'water') {
+      this.moveUnit(this.selectedEntity, neighbour);
     }
   }
 
   panLeft() {
-    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[1];
-      if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedEntity, neighbour);
-      }
-    } else {
-      if (this.viewPortOrigin.x > 0) {
-        this.viewPortOrigin.x--;
-        this.viewPortEnd.x--;
-        this.update();
-      }
+    if (this.viewPortOrigin.x > 0) {
+      this.viewPortOrigin.x--;
+      this.viewPortEnd.x--;
+      this.update();
     }
   }
 
   panRight() {
-    if (this.selectedEntity && this.selectedEntity instanceof Unit) {
-      const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[2];
-      if (neighbour && neighbour.type !== 'water') {
-        this.moveUnit(this.selectedEntity, neighbour); 
-      }
-    } else {
-      if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
-        this.viewPortOrigin.x++;
-        this.viewPortEnd.x++;
-        this.update();
-      }
+    if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
+      this.viewPortOrigin.x++;
+      this.viewPortEnd.x++;
+      this.update();
+    }
+  }
+  
+  panUp() {
+    if (this.viewPortOrigin.y > 0) {
+      this.viewPortOrigin.y--;
+      this.viewPortEnd.y--;
+      this.update();  
+    }
+  }
+
+  panDown() {
+    if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
+      this.viewPortOrigin.y++;
+      this.viewPortEnd.y++;
+      this.update();
     }
   }
 

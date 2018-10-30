@@ -73,19 +73,19 @@ canvas.addEventListener("mouseup", (e) => {
 window.addEventListener('keydown', e => {
   console.log(e.keyCode);
   if (e.keyCode === 37) {
-    map.panLeft();
+    map.leftKey();
   }
 
   if (e.keyCode === 38) {
-    map.panUp();
+    map.upKey();
   }
 
   if (e.keyCode === 39) {
-    map.panRight();
+    map.rightKey();
   }
 
   if (e.keyCode === 40) {
-    map.panDown();
+    map.downKey();
   }
 
   if (e.keyCode === 107) {
