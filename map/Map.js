@@ -165,28 +165,28 @@ class Map {
   }
 
   entityLeft() {
-    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[1];
+    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[1];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityRight() {
-    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[2];
+    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[2];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityUp() {
-    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[0];
+    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[0];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
 
   entityDown() {
-    const neighbour = getNeighbours(this.grid, cellToIndex(this.selectedEntity.cell), true, true)[3];
+    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[3];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
@@ -207,7 +207,7 @@ class Map {
       this.update();
     }
   }
-  
+
   panUp() {
     if (this.viewPortOrigin.y > 0) {
       this.viewPortOrigin.y--;
@@ -302,6 +302,14 @@ class Map {
     this.draw();
   }
 
+  findSelectedCellCrossNeighbours() {
+    return this.findCrossNeighbours(this.selectedCell);
+  }
+
+  findCrossNeighbours(cell) {
+    return getNeighbours(this.grid, cellToIndex(cell), true, true);
+  }
+
   addRoadToSelectedTile() {
     if (!this.selectedCell) return;
 
@@ -309,14 +317,9 @@ class Map {
 
     if (this.selectedCell.type === 'water') return;
 
-    const neighbours = getNeighbours(this.grid, cellToIndex(this.selectedCell), true, true);
+    const neighbours = this.findSelectedCellCrossNeighbours();
 
     this.selectedCell.road = new Road(this.selectedCell, neighbours);
-    
-    neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = getNeighbours(this.grid, cellToIndex(neighbour), true, true);
-      neighbour.road.shape = findShape(n);
-    })
 
     this.draw();
   }
@@ -327,14 +330,14 @@ class Map {
     if (this.selectedCell.city || this.selectedCell.road) return;
 
     if (this.selectedCell.type === 'water') return;
-    const neighbours = getNeighbours(this.grid, cellToIndex(this.selectedCell), true, true);
+    const neighbours = this.findSelectedCellCrossNeighbours();
     this.selectedCell.city = new City(this.selectedCell, 'New City', 1, neighbours);
 
     //   TODO - move this into road.
     neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = getNeighbours(this.grid, cellToIndex(neighbour), true, true);
+      const n = this.findCrossNeighbours(cellToIndex(neighbour));
       neighbour.road.shape = findShape(n);
-    })
+    });
 
     this.selectedCell.city.draw(this.context, this.cellSize);
     this.draw();
@@ -349,23 +352,20 @@ class Map {
     const gridCell = this.grid[cell.point.y][cell.point.x];
 
     if (this.selectedEntity instanceof Unit) {
-      cell.unit = null;
       gridCell.unit = null;
     }
 
     const neighbours = this.selectedEntity.neighbours;
     if (this.selectedEntity instanceof Road) {
-      //  Find network that the road is connected to and it's neighbours and remove
-      
       //  For each neighbour do a connectivity check and update connectedness
       //  Update networks roads.
-      cell.road = null;
-      gridCell.road = null;
+      Road.remove(gridCell, this.selectedEntity);
+      //  Find network that the road is connected to and it's neighbours and remove
+      
     }
     
     if (this.selectedEntity instanceof City) {
-      cell.city = null;
-      gridCell.city = null;
+      City.remove(gridCell);
     }
 
     this.selectedEntity = null;

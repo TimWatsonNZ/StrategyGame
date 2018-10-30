@@ -56,4 +56,10 @@ class City {
   }
 }
 
+City.remove = function(gridCell) {
+  
+  gridCell.city = null;
+  //  Remove from neighbouring roadnetworks and recalculate networks
+}
+
 export default City

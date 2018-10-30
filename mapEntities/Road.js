@@ -230,4 +230,43 @@ class Road {
   }
 }
 
+Road.remove = function (gridCell, road) {
+  gridCell.road = null;
+
+  //  Cases:
+  //    single neighbouring road
+  //      remove road from neighbour and from network
+  //    multiple neighbouring roads
+  //      remove road from neighbours 
+  //      for each neighbouring network reprocess connectivity
+  //    neighbouring city
+  //      Remove road from neighbours
+  //      process connectivity to check if the network should be removed
+  road.neighbours.forEach(neighbour => {
+    neighbour.neighbours = neighbour.neighbours.filter(x => x.id !== neighbour);
+  })
+}
+
+Road.findConnectivity = function(roads) {
+  // Idea is to perform a seperate bfs in step on each peace of road and check connectivity at each step
+  // If two networks contain the same node then they are connected.
+
+  const searches = roads.map(x => {
+    const visited = {};
+    visited[x.id] = true;
+    return { isFinished: false, edgeSet: x.neighbours, visited, connected: [] };
+  });
+
+  while (searches.find(x => x.isFinished).length > 0) {
+    console.log('Iteration 1');
+    searches.forEach(x => x.finished = true);
+  }
+  //  Continue until all searches are complete.
+  //  Test each iteration and stop search if necessary.
+}
+
+//  Save state 
+Road.incrementalBfs = function() {
+
+}
 export { Road, findShape };
