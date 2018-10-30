@@ -1,5 +1,6 @@
 
 import RoadNetwork from './RoadNetwork';
+import City from './City';
 import generateGuid from '../generateGuid';
 
 const Shapes = {
@@ -92,17 +93,19 @@ class Road {
       n.neighbours.push(this);
     });
 
-    this.roadNetwork = new RoadNetwork(this);
-    this.roadNetwork.addRoad(this);
+    const neighbouringRoads = this.neighbours.filter(x => x instanceof Road)
+      .map(x => x.roadNetwork);
 
-    this.neighbours.forEach(neighbour => {
-      if (neighbour.type === 'road') {
-        this.mergeNetworks(neighbour);
-      }
+    if (neighbouringRoads.length > 0) {
+        this.mergeNetworks(neighbouringRoads);
+    } else {
+      this.roadNetwork = new RoadNetwork(this);
+      this.roadNetwork.addRoad(this);
+    }
 
-      if (neighbour.type === 'city') {
-        neighbour.addNetwork(this.roadNetwork);
-      }
+    const neighbouringCities = this.neighbours.filter(x => x instanceof City);
+    neighbouringCities.forEach(city => {
+      city.addNetwork(this.roadNetwork);
     });
   }
 
@@ -113,10 +116,15 @@ class Road {
   toString() {
     return `${this.type}: ${this.shape}`;
   }
-
-  mergeNetworks(otherRoad) {
-    if (otherRoad.roadNetwork.id !== this.roadNetwork.id) {
-      this.roadNetwork.merge(otherRoad.roadNetwork, { type: 'road', entity: this });
+  
+  mergeNetworks(networks) {
+    const first = networks.pop();
+    if (!this.roadNetwork) {
+      first.addRoad(this);
+      this.roadNetwork = first;
+    }
+    if (networks.length > 1) {
+      first.merge(networks);
     }
   }
 

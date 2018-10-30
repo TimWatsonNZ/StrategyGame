@@ -21,23 +21,24 @@ class RoadNetwork {
     city.roadNetwork = this;
   }
 
-  merge(network, entity) {
-    network.cities.forEach(x => {
-      if (!this.cities.find(city => city.equals(x))) {
-        this.cities.push(x);
-        x.roadNetwork = this;
-      }
+  merge(networks) {
+    networks.forEach(network => {
+      network.cities.forEach(x => {
+        if (!this.cities.find(city => city.equals(x))) {
+          this.cities.push(x);
+          x.roadNetwork = this;
+        }
+      });
+  
+      //  Should optimise - store roads as dictionary
+      network.roads.forEach(x => {
+        if (!this.roads.find(road => road.equals(x))) {
+          this.roads.push(x);
+          x.roadNetwork = this;
+        }
+      });
     });
-
-    network.roads.forEach(x => {
-      if (!this.roads.find(road => road.equals(x))) {
-        this.roads.push(x);
-        x.roadNetwork = this;
-      }
-    });
-
-    entity.roadNetwork = this;
-
+    
     //  For each city to a bfs and find neighbours.
     this.cities.forEach(city => {
       this.findDistances(city);

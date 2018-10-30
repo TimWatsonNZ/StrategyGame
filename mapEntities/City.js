@@ -1,6 +1,6 @@
 import Cell from './Cell';
 import generateGuid from '../generateGuid';
-import RoadNetwork from './RoadNetwork';
+
 class City {
   constructor(cell, name, population, neighbours) {
     this.type = 'city';
@@ -29,12 +29,6 @@ class City {
     });
   }
 
-  mergeNetworks(otherRoad) {
-    if (otherRoad.roadNetwork.id !== this.roadNetwork.id) {
-      otherRoad.roadNetwork.merge(this.roadNetwork, { type: 'city', entity: this });
-    }
-  }
-
   equals(otherCity) {
     return otherCity.id === this.id;
   }
@@ -54,7 +48,7 @@ class City {
   }
 
   addNetwork(network) {
-    if (!this.roadNetworks.includes(x => x.id === network.id)) {
+    if (!this.roadNetworks.some(x => x.id === network.id)) {
       this.roadNetworks.push(network);
       network.cities.push(this);
     }
