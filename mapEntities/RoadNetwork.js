@@ -39,7 +39,11 @@ class RoadNetwork {
       });
     });
     
-    //  For each city to a bfs and find neighbours.
+   this.findDistancesForCities();
+  }
+
+  findDistancesForCities() {
+ //  For each city to a bfs and find neighbours.
     this.cities.forEach(city => {
       this.findDistances(city);
     });

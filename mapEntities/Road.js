@@ -123,9 +123,7 @@ class Road {
       first.addRoad(this);
       this.roadNetwork = first;
     }
-    if (networks.length > 1) {
-      first.merge(networks);
-    }
+    first.merge(networks);
   }
 
   drawHorizontal(context, cellSize) {

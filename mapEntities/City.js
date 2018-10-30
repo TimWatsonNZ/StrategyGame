@@ -51,6 +51,7 @@ class City {
     if (!this.roadNetworks.some(x => x.id === network.id)) {
       this.roadNetworks.push(network);
       network.cities.push(this);
+      network.findDistancesForCities();
     }
   }
 }
