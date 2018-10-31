@@ -18,11 +18,13 @@ Version 2  - Entity Update
             - Buttons/keys to remove entities. - done
             - Button to remove entities. - done 
             - Remove roads and rebuild sub networks.
-            - Redo road networks so that they are terminated by cities, this will speed up distance calculations.
+            - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
 
 Version 2.5         Refactor
-          - Migrate to typescript.
-          - Isometric view
+          - Look at removing neighbours from cells/entities to reduce possibility of bugs.
+          - Migrate to typescript - entities in particular could benefit from typing.
+          - Isometric view - this will be a big job, need to change drawing and cell selection and panning/zooming a bit.
+          - Can optimise panning to only update edges instead of entire structure.
           - Should add some tests around roads and adding/removing things.
           - Improve/optimise/profile.
 
