@@ -21,6 +21,7 @@ Version 2  - Entity Update
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
 
 Version 2.5         Refactor
+          - Split off controls and entity adding from map to somewhere else.
           - Look at removing neighbours from cells/entities to reduce possibility of bugs.
           - Migrate to typescript - entities in particular could benefit from typing.
           - Isometric view - this will be a big job, need to change drawing and cell selection and panning/zooming a bit.
