@@ -22,70 +22,13 @@ const Shapes = {
   cross: 'cross'
 };
 
-function findShape(neighbours) {
-  const topNeighbour = (neighbours[0] && (neighbours[0].road || neighbours[0].city)) || null;
-  const leftNeighbour = (neighbours[1] && (neighbours[1].road || neighbours[1].city)) || null;
-  const rightNeighbour = (neighbours[2] && (neighbours[2].road || neighbours[2].city)) || null;
-  const bottomNeighbour = (neighbours[3] && (neighbours[3].road || neighbours[3].city)) || null;
-
-  let shape = Shapes.isolated;
-  
-  if (topNeighbour) {
-    if (leftNeighbour) {
-      if (rightNeighbour && bottomNeighbour) {
-        shape = Shapes.cross;
-        // [topNeighbour, leftNeighbour, rightNeighbour, bottomNeighbour].forEach(updateRoad);
-      } else if (rightNeighbour) {
-        shape = Shapes.horizontalTop;
-      } else if (bottomNeighbour) {
-        shape = Shapes.verticalLeft;
-      } else {
-        shape = Shapes.topLeft;
-      }
-    } else if (rightNeighbour) {
-      if (bottomNeighbour) {
-        shape = Shapes.verticalRight;
-      } else {
-        shape = Shapes.topRight;
-      }
-    } else {
-      if (bottomNeighbour) {
-        shape = Shapes.vertical;
-      } else {
-        shape = Shapes.top;
-      }
-    }
-  } else if (bottomNeighbour) {
-  if (leftNeighbour) {
-    if (rightNeighbour) {
-      shape = Shapes.horizontalBottom;
-    } else {
-      shape = Shapes.bottomLeft;
-    }
-  } else if (rightNeighbour) {
-    shape = Shapes.bottomRight;
-  } else {
-    shape = Shapes.bottom;
-  }
-  } else if (leftNeighbour) {
-    if (rightNeighbour) {
-      shape = Shapes.horizontal;
-    } else {
-      shape = Shapes.left;
-    }
-  } else if (rightNeighbour) {
-    shape = Shapes.right;
-  }
-
-  return shape;
-}
 
 class Road {
   constructor(cell, neighbours) {
     this.type = 'road';
     this.id = generateGuid();
     this.cell = cell;
-    this.shape = findShape(neighbours);
+    this.shape = Road.findShape(neighbours);
     this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
 
@@ -94,10 +37,10 @@ class Road {
     });
 
     const neighbouringRoads = this.neighbours.filter(x => x instanceof Road)
-      .map(x => x.roadNetwork);
+    const neighbouringRoadNetworks = neighbouringRoads.map(x => x.roadNetwork);
 
-    if (neighbouringRoads.length > 0) {
-        this.mergeNetworks(neighbouringRoads);
+    if (neighbouringRoadNetworks.length > 0) {
+        this.mergeNetworks(neighbouringRoadNetworks);
     } else {
       this.roadNetwork = new RoadNetwork(this);
       this.roadNetwork.addRoad(this);
@@ -106,6 +49,11 @@ class Road {
     const neighbouringCities = this.neighbours.filter(x => x instanceof City);
     neighbouringCities.forEach(city => {
       city.addNetwork(this.roadNetwork);
+    });
+
+    neighbouringRoads.forEach(road => {
+      road.neighbours.push(this);
+      road.shape = Road.findShape(road.neighbours);
     });
   }
 
@@ -269,4 +217,63 @@ Road.findConnectivity = function(roads) {
 Road.incrementalBfs = function() {
 
 }
-export { Road, findShape };
+
+
+Road.findShape = function (neighbours) {
+  const topNeighbour = (neighbours[0] && (neighbours[0].road || neighbours[0].city)) || null;
+  const leftNeighbour = (neighbours[1] && (neighbours[1].road || neighbours[1].city)) || null;
+  const rightNeighbour = (neighbours[2] && (neighbours[2].road || neighbours[2].city)) || null;
+  const bottomNeighbour = (neighbours[3] && (neighbours[3].road || neighbours[3].city)) || null;
+
+  let shape = Shapes.isolated;
+  
+  if (topNeighbour) {
+    if (leftNeighbour) {
+      if (rightNeighbour && bottomNeighbour) {
+        shape = Shapes.cross;
+        // [topNeighbour, leftNeighbour, rightNeighbour, bottomNeighbour].forEach(updateRoad);
+      } else if (rightNeighbour) {
+        shape = Shapes.horizontalTop;
+      } else if (bottomNeighbour) {
+        shape = Shapes.verticalLeft;
+      } else {
+        shape = Shapes.topLeft;
+      }
+    } else if (rightNeighbour) {
+      if (bottomNeighbour) {
+        shape = Shapes.verticalRight;
+      } else {
+        shape = Shapes.topRight;
+      }
+    } else {
+      if (bottomNeighbour) {
+        shape = Shapes.vertical;
+      } else {
+        shape = Shapes.top;
+      }
+    }
+  } else if (bottomNeighbour) {
+  if (leftNeighbour) {
+    if (rightNeighbour) {
+      shape = Shapes.horizontalBottom;
+    } else {
+      shape = Shapes.bottomLeft;
+    }
+  } else if (rightNeighbour) {
+    shape = Shapes.bottomRight;
+  } else {
+    shape = Shapes.bottom;
+  }
+  } else if (leftNeighbour) {
+    if (rightNeighbour) {
+      shape = Shapes.horizontal;
+    } else {
+      shape = Shapes.left;
+    }
+  } else if (rightNeighbour) {
+    shape = Shapes.right;
+  }
+
+  return shape;
+}
+export { Road };

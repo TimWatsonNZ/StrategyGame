@@ -1,25 +1,10 @@
 import Point from '../mapEntities/Point';
-import Cell from '../mapEntities/Cell';
 import City from '../mapEntities/City';
 import Unit from '../mapEntities/Unit';
-
-import { Road, findShape } from '../mapEntities/Road';
-import mapGenerator from './MapGenerator';
+import { gridService, gridServiceInit } from './GridService';
+import { Road } from '../mapEntities/Road';
 import { cellToIndex, getNeighbours } from './gridUtils';
 
-
-const waterType = {
-  borders: {
-    grass: 0.1,
-    water: 0.9,
-  }
-}
-const grassType = {
-  borders: {
-    grass: 0.9,
-    water: 0.1,
-  }
-}
 
 class Map {
   
@@ -32,44 +17,20 @@ class Map {
     this.origin = new Point(0, 0);
     this.selectedCell = null;
     this.selectedEntity = null;
-    this.grid = [];
+
+    gridServiceInit(cellNumber);
+
     this.clippedGrid = [];
     this.viewPortSize = size; //  how large the view port is
     this.zoomLevel = 40;  //  how many cells are in view port
     this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.zoomLevel, this.viewPortOrigin.y +  this.zoomLevel);
      
+    this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
     this.cellSize = this.viewPortSize / this.zoomLevel; //  should be view port size / view port content size
-    this.init();
   }
 
-  init() {
-    this.grid = mapGenerator.generate(this.cellNumber);
-    this.clippedGrid = this.createClippedGrid();
-  }
-
-  createClippedGrid() {
-    const newgrid = [];
-    const startPoint = new Point(this.viewPortOrigin.x, this.viewPortOrigin.y);
-    const endPoint = new Point(this.viewPortEnd.x, this.viewPortEnd.y);
-    
-    for (let y = startPoint.y;y <= endPoint.y;y++) {
-      const newrow = [];
-      const row = this.grid[y];
-      if (row) {
-        for (let x = startPoint.x; x <= endPoint.x; x++) {
-        const cell = row[x];
-
-          if (cell && cell.point) {
-            cell.drawingPoint = new Point(cell.point.x, cell.point.y);
-            cell.drawingPoint.x = x - startPoint.x;
-            cell.drawingPoint.y = y - startPoint.y;
-            newrow.push(cell);
-          }
-        }
-      }  
-      newgrid.push(newrow);
-    }
-    return newgrid;
+  grid() {
+    return gridService.grid;
   }
 
   clickCell(x, y) {
@@ -125,8 +86,8 @@ class Map {
 
   moveUnit(unit, neighbour) {
     const originalCell = unit.cell;
-    unit.cell = this.grid[neighbour.point.y][neighbour.point.x];
-    this.grid[neighbour.point.y][neighbour.point.x].unit = unit;
+    unit.cell = this.grid()[neighbour.point.y][neighbour.point.x];
+    this.grid()[neighbour.point.y][neighbour.point.x].unit = unit;
     originalCell.unit = null;
     this.update();
   }
@@ -245,7 +206,7 @@ class Map {
   }
 
   update() {
-    this.clippedGrid = this.createClippedGrid();
+    this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
     this.draw();
   }
 
@@ -307,7 +268,7 @@ class Map {
   }
 
   findCrossNeighbours(cell) {
-    return getNeighbours(this.grid, cellToIndex(cell), true, true);
+    return getNeighbours(this.grid(), cellToIndex(cell), true, true);
   }
 
   addRoadToSelectedTile() {
@@ -336,7 +297,7 @@ class Map {
     //   TODO - move this into road.
     neighbours.filter(x => x && x.road).forEach(neighbour => {
       const n = this.findCrossNeighbours(cellToIndex(neighbour));
-      neighbour.road.shape = findShape(n);
+      neighbour.road.shape = Road.findShape(n);
     });
 
     this.selectedCell.city.draw(this.context, this.cellSize);
@@ -349,7 +310,7 @@ class Map {
     }
 
     const cell = this.selectedEntity.cell;
-    const gridCell = this.grid[cell.point.y][cell.point.x];
+    const gridCell = this.grid()[cell.point.y][cell.point.x];
 
     if (this.selectedEntity instanceof Unit) {
       gridCell.unit = null;
