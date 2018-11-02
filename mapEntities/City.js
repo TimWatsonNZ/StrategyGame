@@ -1,12 +1,12 @@
-import Cell from './Cell';
+import Tile from '../map/Tiles/Tile';
 import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 
 class City {
-  constructor(cell, name, population, neighbours) {
+  constructor(tile, name, population, neighbours) {
     this.type = 'city';
     this.id = generateGuid();
-    this.cell = cell;
+    this.tile = tile;
     this.name = name;
     this.population = population;
 
@@ -34,13 +34,13 @@ class City {
     return otherCity.id === this.id;
   }
 
-  draw(context, cellSize) {
+  draw(context, tileSize) {
     context.fillStyle = '#000000';
-    const baseX = this.cell.drawingPoint.x * cellSize;
-    const baseY = this.cell.drawingPoint.y * cellSize;
-    context.fillRect(baseX,  baseY + cellSize/2, cellSize/4, cellSize/2);
-    context.fillRect(baseX + cellSize/4,  baseY + cellSize/4, cellSize/2, 3*cellSize/4);
-    context.fillRect(baseX + 3*cellSize/4,  baseY + cellSize/2, cellSize/4, cellSize/2);
+    const baseX = this.tile.drawingPoint.x * tileSize;
+    const baseY = this.tile.drawingPoint.y * tileSize;
+    context.fillRect(baseX,  baseY + tileSize/2, tileSize/4, tileSize/2);
+    context.fillRect(baseX + tileSize/4,  baseY + tileSize/4, tileSize/2, 3*tileSize/4);
+    context.fillRect(baseX + 3*tileSize/4,  baseY + tileSize/2, tileSize/4, tileSize/2);
   }
 
   toString() {
@@ -57,24 +57,24 @@ class City {
   }
 }
 
-City.remove = function(gridCell) {
+City.remove = function(gridTile) {
   
-  gridCell.city = null;
+  gridTile.city = null;
   //  Remove from neighbouring roadnetworks and recalculate networks
 }
 
-City.add = function(selectedCell) {
-  if (!selectedCell) return false;
+City.add = function(selectedTile) {
+  if (!selectedTile) return false;
 
-  if (selectedCell.city || selectedCell.road) return false;
+  if (selectedTile.city || selectedTile.road) return false;
 
-  if (selectedCell.type === 'water') return false;
-  const neighbours = gridService.findSelectedCellCrossNeighbours(selectedCell);
-  selectedCell.city = new City(selectedCell, 'New City', 1, neighbours);
+  if (selectedTile.type === 'water') return false;
+  const neighbours = gridService.findSelectedTileCrossNeighbours(selectedTile);
+  selectedTile.city = new City(selectedTile, 'New City', 1, neighbours);
 
   //   TODO - move this into road.
   neighbours.filter(x => x && x.road).forEach(neighbour => {
-    const n = gridService.findCrossNeighbours(gridService.cellToIndex(neighbour));
+    const n = gridService.findCrossNeighbours(gridService.tileToIndex(neighbour));
     neighbour.road.shape = Road.findShape(n);
   });
 

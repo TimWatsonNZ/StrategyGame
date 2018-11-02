@@ -23,10 +23,10 @@ Version 2  - Entity Update
             - Prevent settlements from being too near each other.
 
 Version 2.5         Refactor
-          - Split off controls and entity adding from map to somewhere else.
-          - Look at removing neighbours from cells/entities to reduce possibility of bugs.
+          - Split off controls and entity adding from map to somewhere else. - in progress
+          - Look at removing neighbours from Tiles/entities to reduce possibility of bugs. - in progress
           - Migrate to typescript - entities in particular could benefit from typing.
-          - Isometric view - this will be a big job, need to change drawing and cell selection and panning/zooming a bit.
+          - Isometric view - this will be a big job, need to change drawing and Tile selection and panning/zooming a bit.
           - Can optimise panning to only update edges instead of entire structure.
           - Should add some tests around roads and adding/removing things.
 
@@ -40,11 +40,11 @@ Version 3 - Resources/Economics update
             - turn button.
             - city to city population flow.
             - create a farm tile.
-            - basic pop system, farmers to work the farms.
-            - pops have needs and own resources.
+            - basic pop system, farmers to work the farms. - in progress
+            - pops have needs and own resources. - in progress
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth.
-            - forest tile and a wood resource - add a woodcutter pop?
+            - forest tile and a wood resource - add a woodcutter pop? - in progress
             - implement some basic transactions - food for food or gold?
            
 Version 4 - Combat/Basic AI update

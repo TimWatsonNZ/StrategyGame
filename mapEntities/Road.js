@@ -25,10 +25,10 @@ const Shapes = {
 
 
 class Road {
-  constructor(cell, neighbours) {
+  constructor(tile, neighbours) {
     this.type = 'road';
     this.id = generateGuid();
-    this.cell = cell;
+    this.tile = tile;
     this.shape = Road.findShape(neighbours);
     this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
@@ -59,7 +59,7 @@ class Road {
   }
 
   equals(otherRoad) {
-    return this.cell.equals(otherRoad.cell);
+    return this.tile.equals(otherRoad.tile);
   }
 
   toString() {
@@ -75,112 +75,112 @@ class Road {
     first.merge(networks);
   }
 
-  drawHorizontal(context, cellSize) {
-    context.fillRect(this.cell.drawingPoint.x * cellSize, this.cell.drawingPoint.y * cellSize + 3*cellSize/8, cellSize, cellSize/4);
+  drawHorizontal(context, tileSize) {
+    context.fillRect(this.tile.drawingPoint.x * tileSize, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, tileSize, tileSize/4);
   }
 
-  drawVertical(context, cellSize) {
-    context.fillRect(this.cell.drawingPoint.x * cellSize + 3*cellSize/8, this.cell.drawingPoint.y * cellSize, cellSize/4, cellSize);
+  drawVertical(context, tileSize) {
+    context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize, tileSize/4, tileSize);
   }
 
-  drawTop(context, cellSize) { 
-    context.fillRect(this.cell.drawingPoint.x * cellSize + 3*cellSize/8, this.cell.drawingPoint.y * cellSize, cellSize/4, 5*cellSize/8);
+  drawTop(context, tileSize) { 
+    context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize, tileSize/4, 5*tileSize/8);
   }
   
-  drawBottom(context, cellSize) { 
-    context.fillRect(this.cell.drawingPoint.x * cellSize + 3*cellSize/8, this.cell.drawingPoint.y * cellSize + 3*cellSize/8, cellSize/4, cellSize);
+  drawBottom(context, tileSize) { 
+    context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, tileSize/4, tileSize);
   }
   
-  drawLeft(context, cellSize) { 
-    context.fillRect(this.cell.drawingPoint.x * cellSize, this.cell.drawingPoint.y * cellSize + 3*cellSize/8, 5*cellSize/8, cellSize/4);
+  drawLeft(context, tileSize) { 
+    context.fillRect(this.tile.drawingPoint.x * tileSize, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, 5*tileSize/8, tileSize/4);
   }
   
-  drawRight(context, cellSize) { 
-    context.fillRect(this.cell.drawingPoint.x * cellSize + cellSize/2, this.cell.drawingPoint.y * cellSize + 3*cellSize/8, 3*cellSize/4, cellSize/4);
+  drawRight(context, tileSize) { 
+    context.fillRect(this.tile.drawingPoint.x * tileSize + tileSize/2, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, 3*tileSize/4, tileSize/4);
   }
 
-  draw(context, cellSize) {
+  draw(context, tileSize) {
     context.fillStyle = '#c48b23';
 
     switch (this.shape) {
       case Shapes.isolated:
-        context.fillRect(this.cell.drawingPoint.x * cellSize + cellSize/2, this.cell.drawingPoint.y * cellSize + cellSize/2, cellSize/4, cellSize/4);
+        context.fillRect(this.tile.drawingPoint.x * tileSize + tileSize/2, this.tile.drawingPoint.y * tileSize + tileSize/2, tileSize/4, tileSize/4);
         break;
         
       case Shapes.vertical:
-        this.drawVertical(context, cellSize);
+        this.drawVertical(context, tileSize);
         break;
       
       case Shapes.horizontal:
-        this.drawHorizontal(context, cellSize);
+        this.drawHorizontal(context, tileSize);
         break;
         
       case Shapes.left:
-        this.drawLeft(context, cellSize);
+        this.drawLeft(context, tileSize);
         break;
 
       case Shapes.right:
-        this.drawRight(context, cellSize);
+        this.drawRight(context, tileSize);
         break;
 
       case Shapes.top:
-        this.drawTop(context, cellSize);
+        this.drawTop(context, tileSize);
         break;
 
       case Shapes.bottom:
-        this.drawBottom(context, cellSize);
+        this.drawBottom(context, tileSize);
         break;
 
       case Shapes.cross:
-        this.drawVertical(context, cellSize);
-        this.drawHorizontal(context, cellSize);
+        this.drawVertical(context, tileSize);
+        this.drawHorizontal(context, tileSize);
         break;
 
       case Shapes.topLeft:
-        this.drawTop(context, cellSize);
-        this.drawLeft(context, cellSize);
+        this.drawTop(context, tileSize);
+        this.drawLeft(context, tileSize);
         break;
 
       case Shapes.topRight:
-        this.drawTop(context, cellSize);
-        this.drawRight(context, cellSize);
+        this.drawTop(context, tileSize);
+        this.drawRight(context, tileSize);
         break;
 
       case Shapes.bottomLeft:
-        this.drawBottom(context, cellSize);
-        this.drawLeft(context, cellSize);
+        this.drawBottom(context, tileSize);
+        this.drawLeft(context, tileSize);
         break;
 
       case Shapes.bottomRight:
-        this.drawBottom(context, cellSize);
-        this.drawRight(context, cellSize);
+        this.drawBottom(context, tileSize);
+        this.drawRight(context, tileSize);
         break;
 
       case Shapes.verticalLeft:
-        this.drawVertical(context, cellSize);
-        this.drawLeft(context, cellSize);
+        this.drawVertical(context, tileSize);
+        this.drawLeft(context, tileSize);
         break;
 
       case Shapes.verticalRight:
-        this.drawVertical(context, cellSize);
-        this.drawRight(context, cellSize);
+        this.drawVertical(context, tileSize);
+        this.drawRight(context, tileSize);
         break;
 
       case Shapes.horizontalTop:
-        this.drawHorizontal(context, cellSize);
-        this.drawTop(context, cellSize);
+        this.drawHorizontal(context, tileSize);
+        this.drawTop(context, tileSize);
         break;
 
       case Shapes.horizontalBottom:
-        this.drawHorizontal(context, cellSize);
-        this.drawBottom(context, cellSize);
+        this.drawHorizontal(context, tileSize);
+        this.drawBottom(context, tileSize);
         break;
     }
   }
 }
 
-Road.remove = function (gridCell, road) {
-  gridCell.road = null;
+Road.remove = function (gridTile, road) {
+  gridTile.road = null;
 
   //  Cases:
   //    single neighbouring road
@@ -278,16 +278,16 @@ Road.findShape = function (neighbours) {
   return shape;
 }
 
-Road.add = function (cell) {
-  if (!cell) return false;
+Road.add = function (tile) {
+  if (!tile) return false;
 
-  if (cell.city || cell.road) return false;
+  if (tile.city || tile.road) return false;
 
-  if (cell.type === 'water') return false;
+  if (tile.type === 'water') return false;
 
-  const neighbours = gridService.findSelectedCellCrossNeighbours(cell);
+  const neighbours = gridService.findSelectedtileCrossNeighbours(tile);
 
-  cell.road = new Road(cell, neighbours);
+  tile.road = new Road(tile, neighbours);
   return true;
 }
 

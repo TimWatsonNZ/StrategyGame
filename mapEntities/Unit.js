@@ -1,14 +1,13 @@
-import Cell from './Cell';
 
 class Unit {
-  constructor(cell, name) {
-    this.cell = cell;
+  constructor(tile, name) {
+    this.tile = tile;
     this.name = name;
   }
 
-  draw(context, cellSize) {
+  draw(context, tileSize) {
     context.fillStyle = '#FF0000';
-    context.fillRect(this.cell.drawingPoint.x * cellSize + cellSize/4, this.cell.drawingPoint.y * cellSize + cellSize/4, cellSize/2, 3*cellSize/4);
+    context.fillRect(this.tile.drawingPoint.x * tileSize + tileSize/4, this.tile.drawingPoint.y * tileSize + tileSize/4, tileSize/2, 3*tileSize/4);
   }
 
   toString() {
@@ -16,13 +15,13 @@ class Unit {
   }
 }
 
-Unit.add = function(selectedCell) {  
-  if (!selectedCell) return false;
+Unit.add = function(selectedTile) {  
+  if (!selectedTile) return false;
 
-  if (selectedCell.city || selectedCell.road || selectedCell.unit) return false;
+  if (selectedTile.city || selectedTile.road || selectedTile.unit) return false;
 
-  if (selectedCell.type === 'water') return false;
-  selectedCell.unit = new Unit(selectedCell, 'New Unit');
+  if (selectedTile.type === 'water') return false;
+  selectedTile.unit = new Unit(selectedTile, 'New Unit');
 
   return true;
 }

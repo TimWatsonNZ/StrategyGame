@@ -20,10 +20,10 @@ canvas.addEventListener('click', (e) => {
   clientX -= bodyMargin;
   clientY -= bodyMargin;
   
-  const cell = map.clickCell(clientX, clientY);
+  const tile = map.clickTile(clientX, clientY);
 
-  if (cell) {
-    document.querySelector('#selectedTile').innerHTML = cell.toString()
+  if (tile) {
+    document.querySelector('#selectedTile').innerHTML = tile.toString()
       .split('')
       .map(x => x === '\n' ? '<br />' : x).join('');
   } else {

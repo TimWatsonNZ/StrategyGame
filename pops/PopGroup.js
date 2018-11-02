@@ -1,7 +1,7 @@
 class PopGroup {
-  constructor(pops, cell, resources) {
+  constructor(pops, Tile, resources) {
     this.pops = pops;
-    this.cell = cell;
+    this.Tile = Tile;
     this.resources = resources;
   }
 }

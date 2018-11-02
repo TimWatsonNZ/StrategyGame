@@ -1,6 +1,6 @@
 import { gridService } from './GridService';
+import Tile from '../map/Tiles/Tile';
 
-import Cell from '../mapEntities/Cell';
 class MapGenerator {
 
   generate(gridSize) {
@@ -8,15 +8,15 @@ class MapGenerator {
     for(let h=0;h<gridSize;h++) {
       const row = [];
       for(let w=0;w<gridSize;w++) {
-        row.push(new Cell(w, h, 'blank'));
+        row.push(new Tile(w, h, 'blank'));
       }
       grid.push(row);
     }
     
     const seedTileCount = 80;
     for (let i=0;i < seedTileCount;i++) {
-      const randomCell = grid[Math.floor(Math.random() * grid.length)][Math.floor(Math.random() * grid.length)];
-      randomCell.type = 'grass';
+      const randomTile = grid[Math.floor(Math.random() * grid.length)][Math.floor(Math.random() * grid.length)];
+      randomTile.type = 'grass';
     }
     
     grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = 'grass';
@@ -37,15 +37,15 @@ class MapGenerator {
     const stack = [start];
 
     while (stack.length > 0) {
-      const cell = stack.pop();
-      const neighbours = gridService.getNeighbours(gridService.cellToIndex(cell), false, false, grid);
+      const tile = stack.pop();
+      const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
       const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
       const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
       
       if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {
-        cell.type = 'grass';
+        Tile.type = 'grass';
       } else {
-        cell.type = 'water';
+        Tile.type = 'water';
       }
       neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));
     }
@@ -57,13 +57,13 @@ class MapGenerator {
     for(let h=0;h < gridSize;h++) {
       const newRow = [];
       for(let w=0;w < gridSize;w++) {
-        const cell = grid[h][w];
-        const neighbours = gridService.getNeighbours(gridService.cellToIndex(cell), false, false, grid);
+        const tile = grid[h][w];
+        const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
 
         const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
         const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
 
-        const copy = Cell.copy(cell);
+        const copy = Tile.copy(tile);
         copy.type = rule(copy, waterNeighbours, grassNeighbours);
         
         newRow.push(copy);
@@ -73,21 +73,21 @@ class MapGenerator {
     return newGrid;
   }
 
-  smoothRule (cell, waterNeighbours, grassNeighbours) {
-    if (cell.type === 'water' && grassNeighbours > 3) {
+  smoothRule (tile, waterNeighbours, grassNeighbours) {
+    if (tile.type === 'water' && grassNeighbours > 3) {
       return 'grass';
     }
-    if (cell.type === 'grass' && waterNeighbours > 7) {
+    if (tile.type === 'grass' && waterNeighbours > 7) {
       return 'water';
     }
-    return cell.type;
+    return Tile.type;
   }
 
-  growGrass (cell, waterNeighbours, grassNeighbours) {
-    if (cell.type === 'water' && grassNeighbours > 0) {
+  growGrass (tile, waterNeighbours, grassNeighbours) {
+    if (tile.type === 'water' && grassNeighbours > 0) {
       return 'grass';
     }
-    return cell.type;
+    return Tile.type;
   }
 
   fillInHoles(grid) {

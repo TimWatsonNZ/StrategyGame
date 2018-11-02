@@ -21,13 +21,13 @@ class GridService {
       const row = this.grid[y];
       if (row) {
         for (let x = startPoint.x; x <= endPoint.x; x++) {
-        const cell = row[x];
+        const tile = row[x];
 
-          if (cell && cell.point) {
-            cell.drawingPoint = new Point(cell.point.x, cell.point.y);
-            cell.drawingPoint.x = x - startPoint.x;
-            cell.drawingPoint.y = y - startPoint.y;
-            newrow.push(cell);
+          if (tile && tile.point) {
+            tile.drawingPoint = new Point(tile.point.x, tile.point.y);
+            tile.drawingPoint.x = x - startPoint.x;
+            tile.drawingPoint.y = y - startPoint.y;
+            newrow.push(tile);
           }
         }
       }  
@@ -36,13 +36,13 @@ class GridService {
     return newgrid;
   }
   
-  cellToIndex (cell) {
-    return new Point(cell.point.x, cell.point.y);
+  tileToIndex (tile) {
+    return new Point(tile.point.x, tile.point.y);
   }
 
   getNeighbours(index, preserveOrder = false, noDiagonals = false, inputGrid = null) {
     let grid = inputGrid ? inputGrid : this.grid;
-    const cell = grid[index.y][index.x];
+    const tile = grid[index.y][index.x];
     const allDeltas = [
       { x:-1, y: -1 }, {x: 0, y: -1},  { x: 1, y: -1},
       { x:-1, y:  0 },              ,  { x: 1, y:  0},
@@ -56,7 +56,7 @@ class GridService {
     ];
 
     const neighbours = [];
-    if (!cell) {
+    if (!tile) {
       return neighbours;
     }
 
@@ -76,12 +76,12 @@ class GridService {
     return neighbours;
   }
 
-  findSelectedCellCrossNeighbours(cell) {
-    return this.findCrossNeighbours(cell);
+  findSelectedTileCrossNeighbours(tile) {
+    return this.findCrossNeighbours(tile);
   }
 
-  findCrossNeighbours(cell) {
-    return this.getNeighbours(this.cellToIndex(cell), true, true);
+  findCrossNeighbours(tile) {
+    return this.getNeighbours(this.tileToIndex(tile), true, true);
   }
 }
 
