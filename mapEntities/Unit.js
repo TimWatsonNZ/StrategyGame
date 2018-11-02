@@ -16,4 +16,14 @@ class Unit {
   }
 }
 
+Unit.add = function(selectedCell) {  
+  if (!selectedCell) return false;
+
+  if (selectedCell.city || selectedCell.road || selectedCell.unit) return false;
+
+  if (selectedCell.type === 'water') return false;
+  selectedCell.unit = new Unit(selectedCell, 'New Unit');
+
+  return true;
+}
 export default Unit

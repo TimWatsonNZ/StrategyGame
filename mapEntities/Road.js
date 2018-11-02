@@ -2,6 +2,7 @@
 import RoadNetwork from './RoadNetwork';
 import City from './City';
 import generateGuid from '../generateGuid';
+import { gridService } from '../Grid/GridService';
 
 const Shapes = {
   isolated: 'isolated',
@@ -276,4 +277,18 @@ Road.findShape = function (neighbours) {
 
   return shape;
 }
-export { Road };
+
+Road.add = function (cell) {
+  if (!cell) return false;
+
+  if (cell.city || cell.road) return false;
+
+  if (cell.type === 'water') return false;
+
+  const neighbours = gridService.findSelectedCellCrossNeighbours(cell);
+
+  cell.road = new Road(cell, neighbours);
+  return true;
+}
+
+export default Road;

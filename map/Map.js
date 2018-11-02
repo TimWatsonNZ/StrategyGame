@@ -1,10 +1,8 @@
 import Point from '../mapEntities/Point';
 import City from '../mapEntities/City';
 import Unit from '../mapEntities/Unit';
-import { gridService, gridServiceInit } from './GridService';
-import { Road } from '../mapEntities/Road';
-import { cellToIndex, getNeighbours } from './gridUtils';
-
+import { gridService, gridServiceInit } from '../Grid/GridService';
+import Road from '../mapEntities/Road';
 
 class Map {
   
@@ -18,7 +16,8 @@ class Map {
     this.selectedCell = null;
     this.selectedEntity = null;
 
-    gridServiceInit(cellNumber);
+    gridServiceInit(this.cellNumber);
+    gridService.createMap();
 
     this.clippedGrid = [];
     this.viewPortSize = size; //  how large the view port is
@@ -80,7 +79,7 @@ class Map {
         this.viewPortOrigin.y = this.viewPortOrigin.y + this.zoomLevel;
       }
       
-      this.update();
+      this.updateView();
     }
   }
 
@@ -89,7 +88,7 @@ class Map {
     unit.cell = this.grid()[neighbour.point.y][neighbour.point.x];
     this.grid()[neighbour.point.y][neighbour.point.x].unit = unit;
     originalCell.unit = null;
-    this.update();
+    this.draw();
   }
 
 
@@ -126,28 +125,28 @@ class Map {
   }
 
   entityLeft() {
-    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[1];
+    const neighbour = gridService.findCrossNeighbours(this.selectedEntity.cell)[1];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityRight() {
-    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[2];
+    const neighbour = gridService.findCrossNeighbours(this.selectedEntity.cell)[2];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityUp() {
-    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[0];
+    const neighbour = gridService.findCrossNeighbours(this.selectedEntity.cell)[0];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
 
   entityDown() {
-    const neighbour = this.findCrossNeighbours(this.selectedEntity.cell)[3];
+    const neighbour = gridService.findCrossNeighbours(this.selectedEntity.cell)[3];
     if (neighbour && neighbour.type !== 'water') {
       this.moveUnit(this.selectedEntity, neighbour);
     }
@@ -157,7 +156,7 @@ class Map {
     if (this.viewPortOrigin.x > 0) {
       this.viewPortOrigin.x--;
       this.viewPortEnd.x--;
-      this.update();
+      this.updateView();
     }
   }
 
@@ -165,7 +164,7 @@ class Map {
     if (this.viewPortOrigin.x + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.x++;
       this.viewPortEnd.x++;
-      this.update();
+      this.updateView();
     }
   }
 
@@ -173,7 +172,7 @@ class Map {
     if (this.viewPortOrigin.y > 0) {
       this.viewPortOrigin.y--;
       this.viewPortEnd.y--;
-      this.update();  
+      this.updateView();  
     }
   }
 
@@ -181,7 +180,7 @@ class Map {
     if (this.viewPortOrigin.y + this.zoomLevel < this.cellNumber) {
       this.viewPortOrigin.y++;
       this.viewPortEnd.y++;
-      this.update();
+      this.updateView();
     }
   }
 
@@ -202,12 +201,16 @@ class Map {
   zoom() {
     this.viewPortEnd = new Point(this.viewPortOrigin.x +  this.zoomLevel, this.viewPortOrigin.y +  this.zoomLevel);
     this.cellSize = this.viewPortSize / this.zoomLevel;
-    this.update();
+    this.updateView();
+  }
+
+  updateView() {
+    this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
+    this.draw();
   }
 
   update() {
-    this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
-    this.draw();
+    console.log('update');
   }
 
   draw() {
@@ -253,55 +256,21 @@ class Map {
   }
 
   addUnitToSelectedTile() {
-    if (!this.selectedCell) return;
-
-    if (this.selectedCell.city || this.selectedCell.road || this.selectedCell.unit) return;
-
-    if (this.selectedCell.type === 'water') return;
-    this.selectedCell.unit = new Unit(this.selectedCell, 'New Unit');
-
-    this.draw();
-  }
-
-  findSelectedCellCrossNeighbours() {
-    return this.findCrossNeighbours(this.selectedCell);
-  }
-
-  findCrossNeighbours(cell) {
-    return getNeighbours(this.grid(), cellToIndex(cell), true, true);
+    if (Unit.add(this.selectedCell)) {
+      this.draw();
+    }
   }
 
   addRoadToSelectedTile() {
-    if (!this.selectedCell) return;
-
-    if (this.selectedCell.city || this.selectedCell.road) return;
-
-    if (this.selectedCell.type === 'water') return;
-
-    const neighbours = this.findSelectedCellCrossNeighbours();
-
-    this.selectedCell.road = new Road(this.selectedCell, neighbours);
-
-    this.draw();
+    if (Road.add(this.selectedCell)) {
+      this.draw();
+    }
   }
 
   addCityToSelectedTile() {
-    if (!this.selectedCell) return;
-
-    if (this.selectedCell.city || this.selectedCell.road) return;
-
-    if (this.selectedCell.type === 'water') return;
-    const neighbours = this.findSelectedCellCrossNeighbours();
-    this.selectedCell.city = new City(this.selectedCell, 'New City', 1, neighbours);
-
-    //   TODO - move this into road.
-    neighbours.filter(x => x && x.road).forEach(neighbour => {
-      const n = this.findCrossNeighbours(cellToIndex(neighbour));
-      neighbour.road.shape = Road.findShape(n);
-    });
-
-    this.selectedCell.city.draw(this.context, this.cellSize);
-    this.draw();
+    if (City.add(this.selectedCell)) {
+      this.draw();
+    }
   }
 
   removeSelectedEntity() {
@@ -330,7 +299,7 @@ class Map {
     }
 
     this.selectedEntity = null;
-    this.update();
+    this.draw();
   }
 }
 

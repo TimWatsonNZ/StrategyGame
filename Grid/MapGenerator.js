@@ -1,11 +1,13 @@
-import { cellToIndex, getNeighbours } from './gridUtils';
+import { gridService } from './GridService';
+
 import Cell from '../mapEntities/Cell';
 class MapGenerator {
-  generate(cellNumber) {
-    let grid = [];
-    for(let h=0;h<cellNumber;h++) {
+
+  generate(gridSize) {
+    let grid = []
+    for(let h=0;h<gridSize;h++) {
       const row = [];
-      for(let w=0;w<cellNumber;w++) {
+      for(let w=0;w<gridSize;w++) {
         row.push(new Cell(w, h, 'blank'));
       }
       grid.push(row);
@@ -19,12 +21,12 @@ class MapGenerator {
     
     grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = 'grass';
       
-    grid = this.dfa(cellNumber, grid, this.growGrass);
-    grid = this.dfa(cellNumber, grid, this.growGrass);
+    grid = this.dfa(gridSize, grid, this.growGrass);
+    grid = this.dfa(gridSize, grid, this.growGrass);
     this.floodFill(grid, grid[Math.round(grid.length/2)][Math.round(grid.length/2)]);
 
-    grid = this.dfa(cellNumber, grid, this.smoothRule);
-    grid = this.dfa(cellNumber, grid, this.smoothRule);
+    grid = this.dfa(gridSize, grid, this.smoothRule);
+    grid = this.dfa(gridSize, grid, this.smoothRule);
 
     this.fillInHoles(grid);
 
@@ -36,7 +38,7 @@ class MapGenerator {
 
     while (stack.length > 0) {
       const cell = stack.pop();
-      const neighbours = getNeighbours(grid, cellToIndex(cell));
+      const neighbours = gridService.getNeighbours(gridService.cellToIndex(cell), false, false, grid);
       const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
       const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
       
@@ -49,14 +51,14 @@ class MapGenerator {
     }
   }
 
-  dfa (cellNumber, grid, rule) {
+  dfa (gridSize, grid, rule) {
     const newGrid = [];
 
-    for(let h=0;h < cellNumber;h++) {
+    for(let h=0;h < gridSize;h++) {
       const newRow = [];
-      for(let w=0;w < cellNumber;w++) {
+      for(let w=0;w < gridSize;w++) {
         const cell = grid[h][w];
-        const neighbours = getNeighbours(grid, cellToIndex(cell));
+        const neighbours = gridService.getNeighbours(gridService.cellToIndex(cell), false, false, grid);
 
         const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
         const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;

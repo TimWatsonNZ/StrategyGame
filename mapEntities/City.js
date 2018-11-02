@@ -1,5 +1,6 @@
 import Cell from './Cell';
 import generateGuid from '../generateGuid';
+import { gridService } from '../Grid/GridService';
 
 class City {
   constructor(cell, name, population, neighbours) {
@@ -60,6 +61,24 @@ City.remove = function(gridCell) {
   
   gridCell.city = null;
   //  Remove from neighbouring roadnetworks and recalculate networks
+}
+
+City.add = function(selectedCell) {
+  if (!selectedCell) return false;
+
+  if (selectedCell.city || selectedCell.road) return false;
+
+  if (selectedCell.type === 'water') return false;
+  const neighbours = gridService.findSelectedCellCrossNeighbours(selectedCell);
+  selectedCell.city = new City(selectedCell, 'New City', 1, neighbours);
+
+  //   TODO - move this into road.
+  neighbours.filter(x => x && x.road).forEach(neighbour => {
+    const n = gridService.findCrossNeighbours(gridService.cellToIndex(neighbour));
+    neighbour.road.shape = Road.findShape(n);
+  });
+
+  return true;
 }
 
 export default City
