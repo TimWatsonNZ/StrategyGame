@@ -17,8 +17,10 @@ Version 2  - Entity Update
             - Remove roads and recalculate distances.
             - Buttons/keys to remove entities. - done
             - Button to remove entities. - done 
-            - Remove roads and rebuild sub networks.
+            - Remove roads and rebuild sub networks. - in progress
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
+            - Split off grid into another class and remove neighbour references in map entities - in progress
+            - Prevent settlements from being too near each other.
 
 Version 2.5         Refactor
           - Split off controls and entity adding from map to somewhere else.
@@ -27,7 +29,6 @@ Version 2.5         Refactor
           - Isometric view - this will be a big job, need to change drawing and cell selection and panning/zooming a bit.
           - Can optimise panning to only update edges instead of entire structure.
           - Should add some tests around roads and adding/removing things.
-          - Improve/optimise/profile.
 
 Version 3 - Resources/Economics update
                     - Goal is to get a basic pop, needs and resources system in place.
