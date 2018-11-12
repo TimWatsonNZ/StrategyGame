@@ -14,10 +14,8 @@ Version 2  - Entity Update
             - Road connection algorithm - for a given city find what it's connected to by roads. - done
             - City to city distance. - donerr
             - Moving entities - done
-            - Remove roads and recalculate distances.
             - Buttons/keys to remove entities. - done
             - Button to remove entities. - done 
-            - Remove roads and rebuild sub networks. - in progress
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
             - Split off grid into another class and remove neighbour references in map entities - in progress
             - Prevent settlements from being too near each other.
@@ -26,9 +24,6 @@ Version 2.5         Refactor
           - Split off controls and entity adding from map to somewhere else. - in progress
           - Look at removing neighbours from Tiles/entities to reduce possibility of bugs. - in progress
           - Migrate to typescript - entities in particular could benefit from typing.
-          - Isometric view - this will be a big job, need to change drawing and Tile selection and panning/zooming a bit.
-          - Can optimise panning to only update edges instead of entire structure.
-          - Should add some tests around roads and adding/removing things.
 
 Version 3 - Resources/Economics update
                     - Goal is to get a basic pop, needs and resources system in place.
@@ -37,11 +32,10 @@ Version 3 - Resources/Economics update
                     - Some goods are take as tax.
                     - Access to goods will upgrade the area occupied by the pop.
             
-            - turn button.
-            - city to city population flow.
-            - create a farm tile.
             - basic pop system, farmers to work the farms. - in progress
             - pops have needs and own resources. - in progress
+            - turn button.
+            - create a farm tile.
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth.
             - forest tile and a wood resource - add a woodcutter pop? - in progress
@@ -67,6 +61,9 @@ Version 5 - Intercity update
           - Have a border displayed.
           - Expand on ai so they also found cities.
           
+      - city to city population flow.
+      - Remove roads and recalculate distances. - in progress
+      - Remove roads and rebuild sub networks. - in progress
       - Trade between cities
       - Population flow between cities.
       - Loyalty system.
