@@ -11,7 +11,7 @@ canvas.height=size;
 document.getElementById('root').appendChild(canvas);
 const context = canvas.getContext('2d');
 
-const map = new Map(size, 40, context);
+const map = new Map(size, 50, context);
 map.draw();
 
 //  Color in clicked square

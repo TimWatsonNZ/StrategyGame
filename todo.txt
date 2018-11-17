@@ -17,7 +17,7 @@ Version 2  - Entity Update
             - Buttons/keys to remove entities. - done
             - Button to remove entities. - done 
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
-            - Split off grid into another class and remove neighbour references in map entities - in progress
+            - Split off grid into another class and remove neighbour references in map entities - done
             - Prevent settlements from being too near each other.
 
 Version 2.5         Refactor
@@ -31,7 +31,8 @@ Version 3 - Resources/Economics update
                     - Pops desire and trade for goods locally.
                     - Some goods are take as tax.
                     - Access to goods will upgrade the area occupied by the pop.
-            
+                    
+            - refactor tile type to be an enum - in progress.
             - basic pop system, farmers to work the farms. - in progress
             - pops have needs and own resources. - in progress
             - turn button.

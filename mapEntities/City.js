@@ -1,9 +1,9 @@
-import Tile from '../map/Tiles/Tile';
+
 import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 
 class City {
-  constructor(tile, name, population, neighbours) {
+  constructor(tile, name, population) {
     this.type = 'city';
     this.id = generateGuid();
     this.tile = tile;
@@ -12,21 +12,20 @@ class City {
 
     this.distances = [];
 
-    this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
+    let neighbours = gridService.findCrossNeighbours(tile)
+      .filter(neighbour => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
-
-    
-    this.neighbours.forEach(n => {
-      n.neighbours.push(this);
-    });
-  
 
     this.roadNetworks = [];
     
-    this.neighbours.forEach(neighbour => {
+    neighbours.forEach(neighbour => {
       if (neighbour.type === 'road') {
         this.addNetwork(neighbour.roadNetwork);
       }
+    });
+
+    neighbours.filter(x => x && x.road).forEach(neighbour => {
+      neighbour.road.updateShape();
     });
   }
 
@@ -69,14 +68,7 @@ City.add = function(selectedTile) {
   if (selectedTile.city || selectedTile.road) return false;
 
   if (selectedTile.type === 'water') return false;
-  const neighbours = gridService.findSelectedTileCrossNeighbours(selectedTile);
-  selectedTile.city = new City(selectedTile, 'New City', 1, neighbours);
-
-  //   TODO - move this into road.
-  neighbours.filter(x => x && x.road).forEach(neighbour => {
-    const n = gridService.findCrossNeighbours(gridService.tileToIndex(neighbour));
-    neighbour.road.shape = Road.findShape(n);
-  });
+  selectedTile.city = new City(selectedTile, 'New City', 1);
 
   return true;
 }

@@ -1,4 +1,5 @@
 import generateGuid from '../generateGuid';
+import { gridService } from '../Grid/GridService';
 
 class RoadNetwork {
   constructor(road = null, city = null) {
@@ -49,9 +50,10 @@ class RoadNetwork {
     });
   }
 
+
   findDistances(city) {
     const distances = [];
-    let neighbours = city.neighbours.map(node => ({node, distance: 0 }));
+    let neighbours = gridService.findCrossNeighbours(city.tile).map(node => ({node, distance: 0 }));
     const visited = {};
     visited[city.id] = true;
 
@@ -62,8 +64,8 @@ class RoadNetwork {
         distances.push({city, distance: neighbour.distance });
       } else {
         visited[neighbour.node.id] = true;
-        const neighboursNeighbours = neighbour.node.neighbours
-          .filter(x => !visited[x.id])
+        const neighboursNeighbours = gridService.findCrossNeighbours(neighbour.node)
+            .filter(x => !visited[x.id])
           .map(x => ({ node: x, distance: neighbour.distance + 1 }));
         neighbours = neighbours.concat(neighboursNeighbours);
       }

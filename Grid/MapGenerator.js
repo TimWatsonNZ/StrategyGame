@@ -43,9 +43,9 @@ class MapGenerator {
       const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
       
       if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {
-        Tile.type = 'grass';
+        tile.type = 'grass';
       } else {
-        Tile.type = 'water';
+        tile.type = 'water';
       }
       neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));
     }
@@ -80,14 +80,14 @@ class MapGenerator {
     if (tile.type === 'grass' && waterNeighbours > 7) {
       return 'water';
     }
-    return Tile.type;
+    return tile.type;
   }
 
   growGrass (tile, waterNeighbours, grassNeighbours) {
     if (tile.type === 'water' && grassNeighbours > 0) {
       return 'grass';
     }
-    return Tile.type;
+    return tile.type;
   }
 
   fillInHoles(grid) {

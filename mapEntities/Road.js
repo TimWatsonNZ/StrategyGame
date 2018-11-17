@@ -25,19 +25,18 @@ const Shapes = {
 
 
 class Road {
-  constructor(tile, neighbours) {
+  constructor(tile) {
     this.type = 'road';
     this.id = generateGuid();
     this.tile = tile;
+
+    let neighbours = gridService.findCrossNeighbours(tile);
+
     this.shape = Road.findShape(neighbours);
-    this.neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
+    neighbours = neighbours.filter(neighbour => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
 
-    this.neighbours.forEach(n => {
-      n.neighbours.push(this);
-    });
-
-    const neighbouringRoads = this.neighbours.filter(x => x instanceof Road)
+    const neighbouringRoads = neighbours.filter(x => x instanceof Road)
     const neighbouringRoadNetworks = neighbouringRoads.map(x => x.roadNetwork);
 
     if (neighbouringRoadNetworks.length > 0) {
@@ -47,7 +46,7 @@ class Road {
       this.roadNetwork.addRoad(this);
     }
 
-    const neighbouringCities = this.neighbours.filter(x => x instanceof City);
+    const neighbouringCities = neighbours.filter(x => x instanceof City);
     neighbouringCities.forEach(city => {
       city.addNetwork(this.roadNetwork);
     });
@@ -73,6 +72,11 @@ class Road {
       this.roadNetwork = first;
     }
     first.merge(networks);
+  }
+
+  updateShape() {
+    const n = gridService.findCrossNeighbours(gridService.tileToIndex(neighbour));
+    this.shape = Road.findShape(n);
   }
 
   drawHorizontal(context, tileSize) {
@@ -285,9 +289,7 @@ Road.add = function (tile) {
 
   if (tile.type === 'water') return false;
 
-  const neighbours = gridService.findSelectedtileCrossNeighbours(tile);
-
-  tile.road = new Road(tile, neighbours);
+  tile.road = new Road(tile);
   return true;
 }
 

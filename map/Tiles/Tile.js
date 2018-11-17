@@ -32,22 +32,22 @@ class Tile {
 Tile.copy = function (tile, type = null) {
   let copy;
   if (!type) {
-    copy =  new Tile(tile.point.x, tile.point.y, Tile.type);
+    copy =  new Tile(tile.point.x, tile.point.y, tile.type);
     copy.selected = copy.selected;
   }
 
   if (type === TileTypes.Grass) {
-    copy = new GrassTile(tile.point.x, tile.point.y, Tile.type);
+    copy = new GrassTile(tile.point.x, tile.point.y, tile.type);
     copy.selected = copy.selected;
   }
   
   if (type === TileTypes.Forest) {
-    copy = new ForestTile(tile.point.x, tile.point.y, Tile.type);
+    copy = new ForestTile(tile.point.x, tile.point.y, tile.type);
     copy.selected = copy.selected;
   }
 
   if (type === TileTypes.Ocean) {
-    copy = new OceanTile(tile.point.x, tile.point.y, Tile.type);
+    copy = new OceanTile(tile.point.x, tile.point.y, tile.type);
     copy.selected = copy.selected;
   }
   return copy;

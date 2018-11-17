@@ -81,7 +81,7 @@ class GridService {
   }
 
   findCrossNeighbours(tile) {
-    return this.getNeighbours(this.tileToIndex(tile), true, true);
+    return this.getNeighbours(this.tileToIndex(tile), false, true);
   }
 }
 
