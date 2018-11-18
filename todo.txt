@@ -23,7 +23,7 @@ Version .2  - Entity Update
 Version .2.5         Refactor
           - Split off controls and entity adding from map to somewhere else. - done
           - Look at removing neighbours from Tiles/entities to reduce possibility of bugs. - done
-          - Migrate to typescript - entities in particular could benefit from typing. - in progress
+          - Migrate to typescript - entities in particular could benefit from typing. - done
 
 Version .3 - Resources/Economics update
                     - Goal is to get a basic pop, needs and resources system in place.
@@ -32,11 +32,12 @@ Version .3 - Resources/Economics update
                     - Some goods are take as tax.
                     - Access to goods will upgrade the area occupied by the pop.
 
-            - refactor tile type to be an enum - in progress.
+            - refactor tile type to be an enum - done.
             - basic pop system, farmers to work the farms. - in progress
             - pops have needs and own resources. - in progress
-            - turn button.
+            - turn button. - in progress
             - create a farm tile.
+            - cities own nearby tiles.
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth.
             - forest tile and a wood resource - add a woodcutter pop? - in progress

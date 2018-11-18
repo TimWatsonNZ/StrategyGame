@@ -1,5 +1,6 @@
 import Pop from './Pop';
 import * as Resources from '../Resources/Resources';
+import Resource from '../Resources/Resource';
 
 class Gatherer extends Pop {
   constructor(number: number, group: any) {
@@ -7,10 +8,13 @@ class Gatherer extends Pop {
   }
 }
 
-// const needs = {};
-// needs[`${Resources.Food}`] = { consumes: 1 };
+const resources: Resource[] = [];
+resources[0] = new Resources.Food(1);
 
-const produces = {};
-// produces[`${Resources.Food}`] = 
+const needs: any = {};
+needs['food'] = { consumes: 1 };
+
+const produces: any = {};
+produces['food'] = { produces: 1.1 };
 
 export default Gatherer;

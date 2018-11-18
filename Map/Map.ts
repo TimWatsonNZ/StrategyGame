@@ -97,10 +97,11 @@ class Map {
     }
   }
 
+  //  move to unit
   moveUnit(unit: Unit, neighbour: Tile) {
     const originalTile = unit.tile;
-    unit.tile = this.grid()[neighbour.point.y][neighbour.point.x];
-    this.grid()[neighbour.point.y][neighbour.point.x].unit = unit;
+    unit.tile = gridService.grid[neighbour.point.y][neighbour.point.x];
+    gridService.grid[neighbour.point.y][neighbour.point.x].unit = unit;
     originalTile.unit = null;
     this.draw();
   }
@@ -140,28 +141,28 @@ class Map {
 
   entityLeft() {
     const neighbour = gridService.findCrossNeighbours(this.selectedEntity.tile)[1];
-    if (neighbour && neighbour.type !== 'water') {
+    if (neighbour && neighbour.type !== TileType.Ocean) {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityRight() {
     const neighbour = gridService.findCrossNeighbours(this.selectedEntity.tile)[2];
-    if (neighbour && neighbour.type !== 'water') {
+    if (neighbour && neighbour.type !== TileType.Ocean) {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
   
   entityUp() {
     const neighbour = gridService.findCrossNeighbours(this.selectedEntity.tile)[0];
-    if (neighbour && neighbour.type !== 'water') {
+    if (neighbour && neighbour.type !== TileType.Ocean) {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
 
   entityDown() {
     const neighbour = gridService.findCrossNeighbours(this.selectedEntity.Tile)[3];
-    if (neighbour && neighbour.type !== 'water') {
+    if (neighbour && neighbour.type !== TileType.Ocean) {
       this.moveUnit(this.selectedEntity, neighbour);
     }
   }
@@ -218,9 +219,13 @@ class Map {
     this.updateView();
   }
 
-  updateView() {
-    this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
+  updateView(updateGrid = true) {
+    if (updateGrid)this.clippedGrid = gridService.createClippedGrid(this.viewPortOrigin, this.viewPortEnd);
     this.draw();
+  }
+
+  endTurn() {
+    console.log('end turn');
   }
 
   update() {
@@ -293,7 +298,7 @@ class Map {
     }
 
     const tile = this.selectedEntity.tile;
-    const gridTile = this.grid()[tile.point.y][tile.point.x];
+    const gridTile = gridService.grid[tile.point.y][tile.point.x];
 
     if (this.selectedEntity instanceof Unit) {
       gridTile.unit = null;

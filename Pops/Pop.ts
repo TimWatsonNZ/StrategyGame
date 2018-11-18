@@ -8,6 +8,7 @@ class Pop {
   needs: Needs;
   produces: any;
   contentment: any;
+
   constructor(number: number, group: any, resouces: Resource[], needs: Needs, produces: any, contentment: any, strata: any) {
     this.number = number;
     this.group = group;
@@ -15,6 +16,10 @@ class Pop {
     this.needs = needs;
     this.produces = produces;
     this.contentment = contentment;
+  }
+
+  update() {
+    
   }
 }
 

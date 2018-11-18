@@ -20,7 +20,7 @@ canvas.addEventListener('click', (e) => {
   clientX -= bodyMargin;
   clientY -= bodyMargin;
   
-  const tile = map.clickTile(clientX, clientY);
+  const tile = map.clickTile(new Point(clientX, clientY));
 
   if (tile) {
     document.querySelector('#selectedTile').innerHTML = tile.toString()
@@ -111,7 +111,10 @@ window.addEventListener('keydown', e => {
   if (e.keyCode === 8 || e.keyCode === 46) {
     map.removeSelectedEntity();
   }
-  console.log(e.keyCode);
+
+  if (e.keyCode === 13) {
+    map.endTurn();
+  }
 });
 
 document.querySelector('#addCity').addEventListener('click', () => {
