@@ -1,5 +1,6 @@
-import Point from '../mapEntities/Point';
+import Point from '../MapEntities/Point';
 import mapGenerator from './MapGenerator';
+import Tile from '../Map/Tiles/Tile';
 
 class GridService {
   gridSize: number;
@@ -39,7 +40,7 @@ class GridService {
     return newgrid;
   }
   
-  tileToIndex (tile: any) {
+  tileToIndex (tile: Tile) {
     return new Point(tile.point.x, tile.point.y);
   }
 
@@ -103,11 +104,11 @@ class GridService {
     return neighbours;
   }
 
-  findSelectedTileCrossNeighbours(tile: any) {
+  findSelectedTileCrossNeighbours(tile: Tile) {
     return this.findCrossNeighbours(tile);
   }
 
-  findCrossNeighbours(tile: any) {
+  findCrossNeighbours(tile: Tile) {
     return this.getNeighbours(this.tileToIndex(tile), false, true);
   }
 }

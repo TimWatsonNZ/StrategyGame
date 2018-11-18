@@ -3,6 +3,8 @@ import RoadNetwork from './RoadNetwork';
 import City from './City';
 import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
+import Tile from '../Map/Tiles/Tile';
+import TileType from '../Map/Tiles/TileType';
 
 const Shapes = {
   isolated: 'isolated',
@@ -25,7 +27,16 @@ const Shapes = {
 
 
 class Road {
-  constructor(tile) {
+  type: string;
+  id: string;
+  tile: Tile;
+  shape: any;
+  static add: (tile: Tile) => boolean;
+  static findShape: any;
+  roadNetwork: RoadNetwork;
+  static remove: (gridTile: Tile, road: Road) => void;
+  static findConnectivity: (roads: any) => void;
+  constructor(tile: Tile) {
     this.type = 'road';
     this.id = generateGuid();
     this.tile = tile;
@@ -42,7 +53,7 @@ class Road {
     if (neighbouringRoadNetworks.length > 0) {
         this.mergeNetworks(neighbouringRoadNetworks);
     } else {
-      this.roadNetwork = new RoadNetwork(this);
+      this.roadNetwork = new RoadNetwork();
       this.roadNetwork.addRoad(this);
     }
 
@@ -57,7 +68,7 @@ class Road {
     });
   }
 
-  equals(otherRoad) {
+  equals(otherRoad: Road) {
     return this.tile.equals(otherRoad.tile);
   }
 
@@ -65,7 +76,7 @@ class Road {
     return `${this.type}: ${this.shape}`;
   }
   
-  mergeNetworks(networks) {
+  mergeNetworks(networks: any[]) {
     const first = networks.pop();
     if (!this.roadNetwork) {
       first.addRoad(this);
@@ -75,35 +86,35 @@ class Road {
   }
 
   updateShape() {
-    const n = gridService.findCrossNeighbours(gridService.tileToIndex(neighbour));
+    const n = gridService.findCrossNeighbours(this.tile);
     this.shape = Road.findShape(n);
   }
 
-  drawHorizontal(context, tileSize) {
+  drawHorizontal(context: any, tileSize: number) {
     context.fillRect(this.tile.drawingPoint.x * tileSize, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, tileSize, tileSize/4);
   }
 
-  drawVertical(context, tileSize) {
+  drawVertical(context: any, tileSize: number) {
     context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize, tileSize/4, tileSize);
   }
 
-  drawTop(context, tileSize) { 
+  drawTop(context: any, tileSize: number) { 
     context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize, tileSize/4, 5*tileSize/8);
   }
   
-  drawBottom(context, tileSize) { 
+  drawBottom(context: any, tileSize: number) { 
     context.fillRect(this.tile.drawingPoint.x * tileSize + 3*tileSize/8, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, tileSize/4, tileSize);
   }
   
-  drawLeft(context, tileSize) { 
+  drawLeft(context: any, tileSize: number) { 
     context.fillRect(this.tile.drawingPoint.x * tileSize, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, 5*tileSize/8, tileSize/4);
   }
   
-  drawRight(context, tileSize) { 
+  drawRight(context: any, tileSize: number) { 
     context.fillRect(this.tile.drawingPoint.x * tileSize + tileSize/2, this.tile.drawingPoint.y * tileSize + 3*tileSize/8, 3*tileSize/4, tileSize/4);
   }
 
-  draw(context, tileSize) {
+  draw(context: any, tileSize: number) {
     context.fillStyle = '#c48b23';
 
     switch (this.shape) {
@@ -183,7 +194,7 @@ class Road {
   }
 }
 
-Road.remove = function (gridTile, road) {
+Road.remove = function (gridTile: Tile, road: Road) {
   gridTile.road = null;
 
   //  Cases:
@@ -195,36 +206,36 @@ Road.remove = function (gridTile, road) {
   //    neighbouring city
   //      Remove road from neighbours
   //      process connectivity to check if the network should be removed
-  road.neighbours.forEach(neighbour => {
-    neighbour.neighbours = neighbour.neighbours.filter(x => x.id !== neighbour);
-  })
+  // road.neighbours.forEach(neighbour => {
+  //   neighbour.neighbours = neighbour.neighbours.filter(x => x.id !== neighbour);
+  // })
 }
 
 Road.findConnectivity = function(roads) {
   // Idea is to perform a seperate bfs in step on each peace of road and check connectivity at each step
   // If two networks contain the same node then they are connected.
 
-  const searches = roads.map(x => {
-    const visited = {};
-    visited[x.id] = true;
-    return { isFinished: false, edgeSet: x.neighbours, visited, connected: [] };
-  });
+  // const searches = roads.map(x => {
+  //   const visited = {};
+  //   visited[x.id] = true;
+  //   return { isFinished: false, edgeSet: x.neighbours, visited, connected: [] };
+  // });
 
-  while (searches.find(x => x.isFinished).length > 0) {
-    console.log('Iteration 1');
-    searches.forEach(x => x.finished = true);
-  }
+  // while (searches.find(x => x.isFinished).length > 0) {
+  //   console.log('Iteration 1');
+  //   searches.forEach(x => x.finished = true);
+  // }
   //  Continue until all searches are complete.
   //  Test each iteration and stop search if necessary.
 }
 
 //  Save state 
-Road.incrementalBfs = function() {
+// Road.incrementalBfs = function() {
 
-}
+// }
 
 
-Road.findShape = function (neighbours) {
+Road.findShape = function (neighbours: Tile[]) {
   const topNeighbour = (neighbours[0] && (neighbours[0].road || neighbours[0].city)) || null;
   const leftNeighbour = (neighbours[1] && (neighbours[1].road || neighbours[1].city)) || null;
   const rightNeighbour = (neighbours[2] && (neighbours[2].road || neighbours[2].city)) || null;
@@ -282,12 +293,12 @@ Road.findShape = function (neighbours) {
   return shape;
 }
 
-Road.add = function (tile) {
+Road.add = function (tile: Tile) {
   if (!tile) return false;
 
   if (tile.city || tile.road) return false;
 
-  if (tile.type === 'water') return false;
+  if (tile.type === TileType.Ocean) return false;
 
   tile.road = new Road(tile);
   return true;

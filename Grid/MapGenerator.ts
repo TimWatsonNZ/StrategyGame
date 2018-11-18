@@ -1,14 +1,16 @@
 import { gridService } from './GridService';
-import Tile from '../map/Tiles/Tile';
+import Tile from '../Map/Tiles/Tile';
+import Point from '../MapEntities/Point';
+import TileType from '../Map/Tiles/TileType';
 
 class MapGenerator {
 
-  generate(gridSize) {
-    let grid = []
+  generate(gridSize: number) {
+    let grid: Tile[][] = []
     for(let h=0;h<gridSize;h++) {
       const row = [];
       for(let w=0;w<gridSize;w++) {
-        row.push(new Tile(w, h, 'blank'));
+        row.push(new Tile(new Point(w, h), TileType.None));
       }
       grid.push(row);
     }
@@ -16,10 +18,10 @@ class MapGenerator {
     const seedTileCount = 80;
     for (let i=0;i < seedTileCount;i++) {
       const randomTile = grid[Math.floor(Math.random() * grid.length)][Math.floor(Math.random() * grid.length)];
-      randomTile.type = 'grass';
+      randomTile.type = TileType.Grass;
     }
     
-    grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = 'grass';
+    grid[Math.round(grid.length/2)][Math.round(grid.length/2)].type = TileType.Grass;
       
     grid = this.dfa(gridSize, grid, this.growGrass);
     grid = this.dfa(gridSize, grid, this.growGrass);
@@ -33,25 +35,25 @@ class MapGenerator {
     return grid;
   }
 
-  floodFill(grid, start) {
+  floodFill(grid: Tile[][], start: Tile) {
     const stack = [start];
 
     while (stack.length > 0) {
       const tile = stack.pop();
       const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
-      const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
-      const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
+      const waterNeighbours = neighbours.filter(x => x.type === TileType.Ocean).length;
+      const grassNeighbours = neighbours.filter(x => x.type === TileType.Grass).length;
       
       if (Math.round(Math.random() * (waterNeighbours + grassNeighbours)) > waterNeighbours) {
-        tile.type = 'grass';
+        tile.type = TileType.Grass;
       } else {
-        tile.type = 'water';
+        tile.type = TileType.Ocean;
       }
-      neighbours.filter(x => x.type === 'blank').forEach(x => stack.push(x));
+      neighbours.filter(x => x.type === TileType.None).forEach(x => stack.push(x));
     }
   }
 
-  dfa (gridSize, grid, rule) {
+  dfa (gridSize: number, grid: Tile[][], rule: any) {
     const newGrid = [];
 
     for(let h=0;h < gridSize;h++) {
@@ -60,8 +62,8 @@ class MapGenerator {
         const tile = grid[h][w];
         const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
 
-        const waterNeighbours = neighbours.filter(x => x.type === 'water').length;
-        const grassNeighbours = neighbours.filter(x => x.type === 'grass').length;
+        const waterNeighbours = neighbours.filter(x => x.type === TileType.Ocean).length;
+        const grassNeighbours = neighbours.filter(x => x.type === TileType.Grass).length;
 
         const copy = Tile.copy(tile);
         copy.type = rule(copy, waterNeighbours, grassNeighbours);
@@ -73,28 +75,28 @@ class MapGenerator {
     return newGrid;
   }
 
-  smoothRule (tile, waterNeighbours, grassNeighbours) {
-    if (tile.type === 'water' && grassNeighbours > 3) {
-      return 'grass';
+  smoothRule (tile: Tile, waterNeighbours: number, grassNeighbours: number) {
+    if (tile.type === TileType.Ocean && grassNeighbours > 3) {
+      return TileType.Grass;
     }
-    if (tile.type === 'grass' && waterNeighbours > 7) {
-      return 'water';
-    }
-    return tile.type;
-  }
-
-  growGrass (tile, waterNeighbours, grassNeighbours) {
-    if (tile.type === 'water' && grassNeighbours > 0) {
-      return 'grass';
+    if (tile.type === TileType.Grass && waterNeighbours > 7) {
+      return TileType.Ocean;
     }
     return tile.type;
   }
 
-  fillInHoles(grid) {
+  growGrass (tile: Tile, waterNeighbours: number, grassNeighbours: number) {
+    if (tile.type === TileType.Ocean && grassNeighbours > 0) {
+      return TileType.Grass;
+    }
+    return tile.type;
+  }
+
+  fillInHoles(grid: Tile[][]) {
     for(let y = 0; y < grid.length; y++) {
       for (let h = 0; h < grid[y].length; h++) {
-        if (grid[y][h].type === 'blank') {
-          grid[y][h].type = 'water';
+        if (grid[y][h].type === TileType.None) {
+          grid[y][h].type = TileType.Ocean;
         }
       }
     }

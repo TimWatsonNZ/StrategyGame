@@ -1,5 +1,5 @@
 import Map from './Map/Map';
-import Point from './mapEntities/Point';
+import Point from './MapEntities/Point';
 
 const canvas = document.createElement('canvas');
 const size = 500;

@@ -1,12 +1,26 @@
-import Point from '../mapEntities/Point';
-import City from '../mapEntities/City';
-import Unit from '../mapEntities/Unit';
+import Point from '../MapEntities/Point';
+import City from '../MapEntities/City';
+import Unit from '../MapEntities/Unit';
 import { gridService, gridServiceInit } from '../Grid/GridService';
-import Road from '../mapEntities/Road';
+import Road from '../MapEntities/Road';
+import TileType from './Tiles/TileType';
+import Tile from './Tiles/Tile';
 
 class Map {
+  context: any;
+  size: number;
+  tileNumber: number;
+  viewPortOrigin: Point;
+  selectedTile: Tile;
+  selectedEntity: any;
+  zoomLevel: number;
+  origin: Point;
+  viewPortEnd: Point;
+  tileSize: number;
+  clippedGrid: any[];
+  viewPortSize: number;
   
-  constructor(size, tileNumber, context) {
+  constructor(size: number, tileNumber: number, context: any) {
     //  Draw grid of squares
     this.context = context;
     this.size = size;
@@ -32,9 +46,9 @@ class Map {
     return gridService.grid;
   }
 
-  clickTile(x, y) {
-    const tileX = Math.floor(x / this.tileSize);
-    const tileY = Math.floor(y / this.tileSize);
+  clickTile(point: Point) {
+    const tileX = Math.floor(point.x / this.tileSize);
+    const tileY = Math.floor(point.y / this.tileSize);
 
     const tile = this.clippedGrid[tileY] && this.clippedGrid[tileY][tileX];
 
@@ -55,7 +69,7 @@ class Map {
     return tile;
   }
 
-  drag(diffX, diffY) {
+  drag(diffX: number, diffY: number) {
 
     const minDrag = 1;
     if (Math.abs(diffX) > minDrag || Math.abs(diffY) > minDrag) {
@@ -83,7 +97,7 @@ class Map {
     }
   }
 
-  moveUnit(unit, neighbour) {
+  moveUnit(unit: Unit, neighbour: Tile) {
     const originalTile = unit.tile;
     unit.tile = this.grid()[neighbour.point.y][neighbour.point.x];
     this.grid()[neighbour.point.y][neighbour.point.x].unit = unit;
@@ -222,13 +236,13 @@ class Map {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const tile = this.clippedGrid[h][w];
         if (tile && (tile.drawingPoint.x) <= this.viewPortEnd.x && (tile.drawingPoint.x) >= 0 && (tile.drawingPoint.y) >= 0 && tile.drawingPoint.y <= this.viewPortEnd.y) {
-          if (tile.type === 'grass') {
+          if (tile.type === TileType.Grass) {
             this.context.fillStyle = '#00FF00';
           }
-          if (tile.type === 'water') {
+          if (tile.type === TileType.Ocean) {
             this.context.fillStyle = '#0000FF';
           }
-          if (tile.type === 'blank') {
+          if (tile.type === TileType.None) {
             this.context.fillStyle = '#FFFFFF';
           }
           this.context.fillRect(tile.drawingPoint.x * this.tileSize, tile.drawingPoint.y * this.tileSize, this.tileSize, this.tileSize);

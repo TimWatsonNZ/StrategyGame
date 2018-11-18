@@ -1,18 +1,20 @@
 
 import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
+import Tile from '../Map/Tiles/Tile';
+import TileType from '../Map/Tiles/TileType';
 
 class City {
   type: string;
   id: string;
-  tile: any;
+  tile: Tile;
   name: string;
   population: number;
   distances: any[];
-  static add: (tile: any) => boolean;
+  static add: (tile: Tile) => boolean;
   roadNetworks: any;
-  static remove: (gridTile: any) => void;
-  constructor(tile: any, name: string, population: number) {
+  static remove: (gridTile: Tile) => void;
+  constructor(tile: Tile, name: string, population: number) {
     this.type = 'city';
     this.id = generateGuid();
     this.tile = tile;
@@ -65,18 +67,18 @@ class City {
   }
 }
 
-City.remove = function(gridTile: any) {
+City.remove = function(gridTile: Tile) {
   
   gridTile.city = null;
   //  Remove from neighbouring roadnetworks and recalculate networks
 }
 
-City.add = function(tile: any) {
+City.add = function(tile: Tile) {
   if (!tile) return false;
 
   if (tile.city || tile.road) return false;
 
-  if (tile.type === 'water') return false;
+  if (tile.type === TileType.Ocean) return false;
 
   const neighbours = gridService.getRegion(tile.point, 2);
 

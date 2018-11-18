@@ -1,8 +1,10 @@
+import Tile from "../Map/Tiles/Tile";
+import TileType from "../Map/Tiles/TileType";
 
 class Unit {
-  tile: any;
+  tile: Tile;
   name: string;
-  static add: (selectedTile: any) => boolean;
+  static add: (selectedTile: Tile) => boolean;
   constructor(tile: any, name: string) {
     this.tile = tile;
     this.name = name;
@@ -18,12 +20,12 @@ class Unit {
   }
 }
 
-Unit.add = function(selectedTile: any) {  
+Unit.add = function(selectedTile: Tile) {  
   if (!selectedTile) return false;
 
   if (selectedTile.city || selectedTile.road || selectedTile.unit) return false;
 
-  if (selectedTile.type === 'water') return false;
+  if (selectedTile.type === TileType.Ocean) return false;
   selectedTile.unit = new Unit(selectedTile, 'New Unit');
 
   return true;

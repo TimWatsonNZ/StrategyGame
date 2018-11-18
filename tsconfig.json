@@ -4,7 +4,7 @@
     "noImplicitAny": true,
     "module": "es6",
     "sourceMap": true,
-    "target": "es5",
+    "target": "es6",
     "allowJs": true
   }
 }
