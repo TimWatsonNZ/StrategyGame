@@ -3,7 +3,16 @@ import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 
 class City {
-  constructor(tile, name, population) {
+  type: string;
+  id: string;
+  tile: any;
+  name: string;
+  population: number;
+  distances: any[];
+  static add: (tile: any) => boolean;
+  roadNetworks: any;
+  static remove: (gridTile: any) => void;
+  constructor(tile: any, name: string, population: number) {
     this.type = 'city';
     this.id = generateGuid();
     this.tile = tile;
@@ -13,27 +22,27 @@ class City {
     this.distances = [];
 
     let neighbours = gridService.findCrossNeighbours(tile)
-      .filter(neighbour => neighbour.city || neighbour.road)
+      .filter((neighbour: any) => neighbour.city || neighbour.road)
       .map(x => x.road || x.city);
 
     this.roadNetworks = [];
     
-    neighbours.forEach(neighbour => {
+    neighbours.forEach((neighbour: any) => {
       if (neighbour.type === 'road') {
         this.addNetwork(neighbour.roadNetwork);
       }
     });
 
-    neighbours.filter(x => x && x.road).forEach(neighbour => {
+    neighbours.filter((x: any) => x && x.road).forEach((neighbour: any) => {
       neighbour.road.updateShape();
     });
   }
 
-  equals(otherCity) {
+  equals(otherCity: any) {
     return otherCity.id === this.id;
   }
 
-  draw(context, tileSize) {
+  draw(context: any, tileSize: number) {
     context.fillStyle = '#000000';
     const baseX = this.tile.drawingPoint.x * tileSize;
     const baseY = this.tile.drawingPoint.y * tileSize;
@@ -47,8 +56,8 @@ class City {
     return `${this.id}: ${this.population}\n ${distances}`;
   }
 
-  addNetwork(network) {
-    if (!this.roadNetworks.some(x => x.id === network.id)) {
+  addNetwork(network: any) {
+    if (!this.roadNetworks.some((x: any) => x.id === network.id)) {
       this.roadNetworks.push(network);
       network.cities.push(this);
       network.findDistancesForCities();
@@ -56,19 +65,23 @@ class City {
   }
 }
 
-City.remove = function(gridTile) {
+City.remove = function(gridTile: any) {
   
   gridTile.city = null;
   //  Remove from neighbouring roadnetworks and recalculate networks
 }
 
-City.add = function(selectedTile) {
-  if (!selectedTile) return false;
+City.add = function(tile: any) {
+  if (!tile) return false;
 
-  if (selectedTile.city || selectedTile.road) return false;
+  if (tile.city || tile.road) return false;
 
-  if (selectedTile.type === 'water') return false;
-  selectedTile.city = new City(selectedTile, 'New City', 1);
+  if (tile.type === 'water') return false;
+
+  const neighbours = gridService.getRegion(tile.point, 2);
+
+  if (neighbours.filter((x: any) => x.city).length > 0) return false;
+  tile.city = new City(tile, 'New City', 1);
 
   return true;
 }

@@ -2,7 +2,9 @@ import Point from '../mapEntities/Point';
 import mapGenerator from './MapGenerator';
 
 class GridService {
-  constructor(gridSize) {
+  gridSize: number;
+  grid: any[];
+  constructor(gridSize: number) {
     this.gridSize = gridSize;
     this.grid = [];
   }
@@ -11,7 +13,8 @@ class GridService {
     this.grid = mapGenerator.generate(this.gridSize);
   }
 
-  createClippedGrid(viewPortOrigin, viewPortEnd) {
+  //  todo - change these to points
+  createClippedGrid(viewPortOrigin: any, viewPortEnd: any) {
     const newgrid = [];
     const startPoint = new Point(viewPortOrigin.x, viewPortOrigin.y);
     const endPoint = new Point(viewPortEnd.x, viewPortEnd.y);
@@ -36,11 +39,35 @@ class GridService {
     return newgrid;
   }
   
-  tileToIndex (tile) {
+  tileToIndex (tile: any) {
     return new Point(tile.point.x, tile.point.y);
   }
 
-  getNeighbours(index, preserveOrder = false, noDiagonals = false, inputGrid = null) {
+  getRegion(index: any, radius: number) {
+    const deltas = [];
+
+    for (let x=0;x<radius*2+1;x++) {
+      for (let y=0;y < radius*2+1; y++) {
+        deltas.push({ x: x - 1, y: y -1 });
+      }
+    }
+
+    const neighbours: any[] = [];
+    deltas.forEach(delta => {
+      const indexX = index.x + delta.x;
+      const indexY = index.y + delta.y;
+
+      if (indexX < 0 || indexX > this.grid.length-1 ||
+          indexY < 0 || indexY > this.grid.length-1) {
+      } else {
+        neighbours.push(this.grid[indexY][indexX]);
+      }
+    });
+
+    return neighbours;
+  }
+
+  getNeighbours(index: Point, preserveOrder = false, noDiagonals = false, inputGrid: any = null) {
     let grid = inputGrid ? inputGrid : this.grid;
     const tile = grid[index.y][index.x];
     const allDeltas = [
@@ -55,7 +82,7 @@ class GridService {
                        { x: 0, y:  1 },
     ];
 
-    const neighbours = [];
+    const neighbours: any[] = [];
     if (!tile) {
       return neighbours;
     }
@@ -76,17 +103,17 @@ class GridService {
     return neighbours;
   }
 
-  findSelectedTileCrossNeighbours(tile) {
+  findSelectedTileCrossNeighbours(tile: any) {
     return this.findCrossNeighbours(tile);
   }
 
-  findCrossNeighbours(tile) {
+  findCrossNeighbours(tile: any) {
     return this.getNeighbours(this.tileToIndex(tile), false, true);
   }
 }
 
-let gridService = null;
-function gridServiceInit(gridSize) {
+let gridService: GridService = null;
+function gridServiceInit(gridSize: number) {
   gridService = new GridService(gridSize);
 }
 

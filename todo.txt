@@ -1,9 +1,9 @@
-Version 1 - World Creation 
+Version .1 - World Creation 
           Implement camera controls, basic map generation.
 
 All done.
 
-Version 2  - Entity Update
+Version .2  - Entity Update
                     - Goal is to be able to place entities into tiles and interact with them and for them to connect with each other.
                     - Implement entities in the world and the ability to create, edit, remove and give orders to entities.
                     - Implement connectivity of entities and being able to give move orders to these.
@@ -18,20 +18,20 @@ Version 2  - Entity Update
             - Button to remove entities. - done 
             - Redo road networks so that they are terminated by cities, this will speed up distance calculations. - done
             - Split off grid into another class and remove neighbour references in map entities - done
-            - Prevent settlements from being too near each other.
+            - Prevent settlements from being too near each other. - done
 
-Version 2.5         Refactor
-          - Split off controls and entity adding from map to somewhere else. - in progress
-          - Look at removing neighbours from Tiles/entities to reduce possibility of bugs. - in progress
-          - Migrate to typescript - entities in particular could benefit from typing.
+Version .2.5         Refactor
+          - Split off controls and entity adding from map to somewhere else. - done
+          - Look at removing neighbours from Tiles/entities to reduce possibility of bugs. - done
+          - Migrate to typescript - entities in particular could benefit from typing. - in progress
 
-Version 3 - Resources/Economics update
+Version .3 - Resources/Economics update
                     - Goal is to get a basic pop, needs and resources system in place.
                     - Pops are divided by strata and also by job
                     - Pops desire and trade for goods locally.
                     - Some goods are take as tax.
                     - Access to goods will upgrade the area occupied by the pop.
-                    
+
             - refactor tile type to be an enum - in progress.
             - basic pop system, farmers to work the farms. - in progress
             - pops have needs and own resources. - in progress
@@ -42,7 +42,7 @@ Version 3 - Resources/Economics update
             - forest tile and a wood resource - add a woodcutter pop? - in progress
             - implement some basic transactions - food for food or gold?
            
-Version 4 - Combat/Basic AI update
+Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.
           - Create and destroy units.
           - Have units interact with each other
@@ -56,7 +56,7 @@ Version 4 - Combat/Basic AI update
       - implement some basic diplomacy.
       - implement some kind of attrition system.
       
-Version 5 - Intercity update
+Version .5 - Intercity update
           - Be able to settle new towns/settlements.
           - Be able to set up trade routes and markets.
           - Have a border displayed.
