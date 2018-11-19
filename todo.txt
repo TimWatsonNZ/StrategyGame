@@ -40,6 +40,7 @@ Version .3 - Resources/Economics update
                     - pops will improve their tile based on their resources and needs
                     - pops send excess to the town area and also use this excess.
                     - pops can become other kinds of pop.
+            - move drawing logic into tiles.
             - cities own nearby tiles.
             - turn button. - in progress
             - create a farm tile.
@@ -77,8 +78,12 @@ Version .5 - Intercity update
       - Creating new cities - settlers.
       - Some kind of influence/claim system.
       
+Version .6 - Map/Graphics update
+          - Update map generation.
+          - Use images for tiles/entities.
+          - Add sound?
+          - Improve UI
 
-Improve map generation - add mountains, rivers, coast.
 Add seasons and harvests.
 Add different buildings like a granary.
 Add government types.
@@ -87,4 +92,3 @@ Improve pop system - add more pop kinds.
 Add research.
 Refactor out controls to somewhere else
 Refactor out map creation.
-Improve graphics.
