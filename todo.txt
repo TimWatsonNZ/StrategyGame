@@ -33,11 +33,16 @@ Version .3 - Resources/Economics update
                     - Access to goods will upgrade the area occupied by the pop.
 
             - refactor tile type to be an enum - done.
-            - basic pop system, farmers to work the farms. - in progress
-            - pops have needs and own resources. - in progress
+            - basic pop system - in progress
+                    - pops gather resources - in progress
+                    - pops require resources and consume them - in progress
+                    - pops grow and shrink based on needs
+                    - pops will improve their tile based on their resources and needs
+                    - pops send excess to the town area and also use this excess.
+                    - pops can become other kinds of pop.
+            - cities own nearby tiles.
             - turn button. - in progress
             - create a farm tile.
-            - cities own nearby tiles.
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth.
             - forest tile and a wood resource - add a woodcutter pop? - in progress
