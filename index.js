@@ -115,6 +115,10 @@ window.addEventListener('keydown', e => {
   if (e.keyCode === 13) {
     map.endTurn();
   }
+
+  if (e.keyCode === 71) {
+    map.addGatherer();
+  }
 });
 
 document.querySelector('#addCity').addEventListener('click', () => {

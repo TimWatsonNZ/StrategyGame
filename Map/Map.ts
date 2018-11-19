@@ -5,6 +5,8 @@ import { gridService, gridServiceInit } from '../Grid/GridService';
 import Road from '../MapEntities/Road';
 import TileType from './Tiles/TileType';
 import Tile from './Tiles/Tile';
+import Gatherer from '../Pops/Gatherer';
+import Pop from '../Pops/Pop';
 
 class Map {
   context: any;
@@ -19,6 +21,7 @@ class Map {
   tileSize: number;
   clippedGrid: any[];
   viewPortSize: number;
+  entities: any;
   
   constructor(size: number, tileNumber: number, context: any) {
     //  Draw grid of squares
@@ -29,6 +32,9 @@ class Map {
     this.origin = new Point(0, 0);
     this.selectedTile = null;
     this.selectedEntity = null;
+    this.entities = {
+      pops: []
+    };
 
     gridServiceInit(this.tileNumber);
     gridService.createMap();
@@ -225,11 +231,13 @@ class Map {
   }
 
   endTurn() {
-    console.log('end turn');
+    this.update();
   }
 
   update() {
-    console.log('update');
+    this.entities.pops.forEach((pop: Pop) => {
+      pop.update();
+    });
   }
 
   draw() {
@@ -269,6 +277,10 @@ class Map {
           if (tile.unit) {
             tile.unit.draw(this.context, this.tileSize);
           }
+
+          if (tile.pop) {
+            tile.pop.draw(this.context, this.tileSize);
+          }
         }
       }
     }
@@ -288,6 +300,12 @@ class Map {
 
   addCityToSelectedTile() {
     if (City.add(this.selectedTile)) {
+      this.draw();
+    }
+  }
+
+  addGatherer() {
+    if (Gatherer.add(this.selectedTile, this.entities)) {
       this.draw();
     }
   }

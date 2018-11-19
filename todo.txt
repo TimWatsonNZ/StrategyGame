@@ -49,6 +49,12 @@ Version .3 - Resources/Economics update
             - forest tile and a wood resource - add a woodcutter pop? - in progress
             - implement some basic transactions - food for food or gold?
            
+
+Version .35 Refactor 
+        - properly do tiles.
+        - create drawable interface
+        - create addable interface.
+        
 Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.
           - Create and destroy units.

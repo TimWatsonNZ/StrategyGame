@@ -2,8 +2,10 @@ import Point from '../../MapEntities/Point';
 import TileType from './TileType';
 import Unit from '../../MapEntities/Unit';
 import City from '../../MapEntities/City';
+import Pop from '../../Pops/Pop';
+import IPrintable from '../../interfaces/IPrintable';
 
-class Tile {
+class Tile implements IPrintable{
   point: Point;
   selected: boolean;
   type: TileType;
@@ -12,6 +14,7 @@ class Tile {
   road: any;
   unit: Unit;
   drawingPoint: Point;
+  pop: Pop;
   static copy: (tile: Tile, type?: any) => Tile;
   constructor(point: Point, type: TileType) {
     this.point = Point.copy(point);
@@ -30,13 +33,16 @@ class Tile {
     if (this.city) {
       cityDetails = this.city.toString();
     }
+
     let roadDetails = '';
     if (this.road) {
       roadDetails = `${this.road.toString()}\n${this.road.roadNetwork.toString()}`
     }
 
+    let popDetails = this.pop ? this.pop.toString() : '';
+
     const unitDetails = this.unit ? this.unit.toString() : '';
-    return `${tileDetails} ${cityDetails} ${roadDetails} ${unitDetails}`;
+    return `${tileDetails} ${cityDetails} ${roadDetails} ${unitDetails} ${popDetails}`;
   }
 }
 
