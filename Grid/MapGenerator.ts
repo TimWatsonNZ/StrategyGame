@@ -2,6 +2,7 @@ import { gridService } from './GridService';
 import Tile from '../Map/Tiles/Tile';
 import Point from '../MapEntities/Point';
 import TileType from '../Map/Tiles/TileType';
+import TileService from '../Map/Tiles/TileService';
 
 class MapGenerator {
 
@@ -65,8 +66,8 @@ class MapGenerator {
         const waterNeighbours = neighbours.filter(x => x.type === TileType.Ocean).length;
         const grassNeighbours = neighbours.filter(x => x.type === TileType.Grass).length;
 
-        const copy = Tile.copy(tile);
-        copy.type = rule(copy, waterNeighbours, grassNeighbours);
+        const type = rule(tile, waterNeighbours, grassNeighbours);
+        const copy = TileService.createTile(tile, type);
         
         newRow.push(copy);
       }

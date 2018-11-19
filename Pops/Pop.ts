@@ -10,6 +10,7 @@ class Pop implements IDrawable, IPrintable{
   needs: any;
   produces: any;
   tile: Tile;
+  growRequirement: any;
 
   constructor(tile: Tile, number: number, resouces: Resource[], needs: Needs, produces: any) {
     this.tile = tile;
@@ -24,8 +25,21 @@ class Pop implements IDrawable, IPrintable{
       const resource = this.resources[key];
       const needs = this.needs[key];
       const produces = this.produces[key];
+      const carryingPop = this.number * this.number * 0.05;
 
-      resource.amount += produces.amount - needs.amount;
+      resource.amount += (produces.gatherEfficiency * this.tile.resources[key].amount * this.number) - needs.amount * this.number - carryingPop;
+      resource.amount += resource.amount * (1 - resource.resource.decay);
+
+      if (resource.amount >= this.growRequirement['food'].amount) {
+        this.number++;
+        resource.amount -= this.growRequirement['food'].amount;
+      }
+
+      if (resource.amount <= 0) {
+        this.number--;
+      }
+
+      console.log(`Number: ${this.number} Food: ${this.resources['food'].amount}`);
     });
   }
 

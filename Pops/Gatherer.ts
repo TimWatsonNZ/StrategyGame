@@ -5,18 +5,22 @@ import TileType from '../Map/Tiles/TileType';
 import { gridService } from '../Grid/GridService';
 
 const resources: any = {};
-resources['food'] = { amount: 1, resource: new Resources.Food() };
+resources['food'] = { amount: 1, resource: Resources.Food };
 
 const needs:  any = {};
-needs['food'] = { resource: new Resources.Food(), amount: 1 };
+needs['food'] = { resource: Resources.Food, amount: 1 };
 
 const produces: any = [];
-produces['food'] = { resource: new Resources.Food(), amount: 1.1 };
+produces['food'] = { resource: Resources.Food, gatherEfficiency: 1 };
+
+const growRequirement: any = { };
+growRequirement['food'] = { resource: Resources.Food, amount: 5 };
 
 class Gatherer extends Pop {
   static add: (tile: Tile, entities: any) => boolean;
   constructor(tile: Tile, number: number) {
     super(tile, number, resources, needs, produces);
+    this.growRequirement = growRequirement;
   }
 
   draw(context: CanvasRenderingContext2D, tileSize: number) {
@@ -25,7 +29,7 @@ class Gatherer extends Pop {
   }
 
   toString() {
-    return `Gatherer: Food: ${this.resources['food'].amount }`;
+    return `Gatherer: Food: ${this.resources['food'].amount }, Number: ${this.number}`;
   }
 }
 

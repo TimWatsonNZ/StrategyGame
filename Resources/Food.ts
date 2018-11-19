@@ -1,10 +1,6 @@
 import Resource from "./Resource";
 import ResourceTypes from "./ResourceType";
 
-class Food extends Resource {
-  constructor() {
-    super('food', [ResourceTypes.Food], 0.1);
-  }
-}
+const Food = new Resource('food', [ResourceTypes.Food], 1.1);
 
 export default Food;

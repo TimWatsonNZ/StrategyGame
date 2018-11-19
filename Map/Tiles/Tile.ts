@@ -3,6 +3,8 @@ import TileType from './TileType';
 import Unit from '../../MapEntities/Unit';
 import City from '../../MapEntities/City';
 import Pop from '../../Pops/Pop';
+import OceanTile from './OceanTile';
+import GrassTile from './GrassTile';
 import IPrintable from '../../interfaces/IPrintable';
 
 class Tile implements IPrintable{
@@ -14,6 +16,7 @@ class Tile implements IPrintable{
   road: any;
   unit: Unit;
   drawingPoint: Point;
+  resources: any;
   pop: Pop;
   static copy: (tile: Tile, type?: any) => Tile;
   constructor(point: Point, type: TileType) {
@@ -46,14 +49,6 @@ class Tile implements IPrintable{
   }
 }
 
-Tile.copy = function (tile: Tile, type = null) {
-  let copy;
-  if (!type) {
-    copy = new Tile(tile.point, tile.type);
-    copy.selected = copy.selected;
-  }
 
-  return copy;
-}
 
 export default Tile;
