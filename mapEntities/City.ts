@@ -51,6 +51,12 @@ class City {
     context.fillRect(baseX,  baseY + tileSize/2, tileSize/4, tileSize/2);
     context.fillRect(baseX + tileSize/4,  baseY + tileSize/4, tileSize/2, 3*tileSize/4);
     context.fillRect(baseX + 3*tileSize/4,  baseY + tileSize/2, tileSize/4, tileSize/2);
+
+    //const neighbours = gridService.getNeighbours(this.tile.point);
+    
+    context.strokeStyle = '#000000';
+    context.strokeRect((this.tile.drawingPoint.x - 1) * tileSize, (this.tile.drawingPoint.y - 1) * tileSize, tileSize*3, tileSize*3);
+    context.strokeStyle = '#FFFFFF';
   }
 
   toString() {

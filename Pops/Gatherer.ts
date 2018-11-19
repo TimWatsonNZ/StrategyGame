@@ -5,16 +5,21 @@ import TileType from '../Map/Tiles/TileType';
 import { gridService } from '../Grid/GridService';
 
 const resources: any = {};
-resources['food'] = { amount: 1, resource: Resources.Food };
+resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
+resources[Resources.Wood.name] = { amount: 1, resource: Resources.Wood };
 
 const needs:  any = {};
-needs['food'] = { resource: Resources.Food, amount: 1 };
+needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
+
+const wants: any = {};
+wants[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1 };
 
 const produces: any = [];
-produces['food'] = { resource: Resources.Food, gatherEfficiency: 1 };
+produces[Resources.Food.name] = { resource: Resources.Food, gatherEfficiency: 1 };
+produces[Resources.Wood.name] = { resource: Resources.Wood, gatherEfficiency: 0.25 };
 
 const growRequirement: any = { };
-growRequirement['food'] = { resource: Resources.Food, amount: 5 };
+growRequirement[Resources.Food.name] = { resource: Resources.Food, amount: 5 };
 
 class Gatherer extends Pop {
   static add: (tile: Tile, entities: any) => boolean;
@@ -29,7 +34,7 @@ class Gatherer extends Pop {
   }
 
   toString() {
-    return `Gatherer: Food: ${this.resources['food'].amount }, Number: ${this.number}`;
+    return `Gatherer: Food: ${this.resources['food'].amount }, Wood: ${this.resources['wood'].amount} Number: ${this.number}`;
   }
 }
 
