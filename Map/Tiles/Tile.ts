@@ -18,7 +18,9 @@ class Tile implements IPrintable{
   drawingPoint: Point;
   resources: any;
   pop: Pop;
+  improvements: any = [];
   static copy: (tile: Tile, type?: any) => Tile;
+
   constructor(point: Point, type: TileType) {
     this.point = Point.copy(point);
     this.selected = false;
@@ -45,7 +47,14 @@ class Tile implements IPrintable{
     let popDetails = this.pop ? this.pop.toString() : '';
 
     const unitDetails = this.unit ? this.unit.toString() : '';
-    return `${tileDetails} ${cityDetails} ${roadDetails} ${unitDetails} ${popDetails}`;
+
+    const improvementDetails = this.improvements.map((x: any) => x.name).join(',');
+    return `${tileDetails} ${cityDetails} ${roadDetails} ${unitDetails} ${popDetails} ${improvementDetails}`;
+  }
+
+  draw(context: any, tileSize: number) {
+    context.fillStyle = '#FFFFFF';
+    context.fillRect(this.drawingPoint.x * tileSize, this.drawingPoint.y * tileSize, tileSize, tileSize);
   }
 }
 

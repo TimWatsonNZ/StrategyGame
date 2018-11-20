@@ -119,6 +119,10 @@ window.addEventListener('keydown', e => {
   if (e.keyCode === 71) {
     map.addGatherer();
   }
+
+  if (e.keyCode === 70) {
+    map.addCraftsperson();
+  }
 });
 
 document.querySelector('#addCity').addEventListener('click', () => {

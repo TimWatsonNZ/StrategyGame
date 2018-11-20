@@ -7,6 +7,7 @@ import TileType from './Tiles/TileType';
 import Tile from './Tiles/Tile';
 import Gatherer from '../Pops/Gatherer';
 import Pop from '../Pops/Pop';
+import Craftsperson from '../Pops/Craftsperson';
 
 class Map {
   context: any;
@@ -249,17 +250,7 @@ class Map {
       for(let w=0;w<this.clippedGrid[h].length;w++) {
         const tile = this.clippedGrid[h][w];
         if (tile && (tile.drawingPoint.x) <= this.viewPortEnd.x && (tile.drawingPoint.x) >= 0 && (tile.drawingPoint.y) >= 0 && tile.drawingPoint.y <= this.viewPortEnd.y) {
-          if (tile.type === TileType.Grass) {
-            this.context.fillStyle = '#00FF00';
-          }
-          if (tile.type === TileType.Ocean) {
-            this.context.fillStyle = '#0000FF';
-          }
-          if (tile.type === TileType.None) {
-            this.context.fillStyle = '#FFFFFF';
-          }
-          this.context.fillRect(tile.drawingPoint.x * this.tileSize, tile.drawingPoint.y * this.tileSize, this.tileSize, this.tileSize);
-
+          tile.draw(this.context, this.tileSize);
           if (tile.selected) {
             this.context.strokeStyle = '#000000';
             this.context.strokeRect(tile.drawingPoint.x * this.tileSize, tile.drawingPoint.y * this.tileSize, this.tileSize, this.tileSize);
@@ -306,6 +297,12 @@ class Map {
 
   addGatherer() {
     if (Gatherer.add(this.selectedTile, this.entities)) {
+      this.draw();
+    }
+  }
+
+  addCraftsperson() {
+    if (Craftsperson.add(this.selectedTile, this.entities)) {
       this.draw();
     }
   }

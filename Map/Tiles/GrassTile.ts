@@ -10,6 +10,11 @@ class GrassTile extends Tile {
     this.resources[Resources.Food.name] = { resource: Resources.Food, amount: 2 };
     this.resources[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.5 };
   }
+
+  draw(context: any, tileSize: number) {
+    context.fillStyle = '#00FF00';
+    context.fillRect(this.drawingPoint.x * tileSize, this.drawingPoint.y * tileSize, tileSize, tileSize);
+  }
 }
 
 export default GrassTile;
