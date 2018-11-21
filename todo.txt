@@ -43,7 +43,6 @@ Version .3 - Resources/Economics update
                     - pops can become other kinds of pop.
                     - pops can migrate/move tile.
 
-            - I need to draw all tiles and then their entities to avoid draw errors.
             - move drawing logic into tiles. - done
             - cities own nearby tiles.
             - turn button. - done
@@ -52,6 +51,8 @@ Version .3 - Resources/Economics update
             - population growth based on food, find a way to grow but also limit growth. - kind of done?
            
 Version .35 Refactor 
+        - Keep collections of entities outside of tiles - maybe index these by tile id. In this way I can remove a lot of references
+          from the tiles and I can selectively render them.
         - properly do tiles.
         - create drawable interface
         - create addable interface.
