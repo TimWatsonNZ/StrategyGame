@@ -68,7 +68,8 @@ class GridService {
     return neighbours;
   }
 
-  getNeighbours(index: Point, preserveOrder = false, noDiagonals = false, inputGrid: any = null) {
+  getNeighbours(inCominingTile: Tile, preserveOrder = false, noDiagonals = false, inputGrid: any = null) {
+    const index = this.tileToIndex(inCominingTile);
     let grid = inputGrid ? inputGrid : this.grid;
     const tile = grid[index.y][index.x];
     const allDeltas = [
@@ -109,7 +110,7 @@ class GridService {
   }
 
   findCrossNeighbours(tile: Tile) {
-    return this.getNeighbours(this.tileToIndex(tile), false, true);
+    return this.getNeighbours(tile, false, true);
   }
 }
 

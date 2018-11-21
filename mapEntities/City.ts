@@ -3,6 +3,8 @@ import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
+import Pop from '../Pops/Pop';
+import Resource from '../Resources/Resource';
 
 class City {
   type: string;
@@ -11,8 +13,10 @@ class City {
   name: string;
   population: number;
   distances: any[];
-  static add: (tile: Tile) => boolean;
+  static add: (tile: Tile, entities: any) => boolean;
   roadNetworks: any;
+  pops: Pop[];
+  resources: any;
   static remove: (gridTile: Tile) => void;
   constructor(tile: Tile, name: string, population: number) {
     this.type = 'city';
@@ -20,8 +24,10 @@ class City {
     this.tile = tile;
     this.name = name;
     this.population = population;
-
+    this.pops = [];
     this.distances = [];
+
+    this.resources = {};
 
     let neighbours = gridService.findCrossNeighbours(tile)
       .filter((neighbour: any) => neighbour.city || neighbour.road)
@@ -51,9 +57,7 @@ class City {
     context.fillRect(baseX,  baseY + tileSize/2, tileSize/4, tileSize/2);
     context.fillRect(baseX + tileSize/4,  baseY + tileSize/4, tileSize/2, 3*tileSize/4);
     context.fillRect(baseX + 3*tileSize/4,  baseY + tileSize/2, tileSize/4, tileSize/2);
-
-    //const neighbours = gridService.getNeighbours(this.tile.point);
-    
+ 
     context.strokeStyle = '#000000';
     context.strokeRect((this.tile.drawingPoint.x - 1) * tileSize, (this.tile.drawingPoint.y - 1) * tileSize, tileSize*3, tileSize*3);
     context.strokeStyle = '#FFFFFF';
@@ -61,7 +65,8 @@ class City {
 
   toString() {
     const distances = this.distances.map(x => `Id: ${x.city.id} distance: ${x.distance}\n`);
-    return `${this.id}: ${this.population}\n ${distances}`;
+    const pops = this.pops.map(x => `${x.type}, ${x.number}`).join(', ');
+    return `${this.id}: ${this.population}\n ${distances} ${pops}`;
   }
 
   addNetwork(network: any) {
@@ -71,6 +76,20 @@ class City {
       network.findDistancesForCities();
     }
   }
+
+  update() {
+    this.pops.forEach(pop => {
+      Object.keys(pop.resources).forEach((resourceKey: string) => {
+        if (this.resources[resourceKey]) {
+          this.resources[resourceKey].amount += pop.resources[resourceKey].amount;
+          pop.resources[resourceKey].amount = 0;
+        } else {
+          this.resources[resourceKey] = { amount: pop.resources[resourceKey].amount };
+          pop.resources[resourceKey].amount = 0;
+        }
+      });
+    });
+  }
 }
 
 City.remove = function(gridTile: Tile) {
@@ -79,7 +98,7 @@ City.remove = function(gridTile: Tile) {
   //  Remove from neighbouring roadnetworks and recalculate networks
 }
 
-City.add = function(tile: Tile) {
+City.add = function(tile: Tile, entities: any) {
   if (!tile) return false;
 
   if (tile.city || tile.road) return false;
@@ -89,8 +108,9 @@ City.add = function(tile: Tile) {
   const neighbours = gridService.getRegion(tile.point, 2);
 
   if (neighbours.filter((x: any) => x.city).length > 0) return false;
-  tile.city = new City(tile, 'New City', 1);
-
+  const city = new City(tile, 'New City', 1);
+  tile.city = city;
+  entities.cities.push(city);
   return true;
 }
 

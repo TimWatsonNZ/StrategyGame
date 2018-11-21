@@ -41,7 +41,7 @@ class MapGenerator {
 
     while (stack.length > 0) {
       const tile = stack.pop();
-      const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
+      const neighbours = gridService.getNeighbours(tile, false, false, grid);
       const waterNeighbours = neighbours.filter(x => x.type === TileType.Ocean).length;
       const grassNeighbours = neighbours.filter(x => x.type === TileType.Grass).length;
       
@@ -61,7 +61,7 @@ class MapGenerator {
       const newRow = [];
       for(let w=0;w < gridSize;w++) {
         const tile = grid[h][w];
-        const neighbours = gridService.getNeighbours(gridService.tileToIndex(tile), false, false, grid);
+        const neighbours = gridService.getNeighbours(tile, false, false, grid);
 
         const waterNeighbours = neighbours.filter(x => x.type === TileType.Ocean).length;
         const grassNeighbours = neighbours.filter(x => x.type === TileType.Grass).length;

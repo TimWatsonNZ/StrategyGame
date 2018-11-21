@@ -39,15 +39,18 @@ Version .3 - Resources/Economics update
                     - pops grow and shrink based on needs - done
                     - pops will improve their tile based on their resources and needs - done roughly
                     - pops need resources to do their job - in progress.
-                    - pops send excess to the town area and also use this excess. 
+                    - pops send excess to the town area and also use this excess.  - in progress
                     - pops can become other kinds of pop.
                     - pops can migrate/move tile.
 
+            - change demand/production calculations to be more aggregrate - do these in the city itself
+                and then redistribute.
+            - so then pops 'own' resources in a sort of aggregate...i think that will work.
             - move drawing logic into tiles. - done
-            - cities own nearby tiles.
+            - cities own nearby tiles. - done
             - turn button. - done
             - implement crafter - in progress
-            - resource flow to the city - food should end up in the city center, food should decay over time.
+            - resource flow to the city - food should end up in the city center, food should decay over time. - in progress
             - population growth based on food, find a way to grow but also limit growth. - kind of done?
            
 Version .35 Refactor 

@@ -34,7 +34,8 @@ class Map {
     this.selectedTile = null;
     this.selectedEntity = null;
     this.entities = {
-      pops: []
+      pops: [],
+      cities: [],
     };
 
     gridServiceInit(this.tileNumber);
@@ -239,6 +240,8 @@ class Map {
     this.entities.pops.forEach((pop: Pop) => {
       pop.update();
     });
+
+    this.entities.cities.forEach((city: City) => city.update());
   }
 
   draw() {
@@ -290,7 +293,7 @@ class Map {
   }
 
   addCityToSelectedTile() {
-    if (City.add(this.selectedTile)) {
+    if (City.add(this.selectedTile, this.entities)) {
       this.draw();
     }
   }

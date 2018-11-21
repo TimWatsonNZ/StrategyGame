@@ -38,7 +38,7 @@ const improvements = [
 class Craftsperson extends Pop {
   static add: (tile: Tile, entities: any) => boolean;
   constructor(tile: Tile, number: number) {
-    super(tile, number, resources, needs, produces, improvements);
+    super('Craftsperson', tile, number, resources, needs, produces, improvements);
     this.growRequirement = growRequirement;
   }
 
@@ -53,16 +53,9 @@ class Craftsperson extends Pop {
 }
 
 Craftsperson.add = function(tile: Tile, entities: any): boolean {
-  if (!tile) return false;
-
-  if (tile.city || tile.road) return false;
-
-  if (tile.type === TileType.Ocean) return false;
-
   const pop = new Craftsperson(tile, 1);
-  tile.pop = pop;
-  entities.pops.push(pop);
-  return true;
+
+  return Pop.add(tile, entities, pop);
 }
 
 

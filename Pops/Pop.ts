@@ -3,6 +3,8 @@ import Needs from "../Resources/Needs";
 import Tile from "../Map/Tiles/Tile";
 import IDrawable from "../interfaces/IDrawable";
 import IPrintable from "../interfaces/IPrintable";
+import TileType from "../Map/Tiles/TileType";
+import { gridService } from "../Grid/GridService";
 
 class Pop implements IDrawable, IPrintable{
   number: number;
@@ -13,8 +15,12 @@ class Pop implements IDrawable, IPrintable{
   growRequirement: any;
   fertility: number;
   improvements: any;
+  type: string;
+  
+  static add: (tile: Tile, entities: any, pop: Pop) => boolean;
 
-  constructor(tile: Tile, number: number, resouces: Resource[], needs: Needs, produces: any, improvements: any) {
+  constructor(type: string, tile: Tile, number: number, resouces: Resource[], needs: Needs, produces: any, improvements: any) {
+    this.type = type;
     this.tile = tile;
     this.number = number;
     this.resources = resouces;
@@ -93,6 +99,23 @@ class Pop implements IDrawable, IPrintable{
   draw(context: CanvasRenderingContext2D, tileSize: number){
     
   }
+}
+Pop.add = function(tile: Tile, entities: any, pop: Pop): boolean {
+  if (!tile) return false;
+
+  if (tile.city || tile.road) return false;
+
+  if (tile.type === TileType.Ocean) return false;
+
+  const neighbours = gridService.getNeighbours(tile, false, false)
+    .filter(x => x.city).map(x => x.city);
+
+  if (neighbours.length === 0) return false;
+
+  neighbours[0].pops.push(pop);
+  tile.pop = pop;
+  entities.pops.push(pop);
+  return true;
 }
 
 export default Pop;
