@@ -38,7 +38,8 @@ Version .3 - Resources/Economics update
                     - pops require resources and consume them - done
                     - pops grow and shrink based on needs - done
                     - pops will improve their tile based on their resources and needs - done roughly
-                    - pops send excess to the town area and also use this excess.
+                    - pops need resources to do their job - in progress.
+                    - pops send excess to the town area and also use this excess. 
                     - pops can become other kinds of pop.
                     - pops can migrate/move tile.
 
@@ -47,17 +48,17 @@ Version .3 - Resources/Economics update
             - cities own nearby tiles.
             - turn button. - done
             - implement crafter - in progress
-            - create a farm tile.
             - resource flow to the city - food should end up in the city center, food should decay over time.
             - population growth based on food, find a way to grow but also limit growth. - kind of done?
-            - forest tile and a wood resource - add a woodcutter pop? - in progress
-            - implement some basic transactions - food for food or gold?
            
-
 Version .35 Refactor 
         - properly do tiles.
         - create drawable interface
         - create addable interface.
+        - refactor pop update to make it more efficient - no need to check for things every tick.
+        - make improvements nicer - very roughly done atm.
+        - refactor tile - it's becoming ropey.
+        
         
 Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.
@@ -72,21 +73,22 @@ Version .4 - Combat/Basic AI update
       - hostile player who tries to defeat player.
       - implement some basic diplomacy.
       - implement some kind of attrition system.
+      - Recruit from excess population.
+      - Designate areas that pops can settle in.
       
 Version .5 - Intercity update
           - Be able to settle new towns/settlements.
           - Be able to set up trade routes and markets.
           - Have a border displayed.
           - Expand on ai so they also found cities.
+          - Introduce 'luxury' goods.
           
       - city to city population flow.
       - Remove roads and recalculate distances. - in progress
       - Remove roads and rebuild sub networks. - in progress
       - Trade between cities
       - Population flow between cities.
-      - Loyalty system.
       - Creating new cities - settlers.
-      - Some kind of influence/claim system.
       
 Version .6 - Map/Graphics update
           - Update map generation.
@@ -94,6 +96,10 @@ Version .6 - Map/Graphics update
           - Add sound?
           - Improve UI
 
+
+Loyalty system.
+Some kind of influence/claim system.
+More pops - stratas and more pop jobs.
 Add seasons and harvests.
 Add different buildings like a granary.
 Add government types.
@@ -101,4 +107,3 @@ Add raiding.
 Improve pop system - add more pop kinds.
 Add research.
 Refactor out controls to somewhere else
-Refactor out map creation.
