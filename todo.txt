@@ -70,7 +70,9 @@ Version .4 - Combat/Basic AI update
           - Have units interact with each other
           - Have an antagonistic ai in place.
           - Be able to create own units based on population.
-          
+         
+      - Crafter creates weapons?
+      - Create barracks/soldier square
       - Entity movement and an A* algorithm to move things - control by key and by mouse.
       - basic combat system.
       - an enemy player.
@@ -79,6 +81,8 @@ Version .4 - Combat/Basic AI update
       - implement some kind of attrition system.
       - Recruit from excess population.
       - Designate areas that pops can settle in.
+      - Create a tax system here.
+      - Fog of war.
       
 Version .5 - Intercity update
           - Be able to settle new towns/settlements.
