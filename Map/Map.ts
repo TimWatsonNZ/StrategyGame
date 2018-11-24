@@ -237,10 +237,6 @@ class Map {
   }
 
   update() {
-    this.entities.pops.forEach((pop: Pop) => {
-      pop.update();
-    });
-
     this.entities.cities.forEach((city: City) => city.update());
   }
 

@@ -9,6 +9,7 @@ class GrassTile extends Tile {
     this.resources = { };
     this.resources[Resources.Food.name] = { resource: Resources.Food, amount: 2 };
     this.resources[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.5 };
+    this.resources[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.5 };
   }
 
   draw(context: any, tileSize: number) {

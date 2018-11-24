@@ -6,30 +6,38 @@ import { House } from '../Improvement/Improvements';
 
 const resources: any = {};
 resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
-resources[Resources.Wood.name] = { amount: 1, resource: Resources.Wood };
+resources[Resources.Wood.name] = { amount: 0, resource: Resources.Wood };
+resources[Resources.BasicTools.name] = { amount: 0, resource: Resources.BasicTools };
+resources[Resources.Fibre.name] = { amount: 0, resource: Resources.Fibre };
 
 const needs:  any = {};
 needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1 };
+needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1 };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1 };
 
-const wants: any = {};
-wants[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1 };
+const desires: any = {};
+desires[Resources.Food.name] = { resource: Resources.Food, amount: 5, };
+desires[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
+desires[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 1 };
+desires[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0 };
 
 const produces: any = [];
 produces[Resources.Food.name] = {
   type: 'gather',
   resource: Resources.Food,
-  gatherEfficiency: 1
+  efficiency: 1
 };
 produces[Resources.Wood.name] = {
   type: 'gather',
   resource: Resources.Wood,
-  gatherEfficiency: 0.25
+  efficiency: 0.25
 };
 
-produces[Resources.Wood.name] = {
+produces[Resources.Fibre.name] = {
   type: 'gather',
   resource: Resources.Fibre,
-  gatherEfficiency: 0.25
+  efficiency: 0.25
 };
 
 const growRequirement: any = { };
@@ -42,7 +50,7 @@ const improvements = [
 class Gatherer extends Pop {
   static add: (tile: Tile, entities: any) => boolean;
   constructor(tile: Tile, number: number) {
-    super('Gatherer', tile, number, resources, needs, produces, improvements);
+    super('Gatherer', tile, number, resources, needs, produces, improvements, desires);
     this.growRequirement = growRequirement;
   }
 

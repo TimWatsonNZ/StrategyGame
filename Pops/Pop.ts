@@ -16,63 +16,92 @@ class Pop implements IDrawable, IPrintable{
   fertility: number;
   improvements: any;
   type: string;
-  
+  maintainence: any;
+  production: any;
+  popNeeds: any;
+  desires: any;
+
   static add: (tile: Tile, entities: any, pop: Pop) => boolean;
 
-  constructor(type: string, tile: Tile, number: number, resouces: Resource[], needs: Needs, produces: any, improvements: any) {
+  constructor(type: string, tile: Tile, number: number, resouces: Resource[], needs: Needs, produces: any, improvements: any, desires: any) {
     this.type = type;
     this.tile = tile;
     this.number = number;
     this.resources = resouces;
     this.needs = needs;
     this.produces = produces;
-    this.fertility = 1;
+    this.fertility = 0;
     this.improvements = improvements;
+
+    this.production = {};
+    this.popNeeds = {};
+    this.desires = desires;
   }
 
-  update() {
-    
-    const maintainence = this.tile.improvements.reduce((current: any, i: any) => current.concat(i.maintainence), [])
-      .reduce((collection: any, current: any) => {
-        if (collection[current.resource.name]) {
-          collection[current.resource.name].amount += current.amount;
-        } else {
-          collection[current.resource.name] = { amount: current.amount };
-        }
-        return collection;
-      }, {});
 
-    Object.keys(this.produces).forEach((key: string) => {
+  //  Work out how much each pop produces
+  //  Work out how much they are willing to give up.
+  //  Pool this amount.
+  //  Redistribute among types.
+  grow() {
+    // if (resource.amount >= (this.growRequirement[key] && this.growRequirement[key].amount)) {
+    //   this.number += Math.round(this.fertility * resource.amount/this.growRequirement[key].amount);
+    //   resource.amount -= this.growRequirement[key].amount;
+    // }
+
+    
+    // if (resource.amount <= 0 && this.growRequirement[key]) {
+    //   this.number--;
+    // }
+  }
+
+  update(resources: any) {
+    Object.keys(this.resources).forEach((key: string) => {
       const resource = this.resources[key];
       const produces = this.produces[key] || { amount: 0 };
       const carryingPop = 1 + this.number/25
 
-      let gatheredAmount = (produces.gatherEfficiency * this.tile.resources[key].amount * this.number);
-      gatheredAmount = gatheredAmount/carryingPop;
-
-      resource.amount += gatheredAmount;
-
-      if (resource.amount >= (this.growRequirement[key] && this.growRequirement[key].amount)) {
-        this.number += Math.round(this.fertility * resource.amount/this.growRequirement[key].amount);
-        resource.amount -= this.growRequirement[key].amount;
+      let gatheredAmount = 0;
+      if (produces.type === 'gather') {
+        gatheredAmount = produces.efficiency * this.number * this.tile.resources[key].amount;
       }
 
-      if (resource.amount <= 0 && this.growRequirement[key]) {
-        this.number--;
+      if (produces.type === 'craft') {
+        const maxProduced = Object.keys(this.produces[key].requires)
+          .map((k: string) => {
+            return Math.floor(this.resources[k].amount / (this.produces[key].requires[k] * this.number));
+          });
+          
+        gatheredAmount = maxProduced.reduce((min: number, current: any) => {
+          return current < min ? current : min;
+        }, Number.MAX_SAFE_INTEGER)
+
+        gatheredAmount = gatheredAmount > 0 ? gatheredAmount : 0;
       }
 
-      this.improveTile();
-      console.log(`Number: ${this.number} Food: ${this.resources['food'].amount} Wood: ${this.resources['wood'].amount}`);
-    });
+      const produced = gatheredAmount ? gatheredAmount/carryingPop : 0;
 
-    Object.keys(this.needs).forEach((key: string) => {
-      const resource = this.resources[key];
-      const needs = this.needs[key];
+      const needs = this.needs[key] ? this.needs[key].amount * this.number : 0;
 
-      resource.amount -= needs.amount * this.number;
-      resource.amount += resource.amount * (1 - resource.resource.decay);
-      resource.amount -= maintainence[key] ? maintainence[key].amount : 0;
+      resource.amount += produced - needs;
+      
+      if (!resources[key]) {
+        resources[key] = { amount: 0, desire: 0, value: this.needs[key].amount }; 
+      }
+      resources[key].amount += resource.amount;
+      resources[key].desire += resource.amount - this.desires[key].amount;
     });
+  }
+
+
+  updateDesires() {
+    Object.keys(this.desires).forEach((key: string) => {
+      //  if resource they have minus what they need 
+    });
+  }
+
+  produce() {
+    
   }
 
   improveTile() {
@@ -91,6 +120,14 @@ class Pop implements IDrawable, IPrintable{
         if (!this.tile.improvements.find((x: any) => x.name === i.improvement.name)) {
           this.tile.improvements.push(i.improvement);
           this.fertility *= i.improvement.effects.fertility;
+
+          i.maintainence.forEach((maintain: any) => {
+            if (this.maintainence[maintain.resource.name]) {
+              this.maintainence[maintain.resource.name] += maintain.amount;
+            } else {
+              this.maintainence[maintain.resource.name] = maintain.amount;
+            }
+          });
         }
       }
     });
@@ -111,10 +148,15 @@ Pop.add = function(tile: Tile, entities: any, pop: Pop): boolean {
     .filter(x => x.city).map(x => x.city);
 
   if (neighbours.length === 0) return false;
-
-  neighbours[0].pops.push(pop);
+  const city = neighbours[0];
+  city.pops.push(pop);
   tile.pop = pop;
   entities.pops.push(pop);
+
+  if (!city.resources[pop.type]) {
+    city.resources[pop.type] = {};
+  }
+
   return true;
 }
 

@@ -18,6 +18,7 @@ class City {
   pops: Pop[];
   resources: any;
   static remove: (gridTile: Tile) => void;
+
   constructor(tile: Tile, name: string, population: number) {
     this.type = 'city';
     this.id = generateGuid();
@@ -66,7 +67,8 @@ class City {
   toString() {
     const distances = this.distances.map(x => `Id: ${x.city.id} distance: ${x.distance}\n`);
     const pops = this.pops.map(x => `${x.type}, ${x.number}`).join(', ');
-    return `${this.id}: ${this.population}\n ${distances} ${pops}`;
+    const resources = JSON.stringify(this.resources);
+    return `${this.id}: ${this.population}\n ${distances} ${pops} ${resources}`;
   }
 
   addNetwork(network: any) {
@@ -78,17 +80,49 @@ class City {
   }
 
   update() {
+    Object.keys(this.resources).forEach((key:any) => {
+      Object.keys(this.resources[key]).forEach((k2: any) => {
+        this.resources[key][k2].desire = 0;
+      })
+    });
+
     this.pops.forEach(pop => {
-      Object.keys(pop.resources).forEach((resourceKey: string) => {
-        if (this.resources[resourceKey]) {
-          this.resources[resourceKey].amount += pop.resources[resourceKey].amount;
-          pop.resources[resourceKey].amount = 0;
-        } else {
-          this.resources[resourceKey] = { amount: pop.resources[resourceKey].amount };
-          pop.resources[resourceKey].amount = 0;
+      const type = pop.type;
+      //  gather resources
+      pop.update(this.resources[type]);
+    });
+
+    //  work out supply and demand
+    const supplyAndDemand: any = {};
+    Object.keys(this.resources).forEach((popKey: string) => {
+      Object.keys(this.resources[popKey]).forEach((resourceKey: string) => {
+        const resource = this.resources[popKey][resourceKey]
+        if (!supplyAndDemand[resourceKey]) {
+          supplyAndDemand[resourceKey] = { supply: 0, demand: 0 };
         }
+        supplyAndDemand[resourceKey].demand += Math.abs(resource.desire);
+        supplyAndDemand[resourceKey].supply += resource.amount;
+        
       });
     });
+
+    console.log(JSON.stringify(supplyAndDemand));
+    //  adjust values
+    //  do trades
+
+    //  work out desires
+    //  work out trades
+    //  redistribute resources
+
+    //   Object.keys(pop.resources).forEach((resourceKey: string) => {
+    //     if (this.resources[resourceKey]) {
+    //       this.resources[resourceKey].amount += pop.resources[resourceKey].amount;
+    //       pop.resources[resourceKey].amount = 0;
+    //     } else {
+    //       this.resources[resourceKey] = { amount: pop.resources[resourceKey].amount };
+    //       pop.resources[resourceKey].amount = 0;
+    //     }
+    //   });
   }
 }
 
