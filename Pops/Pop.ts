@@ -88,8 +88,9 @@ class Pop implements IDrawable, IPrintable{
       if (!resources[key]) {
         resources[key] = { amount: 0, desire: 0, value: this.needs[key].amount }; 
       }
-      resources[key].amount += resource.amount;
-      resources[key].desire += resource.amount - this.desires[key].amount;
+      const diff = resource.amount - this.desires[key].amount;
+      resources[key].amount += diff > 0 ? diff : 0;
+      resources[key].desire += diff;
     });
   }
 

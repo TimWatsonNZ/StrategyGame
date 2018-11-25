@@ -1,7 +1,6 @@
 import Resource from "./Resource";
+import ResourceTypes from "./ResourceType";
 
-class Fibre extends Resource {
-
-}
+const Fibre = new Resource('food', [ResourceTypes.Ingredient], 1.1);
 
 export default Fibre;

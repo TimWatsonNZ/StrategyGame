@@ -8,7 +8,7 @@ const resources: any = {};
 resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
 resources[Resources.Wood.name] = { amount: 1, resource: Resources.Wood };
 resources[Resources.Fibre.name] = { amount: 1, resource: Resources.Fibre };
-resources[Resources.BasicTools.name] = { amount: 1, resource: Resources.BasicTools };
+resources[Resources.BasicTools.name] = { amount: 2, resource: Resources.BasicTools };
 
 const needs:  any = {};
 needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
@@ -58,7 +58,7 @@ class Craftsperson extends Pop {
   }
 
   toString() {
-    return `Craftsperson: Food: ${this.resources['food'].amount }, Wood: ${this.resources['wood'].amount} Number: ${this.number}`;
+    return `Craftsperson: Food: ${this.resources['food'].amount }, Wood: ${this.resources['wood'].amount} Tools ${this.resources['basicTools'].amount } Number: ${this.number}`;
   }
 }
 

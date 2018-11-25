@@ -1,7 +1,6 @@
 import Resource from "./Resource";
+import ResourceTypes from "./ResourceType";
 
-class BasicTools extends Resource {
 
-}
-
+const BasicTools = new Resource('basicTools', [ResourceTypes.Tool], 1.1);
 export default BasicTools;

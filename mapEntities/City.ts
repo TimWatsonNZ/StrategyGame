@@ -17,6 +17,8 @@ class City {
   roadNetworks: any;
   pops: Pop[];
   resources: any;
+  
+  supplyAndDemand: any = {};
   static remove: (gridTile: Tile) => void;
 
   constructor(tile: Tile, name: string, population: number) {
@@ -92,21 +94,47 @@ class City {
       pop.update(this.resources[type]);
     });
 
+    Object.keys(this.supplyAndDemand).forEach((x: any) => {
+      this.supplyAndDemand[x].supply = 0;
+      this.supplyAndDemand[x].demand = 0;
+    });
+
     //  work out supply and demand
-    const supplyAndDemand: any = {};
     Object.keys(this.resources).forEach((popKey: string) => {
       Object.keys(this.resources[popKey]).forEach((resourceKey: string) => {
         const resource = this.resources[popKey][resourceKey]
-        if (!supplyAndDemand[resourceKey]) {
-          supplyAndDemand[resourceKey] = { supply: 0, demand: 0 };
+        if (!this.supplyAndDemand[resourceKey]) {
+          this.supplyAndDemand[resourceKey] = { supply: 0, demand: 0, value: resource.value };
         }
-        supplyAndDemand[resourceKey].demand += Math.abs(resource.desire);
-        supplyAndDemand[resourceKey].supply += resource.amount;
-        
+        this.supplyAndDemand[resourceKey].demand += Math.abs(resource.desire);
+        this.supplyAndDemand[resourceKey].supply += resource.amount;
       });
     });
 
-    console.log(JSON.stringify(supplyAndDemand));
+    Object.keys(this.supplyAndDemand).forEach((x: any) => {
+      if (this.supplyAndDemand[x].supply > this.supplyAndDemand[x].demand) {
+        this.supplyAndDemand[x].value *= 0.9;
+      } else {
+        this.supplyAndDemand[x].value *= 1.1;
+      }
+    });
+    console.log(JSON.stringify(this.supplyAndDemand));
+
+    const valueByPop: any = {};
+    Object.keys(this.resources).forEach((popKey: string) => {
+      const pop = this.resources[popKey];
+      let accumulatedValue = 0;
+      Object.keys(pop).forEach((resourceKey: string) => {
+        accumulatedValue += this.supplyAndDemand[resourceKey].value * 
+          pop[resourceKey].amount;
+      });
+      valueByPop[popKey] = { accumulatedValue };
+    });
+
+    console.log();
+    console.log(JSON.stringify(valueByPop));
+    //  each popgroup work out how much value they can sell
+    
     //  adjust values
     //  do trades
 
