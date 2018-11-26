@@ -1,6 +1,6 @@
 import Resource from "./Resource";
 import ResourceTypes from "./ResourceType";
 
-const Fibre = new Resource('food', [ResourceTypes.Ingredient], 1.1);
+const Fibre = new Resource('fibre', [ResourceTypes.Ingredient], 0.1, 1, 0.1, 0.1);
 
 export default Fibre;

@@ -30,7 +30,7 @@ class Pop implements IDrawable, IPrintable{
     this.resources = resouces;
     this.needs = needs;
     this.produces = produces;
-    this.fertility = 0;
+    this.fertility = 1;
     this.improvements = improvements;
 
     this.production = {};
@@ -38,21 +38,20 @@ class Pop implements IDrawable, IPrintable{
     this.desires = desires;
   }
 
-
   //  Work out how much each pop produces
   //  Work out how much they are willing to give up.
   //  Pool this amount.
   //  Redistribute among types.
   grow() {
-    // if (resource.amount >= (this.growRequirement[key] && this.growRequirement[key].amount)) {
-    //   this.number += Math.round(this.fertility * resource.amount/this.growRequirement[key].amount);
-    //   resource.amount -= this.growRequirement[key].amount;
-    // }
-
+    if (this.resources['food'].amount >= (this.growRequirement['food'] && this.growRequirement['food'].amount) * this.number) {
+      const increase = Math.round(this.fertility * this.resources['food'].amount/this.growRequirement['food'].amount);
+      this.number += increase;
+      this.resources['food'].amount -= increase;
+    }
     
-    // if (resource.amount <= 0 && this.growRequirement[key]) {
-    //   this.number--;
-    // }
+    if (this.resources['food'].amount <= 0 && this.growRequirement['food']) {
+      this.number--;
+    }
   }
 
   update(resources: any) {
@@ -69,7 +68,7 @@ class Pop implements IDrawable, IPrintable{
       if (produces.type === 'craft') {
         const maxProduced = Object.keys(this.produces[key].requires)
           .map((k: string) => {
-            return Math.floor(this.resources[k].amount / (this.produces[key].requires[k] * this.number));
+            return this.number > 0 ? Math.floor(this.resources[k].amount / (this.produces[key].requires[k] * this.number)) : 0;
           });
           
         gatheredAmount = maxProduced.reduce((min: number, current: any) => {
@@ -86,14 +85,14 @@ class Pop implements IDrawable, IPrintable{
       resource.amount += produced - needs;
       
       if (!resources[key]) {
-        resources[key] = { amount: 0, desire: 0, value: this.needs[key].amount }; 
+        resources[key] = { amount: 0, desire: 0, value: this.resources[key].resource.baseValue, type: key, maxValue: this.resources[key].resource.maxValue }; 
       }
       const diff = resource.amount - this.desires[key].amount;
-      resources[key].amount += diff > 0 ? diff : 0;
-      resources[key].desire += diff;
+      resources[key].amount += diff;
     });
-  }
 
+    this.grow();
+  }
 
   updateDesires() {
     Object.keys(this.desires).forEach((key: string) => {
@@ -147,6 +146,10 @@ Pop.add = function(tile: Tile, entities: any, pop: Pop): boolean {
 
   const neighbours = gridService.getNeighbours(tile, false, false)
     .filter(x => x.city).map(x => x.city);
+
+  Object.keys(pop.resources).forEach((key: string) => {
+    pop.resources[key].amount = pop.resources[key].amount * pop.number;
+  });
 
   if (neighbours.length === 0) return false;
   const city = neighbours[0];

@@ -12,12 +12,12 @@ resources[Resources.Fibre.name] = { amount: 0, resource: Resources.Fibre };
 
 const needs:  any = {};
 needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1 };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
 needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1 };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1 };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0};
 
 const desires: any = {};
-desires[Resources.Food.name] = { resource: Resources.Food, amount: 5, };
+desires[Resources.Food.name] = { resource: Resources.Food, amount: 2.5, };
 desires[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
 desires[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 1 };
 desires[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0 };
@@ -26,7 +26,7 @@ const produces: any = [];
 produces[Resources.Food.name] = {
   type: 'gather',
   resource: Resources.Food,
-  efficiency: 1
+  efficiency: 0.8
 };
 produces[Resources.Wood.name] = {
   type: 'gather',
@@ -41,7 +41,7 @@ produces[Resources.Fibre.name] = {
 };
 
 const growRequirement: any = { };
-growRequirement[Resources.Food.name] = { resource: Resources.Food, amount: 5 };
+growRequirement[Resources.Food.name] = { resource: Resources.Food, amount: 3 };
 
 const improvements = [
   { improvement: House, weight: 1 },

@@ -6,15 +6,15 @@ import { House } from '../Improvement/Improvements';
 
 const resources: any = {};
 resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
-resources[Resources.Wood.name] = { amount: 1, resource: Resources.Wood };
+resources[Resources.Wood.name] = { amount: 1, resource: Resources.Wood, };
 resources[Resources.Fibre.name] = { amount: 1, resource: Resources.Fibre };
 resources[Resources.BasicTools.name] = { amount: 2, resource: Resources.BasicTools };
 
 const needs:  any = {};
-needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1 };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1, };
-needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, };
+needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, type: 'critical' };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1, type: 'working' };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1, type: 'working' };
+needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, type: 'want'  };
 
 const desires: any = {};
 desires[Resources.Food.name] = { resource: Resources.Food, amount: 5 };
@@ -63,7 +63,7 @@ class Craftsperson extends Pop {
 }
 
 Craftsperson.add = function(tile: Tile, entities: any): boolean {
-  const pop = new Craftsperson(tile, 1);
+  const pop = new Craftsperson(tile, 10);
 
   return Pop.add(tile, entities, pop);
 }

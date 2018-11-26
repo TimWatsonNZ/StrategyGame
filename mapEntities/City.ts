@@ -4,7 +4,7 @@ import { gridService } from '../Grid/GridService';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
 import Pop from '../Pops/Pop';
-import Resource from '../Resources/Resource';
+import * as Resources from '../Resources/Resources';
 
 class City {
   type: string;
@@ -85,6 +85,7 @@ class City {
     Object.keys(this.resources).forEach((key:any) => {
       Object.keys(this.resources[key]).forEach((k2: any) => {
         this.resources[key][k2].desire = 0;
+        this.resources[key][k2].amount = 0;
       })
     });
 
@@ -104,18 +105,20 @@ class City {
       Object.keys(this.resources[popKey]).forEach((resourceKey: string) => {
         const resource = this.resources[popKey][resourceKey]
         if (!this.supplyAndDemand[resourceKey]) {
-          this.supplyAndDemand[resourceKey] = { supply: 0, demand: 0, value: resource.value };
+          this.supplyAndDemand[resourceKey] = { supply: 0, demand: 0, value: resource.value, maxValue: this.resources[popKey][resourceKey].maxValue };
         }
-        this.supplyAndDemand[resourceKey].demand += Math.abs(resource.desire);
-        this.supplyAndDemand[resourceKey].supply += resource.amount;
+        this.supplyAndDemand[resourceKey].demand += resource.amount < 0 ? Math.abs(resource.amount) : 0;
+        this.supplyAndDemand[resourceKey].supply += resource.amount > 0 ? Math.abs(resource.amount) : 0
       });
     });
 
     Object.keys(this.supplyAndDemand).forEach((x: any) => {
       if (this.supplyAndDemand[x].supply > this.supplyAndDemand[x].demand) {
         this.supplyAndDemand[x].value *= 0.9;
-      } else {
+      } else if (this.supplyAndDemand[x].supply < this.supplyAndDemand[x].demand){
         this.supplyAndDemand[x].value *= 1.1;
+        this.supplyAndDemand[x].value = this.supplyAndDemand[x].value > this.supplyAndDemand[x].maxValue ? 
+        this.supplyAndDemand[x].maxValue : this.supplyAndDemand[x].value;
       }
     });
     console.log(JSON.stringify(this.supplyAndDemand));
@@ -123,9 +126,9 @@ class City {
     const valueByPop: any = {};
     Object.keys(this.resources).forEach((popKey: string) => {
       const pop = this.resources[popKey];
-      let accumulatedValue = 0;
+      let accumulatedValue: any = {};
       Object.keys(pop).forEach((resourceKey: string) => {
-        accumulatedValue += this.supplyAndDemand[resourceKey].value * 
+        accumulatedValue[resourceKey] = this.supplyAndDemand[resourceKey].value * 
           pop[resourceKey].amount;
       });
       valueByPop[popKey] = { accumulatedValue };
@@ -135,6 +138,7 @@ class City {
     console.log(JSON.stringify(valueByPop));
     //  each popgroup work out how much value they can sell
     
+
     //  adjust values
     //  do trades
 
