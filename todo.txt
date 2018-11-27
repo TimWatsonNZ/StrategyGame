@@ -37,11 +37,8 @@ Version .3 - Resources/Economics update
                     - pops gather resources - done
                     - pops require resources and consume them - done
                     - pops grow and shrink based on needs - done
-                    - pops will improve their tile based on their resources and needs - done roughly
                     - pops need resources to do their job - done.
-                    - pops send excess to the town area and also use this excess.  -done
-                    - pops can become other kinds of pop.
-                    - pops can migrate/move tile.
+                    - pops send excess to the town area and also use this excess. - done
 
             - change demand/production calculations to be more aggregrate - do these in the city itself
                 and then redistribute.
@@ -53,6 +50,7 @@ Version .3 - Resources/Economics update
             - implement trading of resources - in progress
             - resource flow to the city - food should end up in the city center, food should decay over time. - in progress
             - population growth based on food, find a way to grow but also limit growth. - kind of done?
+            - perform transactions between pop groups. - in progress.
            
 Version .35 Refactor 
         - Keep collections of entities outside of tiles - maybe index these by tile id. In this way I can remove a lot of references
@@ -63,7 +61,6 @@ Version .35 Refactor
         - refactor pop update to make it more efficient - no need to check for things every tick.
         - make improvements nicer - very roughly done atm.
         - refactor tile - it's becoming ropey.
-        
         
 Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.
@@ -111,6 +108,9 @@ Pop health system and crime that decreases pop number.
 Loyalty system.
 Some kind of influence/claim system.
 More pops - stratas and more pop jobs.
+          - pops can become other kinds of pop.
+          - pops can migrate/move tile.
+          - pops will improve their tile based on their resources and needs - done roughly
 Add seasons and harvests.
 Add different buildings like a granary.
 Add government types.
