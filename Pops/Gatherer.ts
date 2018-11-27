@@ -11,10 +11,10 @@ resources[Resources.BasicTools.name] = { amount: 0, resource: Resources.BasicToo
 resources[Resources.Fibre.name] = { amount: 0, resource: Resources.Fibre };
 
 const needs:  any = {};
-needs[Resources.Food.name] = { resource: Resources.Food, amount: 1 };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
-needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1 };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0};
+needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, type: 'critical' };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0, type: 'want' };
+needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, type: 'want' };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0, type: 'none' };
 
 const desires: any = {};
 desires[Resources.Food.name] = { resource: Resources.Food, amount: 2.5, };

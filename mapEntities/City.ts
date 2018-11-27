@@ -129,17 +129,17 @@ class City {
       const pop = this.resources[popKey];
 
       Object.keys(pop)
-        .filter((resourceKey: string) => pop[resourceKey].amount > 0)
+        .filter((resourceKey: string) => pop[resourceKey].amount < 0)
         .forEach((resourceKey: string) => {
           if (!buying[resourceKey]) {
             buying[resourceKey] = [];
           }
-          buying[resourceKey].push({ popKey, amount: Math.abs(pop[resourceKey].amount ) });
+          buying[resourceKey].push({ popKey, amount: Math.abs(pop[resourceKey].amount ), needType: pop[resourceKey].needType });
           
         });
 
       Object.keys(pop)
-        .filter((resourceKey: string) => pop[resourceKey].amount < 0)
+        .filter((resourceKey: string) => pop[resourceKey].amount > 0)
         .forEach((resourceKey: any) => {
           if (!selling[resourceKey]) {
             selling[resourceKey] = [];
@@ -152,9 +152,9 @@ class City {
     // Object.keys(transactions).forEach((resourceKey: any) => {
     //   //  match with 
     // });
-    console.log(JSON.stringify(buying));
+    console.log(`Buying: ${JSON.stringify(buying)}`);
     console.log();
-    console.log(JSON.stringify(selling));
+    console.log(`Selling: ${JSON.stringify(selling)}`);
     //  each popgroup work out how much value they can sell
     
 
