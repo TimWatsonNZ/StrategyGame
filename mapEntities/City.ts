@@ -123,19 +123,38 @@ class City {
     });
     console.log(JSON.stringify(this.supplyAndDemand));
 
-    const valueByPop: any = {};
+    const buying: any = {}; //  keys of resource types;
+    const selling: any = {};
     Object.keys(this.resources).forEach((popKey: string) => {
       const pop = this.resources[popKey];
-      let accumulatedValue: any = {};
-      Object.keys(pop).forEach((resourceKey: string) => {
-        accumulatedValue[resourceKey] = this.supplyAndDemand[resourceKey].value * 
-          pop[resourceKey].amount;
-      });
-      valueByPop[popKey] = { accumulatedValue };
+
+      Object.keys(pop)
+        .filter((resourceKey: string) => pop[resourceKey].amount > 0)
+        .forEach((resourceKey: string) => {
+          if (!buying[resourceKey]) {
+            buying[resourceKey] = [];
+          }
+          buying[resourceKey].push({ popKey, amount: Math.abs(pop[resourceKey].amount ) });
+          
+        });
+
+      Object.keys(pop)
+        .filter((resourceKey: string) => pop[resourceKey].amount < 0)
+        .forEach((resourceKey: any) => {
+          if (!selling[resourceKey]) {
+            selling[resourceKey] = [];
+          }
+          selling[resourceKey].push({ popKey, amount: Math.abs(pop[resourceKey].amount) });
+        });
+        
     });
 
+    // Object.keys(transactions).forEach((resourceKey: any) => {
+    //   //  match with 
+    // });
+    console.log(JSON.stringify(buying));
     console.log();
-    console.log(JSON.stringify(valueByPop));
+    console.log(JSON.stringify(selling));
     //  each popgroup work out how much value they can sell
     
 
