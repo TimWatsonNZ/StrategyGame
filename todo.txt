@@ -47,9 +47,9 @@ Version .3 - Resources/Economics update
             - cities own nearby tiles. - done
             - turn button. - done
             - implement crafter - done
-            - implement trading of resources - in progress
             - resource flow to the city - food should end up in the city center, food should decay over time. - in progress
-            - population growth based on food, find a way to grow but also limit growth. - kind of done?
+            - population growth should be based on how satisfied needs are and on health of pop.
+            - implement trading of resources - in progress
             - perform transactions between pop groups. - in progress.
            
 Version .35 Refactor 
@@ -61,6 +61,7 @@ Version .35 Refactor
         - refactor pop update to make it more efficient - no need to check for things every tick.
         - make improvements nicer - very roughly done atm.
         - refactor tile - it's becoming ropey.
+        - Perform some performance tests - I think we should be ok for performance but I'm concerned pop transactions might be slow.
         
 Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.
@@ -102,6 +103,9 @@ Version .6 - Map/Graphics update
           - Add sound?
           - Improve UI
 
+Add some buffers to the economy system - I'm concerned about feedback and instability. For example - pop grows too much and crashes, crash then affects other pops and whole economy collapses. Add buffers around pop growth and death in particular.
+City walls.
+Migrating pops
 Basic diplomacy.
 Attrition system.
 Pop health system and crime that decreases pop number.
