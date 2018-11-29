@@ -9,6 +9,7 @@ import { gridService } from "../Grid/GridService";
 class Pop implements IDrawable, IPrintable{
   number: number;
   resources: any;
+  previousResources: any;
   needs: any;
   produces: any;
   tile: Tile;
@@ -20,6 +21,7 @@ class Pop implements IDrawable, IPrintable{
   production: any;
   popNeeds: any;
   desires: any;
+  health: number;
 
   static add: (tile: Tile, entities: any, pop: Pop) => boolean;
 
@@ -30,7 +32,8 @@ class Pop implements IDrawable, IPrintable{
     this.resources = resouces;
     this.needs = needs;
     this.produces = produces;
-    this.fertility = 1;
+    this.fertility = 0.2;
+    this.health = 0.05;
     this.improvements = improvements;
 
     this.production = {};
@@ -43,18 +46,21 @@ class Pop implements IDrawable, IPrintable{
   //  Pool this amount.
   //  Redistribute among types.
   grow() {
-    if (this.resources['food'].amount >= (this.growRequirement['food'] && this.growRequirement['food'].amount) * this.number) {
-      const increase = Math.round(this.fertility * this.resources['food'].amount/this.growRequirement['food'].amount);
+    
+    if ( this.resources['food'].amount > this.previousResources['food'].amount && this.resources['food'].amount >= (this.growRequirement['food'] && this.growRequirement['food'].amount)) {
+      const increase = this.resources['food'].amount/this.previousResources['food'].amount * this.fertility * this.resources['food'].amount/this.growRequirement['food'].amount;
       this.number += increase;
-      this.resources['food'].amount -= increase;
     }
     
-    if (this.resources['food'].amount <= 0 && this.growRequirement['food']) {
-      this.number--;
+    if (this.resources['food'].amount <= 0 && this.needs['food'].amount) {
+      this.number -= (1 - this.health) * this.number;
     }
+
+    this.number *= (1 - this.health);
   }
 
   update(resources: any) {
+    this.previousResources = JSON.parse(JSON.stringify(this.resources));
     Object.keys(this.resources).forEach((key: string) => {
       const resource = this.resources[key];
       const produces = this.produces[key] || { amount: 0 };
@@ -83,6 +89,7 @@ class Pop implements IDrawable, IPrintable{
       const needs = this.needs[key] ? this.needs[key].amount * this.number : 0;
 
       resource.amount += produced - needs;
+      resource.amount = resource.amount > 0 ? resource.amount : 0;
       
       if (!resources[key]) {
         resources[key] = {
@@ -93,7 +100,7 @@ class Pop implements IDrawable, IPrintable{
           maxValue: this.resources[key].resource.maxValue,
           needType: this.needs[key].type }; 
       }
-      const diff = Math.floor(resource.amount - this.desires[key].amount);
+      const diff = Math.floor(resource.amount - this.desires[key].amount * this.number);
       resources[key].amount += diff;
     });
 

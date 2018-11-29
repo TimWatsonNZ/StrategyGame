@@ -17,7 +17,7 @@ needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1
 needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0, type: 'none' };
 
 const desires: any = {};
-desires[Resources.Food.name] = { resource: Resources.Food, amount: 2.5, };
+desires[Resources.Food.name] = { resource: Resources.Food, amount: 1, };
 desires[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
 desires[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 1 };
 desires[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0 };
@@ -26,7 +26,7 @@ const produces: any = [];
 produces[Resources.Food.name] = {
   type: 'gather',
   resource: Resources.Food,
-  efficiency: 0.8
+  efficiency: 1
 };
 produces[Resources.Wood.name] = {
   type: 'gather',
