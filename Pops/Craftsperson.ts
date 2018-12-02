@@ -3,6 +3,7 @@ import * as Resources from '../Resources/Resources';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
 import { House } from '../Improvement/Improvements';
+import Priorities from '../Resources/Priorities';
 
 const resources: any = {};
 resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
@@ -11,10 +12,10 @@ resources[Resources.Fibre.name] = { amount: 1, resource: Resources.Fibre };
 resources[Resources.BasicTools.name] = { amount: 2, resource: Resources.BasicTools };
 
 const needs:  any = {};
-needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, type: 'critical' };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1, type: 'working' };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1, type: 'working' };
-needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, type: 'want'  };
+needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, priority: Priorities.Critical };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0.1, priority: Priorities.Working };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0.1, priority: Priorities.Working };
+needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, priority: Priorities.Want };
 
 const desires: any = {};
 desires[Resources.Food.name] = { resource: Resources.Food, amount: 5 };
@@ -35,6 +36,7 @@ produces[Resources.BasicTools.name] = {
       [Resources.Wood.name]: 1,
       [Resources.Fibre.name]: 1,
     },
+  efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }],
   output: 1,
 };
 

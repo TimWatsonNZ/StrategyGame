@@ -3,18 +3,19 @@ import * as Resources from '../Resources/Resources';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
 import { House } from '../Improvement/Improvements';
+import Priorities from '../Resources/Priorities';
 
 const resources: any = {};
 resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
 resources[Resources.Wood.name] = { amount: 0, resource: Resources.Wood };
-resources[Resources.BasicTools.name] = { amount: 0, resource: Resources.BasicTools };
+resources[Resources.BasicTools.name] = { amount: 1, resource: Resources.BasicTools };
 resources[Resources.Fibre.name] = { amount: 0, resource: Resources.Fibre };
 
 const needs:  any = {};
-needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, type: 'critical' };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0, type: 'want' };
-needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, type: 'want' };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0, type: 'none' };
+needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, priority: Priorities.Critical };
+needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0, priority: Priorities.Want };
+needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, priority: Priorities.Want };
+needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0, priority: Priorities.None };
 
 const desires: any = {};
 desires[Resources.Food.name] = { resource: Resources.Food, amount: 1, };
@@ -26,18 +27,22 @@ const produces: any = [];
 produces[Resources.Food.name] = {
   type: 'gather',
   resource: Resources.Food,
-  efficiency: 1
+  efficiency: 1,
+  efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
+
 produces[Resources.Wood.name] = {
   type: 'gather',
   resource: Resources.Wood,
-  efficiency: 0.25
+  efficiency: 0.25,
+  efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
 
 produces[Resources.Fibre.name] = {
   type: 'gather',
   resource: Resources.Fibre,
-  efficiency: 0.25
+  efficiency: 0.25,
+  efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
 
 const growRequirement: any = { };
@@ -60,7 +65,7 @@ class Gatherer extends Pop {
   }
 
   toString() {
-    return `Gatherer: Food: ${this.resources['food'].amount }, Wood: ${this.resources['wood'].amount} Number: ${this.number}`;
+    return `Gatherer: Food: ${this.resources['food'].amount }, Wood: ${this.resources['wood'].amount} Tools: ${this.resources['basicTools'].amount} Number: ${this.number}`;
   }
 }
 

@@ -5,6 +5,7 @@ import IDrawable from "../interfaces/IDrawable";
 import IPrintable from "../interfaces/IPrintable";
 import TileType from "../Map/Tiles/TileType";
 import { gridService } from "../Grid/GridService";
+import clamp from '../util';
 
 class Pop implements IDrawable, IPrintable{
   number: number;
@@ -59,6 +60,7 @@ class Pop implements IDrawable, IPrintable{
     this.number *= (1 - this.health);
   }
 
+
   update(resources: any) {
     this.previousResources = JSON.parse(JSON.stringify(this.resources));
     Object.keys(this.resources).forEach((key: string) => {
@@ -67,21 +69,32 @@ class Pop implements IDrawable, IPrintable{
       const carryingPop = 1 + this.number/25
 
       let gatheredAmount = 0;
+      const modifiers = produces.efficiencyModifiers ? produces.efficiencyModifiers.map((x: any) => {
+        return clamp(this.resources[x.resource.name].amount / this.number, 1) * x.multiplier;
+      }) : [];
+
+      const modifier = modifiers.reduce((sum: number, current: number) => sum + current, 1);
       if (produces.type === 'gather') {
-        gatheredAmount = produces.efficiency * this.number * this.tile.resources[key].amount;
+        gatheredAmount = modifier * produces.efficiency * this.number * this.tile.resources[key].amount;
       }
 
       if (produces.type === 'craft') {
         const maxProduced = Object.keys(this.produces[key].requires)
           .map((k: string) => {
-            return this.number > 0 ? Math.floor(this.resources[k].amount / (this.produces[key].requires[k] * this.number)) : 0;
+            return this.number > 0 ? this.resources[k].amount / this.produces[key].requires[k] : 0;
           });
           
-        gatheredAmount = maxProduced.reduce((min: number, current: any) => {
+        const max = maxProduced.reduce((min: number, current: any) => {
           return current < min ? current : min;
-        }, Number.MAX_SAFE_INTEGER)
+        }, Number.MAX_SAFE_INTEGER);
+
+        gatheredAmount = clamp(modifier * produces.efficiency * this.number, max);
 
         gatheredAmount = gatheredAmount > 0 ? gatheredAmount : 0;
+
+        Object.keys(this.produces[key].requires).forEach((x: any) => {
+          this.resources[x].amount -= gatheredAmount/modifier;
+        });
       }
 
       const produced = gatheredAmount ? gatheredAmount/carryingPop : 0;
@@ -98,9 +111,9 @@ class Pop implements IDrawable, IPrintable{
           value: this.resources[key].resource.baseValue,
           type: key,
           maxValue: this.resources[key].resource.maxValue,
-          needType: this.needs[key].type }; 
+          priority: this.needs[key].priority }; 
       }
-      const diff = Math.floor(resource.amount - this.desires[key].amount * this.number);
+      const diff = resource.amount - this.desires[key].amount * this.number;
       resources[key].amount += diff;
     });
 
