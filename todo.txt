@@ -48,11 +48,17 @@ Version .3 - Resources/Economics update
             - turn button. - done
             - implement crafter - done
             - resource flow to the city - food should end up in the city center, food should decay over time. - in progress
-            - population growth should be based on how satisfied needs are and on health of pop.
+            - population growth should be based on how satisfied needs are and on health of pop. - in progress.
             - implement trading of resources - in progress
             - perform transactions between pop groups. - in progress.
+            - implement a form of taxation, doesn't need to be a large amount but just get the system working.
+            - pops currently bottom out on goods that they want - they should still desire to buy things they need but have lots of.
+            - goods can give bonuses to production - done
+            - goods can give bonuses to health or fertility.
+            - get a stable economy running.
            
-Version .35 Refactor 
+Version .35 Mother of all Refactors
+        - Remove all resource references by string, type data structures.
         - Keep collections of entities outside of tiles - maybe index these by tile id. In this way I can remove a lot of references
           from the tiles and I can selectively render them.
         - properly do tiles.
