@@ -162,56 +162,64 @@ class City {
     });
 
     Object.keys(buying).forEach((resourceKey: any) => {
-        const sellingPops = selling[resourceKey];
-        const valueWanted = buying.amount * this.supplyAndDemand[resourceKey].value;
+      const sellingPops = selling[resourceKey];
+      const valueWanted = buying.amount * this.supplyAndDemand[resourceKey].value;
 
-        console.log(resourceKey);
-        const pooledResources: any = [];
-        const resourcePriorities: any = {};
-        //  iterate through each pop in the selling and try to get the amount we want.
-        sellingPops && sellingPops.forEach((sellingPop: any) => {
-          pooledResources.push({ popKey: sellingPop.popKey, amount: sellingPop.selling.amount });
+      console.log(resourceKey);
+      const pooledResources: any = [];
+      //  iterate through each pop in the selling and try to get the amount we want.
+      sellingPops && sellingPops.forEach((sellingPop: any) => {
+        pooledResources.push({ popKey: sellingPop.popKey, amount: sellingPop.selling.amount });
+      });
+
+      let pooledSum = pooledResources.reduce((sum: number, current:any) => sum + current.amount, 0);
+
+      const transaction: any = { sold: [] };
+      //  Later need to work out how much each buyer can get.
+      buying[resourceKey].forEach((buyer: any) => {
+        const amountWanted = buyer.amount;
+        const valueWanted = amountWanted * this.supplyAndDemand[resourceKey].value;
+        const valueBought = 0;
+
+        const sortedSelling = buyer.selling.sort((a: any, b: any) => b.priority - a.priority);
+        sortedSelling.forEach((sellingResource: any) => {
+          if (valueBought >= valueWanted) return;
+
+          // value of the thing the buyer is selling.
+          const sellingValue = clamp(this.supplyAndDemand[sellingResource.type].value *
+            sellingResource.amount, valueWanted);
+
+          const wantedAmountBought = sellingValue / this.supplyAndDemand[resourceKey].value;
+          const actualAmountBought = clamp(wantedAmountBought, pooledSum);
+
+          const boughtValue = actualAmountBought * this.supplyAndDemand[resourceKey].value;
+          const soldAmount = boughtValue / this.supplyAndDemand[sellingResource.type].value;
+
+          //  amount bought is equal to selling value divided by the amount
+          //  bought - buyer gets this much.
+          pooledSum -= actualAmountBought;
+
+          const buyerPops = this.pops.filter(x => x.type === buyer.popKey);
+          const buyerPopNumber = buyerPops.reduce((sum, current) => sum + current.number, 0);
+
+          buyerPops.forEach((pop: any) => pop.resources[resourceKey].amount += actualAmountBought/buyerPopNumber * pop.number);
+          transaction.sold.push({ type: sellingResource.type, amount: soldAmount});
         });
+      });
 
-        buying[resourceKey].forEach((buyer: any) => {
-          const amountWanted = buyer.amount;
-          const valueWanted = amountWanted * this.supplyAndDemand[resourceKey].value;
-          const valueBought = 0;
+      //  Minus the bought amounts from the contributers and distribute the sold goods.
 
-          const transaction: any = { bought: 0, sold: [] };
-          buyer.selling.forEach((sellingResource: any) => {
-            if (valueBought >= valueWanted) return;
+      console.log(`Transaction: ${JSON.stringify(transaction)}`);
+      //  pool together transactions and then distribute by contribution and value.
+      sellingPops.forEach((pop: any) => {
+        transaction.sold.forEach((resource: any) => {
+          const sellerPops = this.pops.filter(x => x.type === pop.type);
+          const sellerPopsNumber = sellerPops.reduce((sum, current) => sum + current.number, 0);
 
-            // value of the thing the buyer is selling.
-            const sellingValue = clamp(this.supplyAndDemand[sellingResource.type].value *
-              sellingResource.amount, valueWanted);
-
-            //  amount bought is equal to selling value divided by the amount
-            transaction.bought += sellingValue / this.supplyAndDemand[sellingResource.type].value;
-            transaction.sold.push({ type: sellingResource.type, amount: sellingValue/sellingResource.amount}) 
-          });
-          console.log(`Transaction: ${JSON.stringify(transaction)}`);
+          sellerPops.forEach((pop: any) => pop.resources[resourceKey].amount += resource.amount/sellerPopsNumber * pop.number);
         });
-        console.log(JSON.stringify(pooledResources));
-
-        
-    });
-    //  adjust values
-    //  do trades
-
-    //  work out desires
-    //  work out trades
-    //  redistribute resources
-
-    //   Object.keys(pop.resources).forEach((resourceKey: string) => {
-    //     if (this.resources[resourceKey]) {
-    //       this.resources[resourceKey].amount += pop.resources[resourceKey].amount;
-    //       pop.resources[resourceKey].amount = 0;
-    //     } else {
-    //       this.resources[resourceKey] = { amount: pop.resources[resourceKey].amount };
-    //       pop.resources[resourceKey].amount = 0;
-    //     }
-    //   });
+      })
+  });
   }
 }
 

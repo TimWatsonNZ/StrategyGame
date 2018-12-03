@@ -65,7 +65,7 @@ class Craftsperson extends Pop {
 }
 
 Craftsperson.add = function(tile: Tile, entities: any): boolean {
-  const pop = new Craftsperson(tile, 10);
+  const pop = new Craftsperson(tile, 1);
 
   return Pop.add(tile, entities, pop);
 }
