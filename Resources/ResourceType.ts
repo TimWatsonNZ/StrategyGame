@@ -8,4 +8,16 @@ enum ResourceTypes {
   'BuildingMaterial' = 'BuildingMaterial'
 }
 
-export default ResourceTypes;
+enum ResourceNames {
+  Food = 'Food',
+  Wood = 'Wood',
+  Fibre = 'Fibre',
+  BasicTools = 'BasicTools'
+}
+
+enum ProductionTypes {
+  Gather,
+  Craft,
+}
+
+export { ResourceTypes, ProductionTypes, ResourceNames };

@@ -4,8 +4,8 @@ import { gridService } from '../Grid/GridService';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
 import Pop from '../Pops/Pop';
-import * as Resources from '../Resources/Resources';
 import clamp from '../util';
+import EntityTypes from './EntityTypes';
 
 class City {
   type: string;
@@ -23,7 +23,7 @@ class City {
   static remove: (gridTile: Tile) => void;
 
   constructor(tile: Tile, name: string, population: number) {
-    this.type = 'city';
+    this.type = EntityTypes.City;
     this.id = generateGuid();
     this.tile = tile;
     this.name = name;
@@ -40,7 +40,7 @@ class City {
     this.roadNetworks = [];
     
     neighbours.forEach((neighbour: any) => {
-      if (neighbour.type === 'road') {
+      if (neighbour.type === EntityTypes.Road) {
         this.addNetwork(neighbour.roadNetwork);
       }
     });

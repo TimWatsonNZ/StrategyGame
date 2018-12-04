@@ -1,52 +1,53 @@
 import Pop from './Pop';
 import * as Resources from '../Resources/Resources';
 import Tile from '../Map/Tiles/Tile';
-import TileType from '../Map/Tiles/TileType';
 import { House } from '../Improvement/Improvements';
 import Priorities from '../Resources/Priorities';
+import { ProductionTypes, ResourceNames } from '../Resources/ResourceType';
+import PopTypes from './PopTypes';
 
 const resources: any = {};
-resources[Resources.Food.name] = { amount: 1, resource: Resources.Food };
-resources[Resources.Wood.name] = { amount: 0, resource: Resources.Wood };
-resources[Resources.BasicTools.name] = { amount: 1, resource: Resources.BasicTools };
-resources[Resources.Fibre.name] = { amount: 0, resource: Resources.Fibre };
+resources[ResourceNames.Food] = { amount: 1, resource: Resources.Food };
+resources[ResourceNames.Wood] = { amount: 0, resource: Resources.Wood };
+resources[ResourceNames.BasicTools] = { amount: 1, resource: Resources.BasicTools };
+resources[ResourceNames.Fibre] = { amount: 0, resource: Resources.Fibre };
 
 const needs:  any = {};
-needs[Resources.Food.name] = { resource: Resources.Food, amount: 1, priority: Priorities.Critical };
-needs[Resources.Wood.name] = { resource: Resources.Wood, amount: 0, priority: Priorities.Want };
-needs[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 0.1, priority: Priorities.Want };
-needs[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0, priority: Priorities.None };
+needs[ResourceNames.Food] = { resource: Resources.Food, amount: 1, priority: Priorities.Critical };
+needs[ResourceNames.Wood] = { resource: Resources.Wood, amount: 0, priority: Priorities.Want };
+needs[ResourceNames.BasicTools] = { resource: Resources.BasicTools, amount: 0.1, priority: Priorities.Want };
+needs[ResourceNames.Fibre] = { resource: Resources.Fibre, amount: 0, priority: Priorities.None };
 
 const desires: any = {};
-desires[Resources.Food.name] = { resource: Resources.Food, amount: 1, };
-desires[Resources.Wood.name] = { resource: Resources.Wood, amount: 0 };
-desires[Resources.BasicTools.name] = { resource: Resources.BasicTools, amount: 1 };
-desires[Resources.Fibre.name] = { resource: Resources.Fibre, amount: 0 };
+desires[ResourceNames.Food] = { resource: Resources.Food, amount: 1, };
+desires[ResourceNames.Wood] = { resource: Resources.Wood, amount: 0 };
+desires[ResourceNames.BasicTools] = { resource: Resources.BasicTools, amount: 1 };
+desires[ResourceNames.Fibre] = { resource: Resources.Fibre, amount: 0 };
 
 const produces: any = [];
-produces[Resources.Food.name] = {
-  type: 'gather',
+produces[ResourceNames.Food] = {
+  type: ProductionTypes.Gather,
   resource: Resources.Food,
   efficiency: 1,
   efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
 
-produces[Resources.Wood.name] = {
-  type: 'gather',
+produces[ResourceNames.Wood] = {
+  type: ProductionTypes.Gather,
   resource: Resources.Wood,
   efficiency: 0.25,
   efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
 
-produces[Resources.Fibre.name] = {
-  type: 'gather',
+produces[ResourceNames.Fibre] = {
+  type: ProductionTypes.Gather,
   resource: Resources.Fibre,
   efficiency: 0.25,
   efficiencyModifiers: [{ resource: Resources.BasicTools, multiplier: 0.2 }]
 };
 
 const growRequirement: any = { };
-growRequirement[Resources.Food.name] = { resource: Resources.Food, amount: 3 };
+growRequirement[ResourceNames.Food] = { resource: Resources.Food, amount: 3 };
 
 const improvements = [
   { improvement: House, weight: 1 },
@@ -55,7 +56,7 @@ const improvements = [
 class Gatherer extends Pop {
   static add: (tile: Tile, entities: any) => boolean;
   constructor(tile: Tile, number: number) {
-    super('Gatherer', tile, number, resources, needs, produces, improvements, desires);
+    super(PopTypes.Gatherer, tile, number, resources, needs, produces, improvements, desires);
     this.growRequirement = growRequirement;
   }
 

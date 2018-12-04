@@ -7,7 +7,7 @@ import TileType from './Tiles/TileType';
 import Tile from './Tiles/Tile';
 import Gatherer from '../Pops/Gatherer';
 import Pop from '../Pops/Pop';
-import Craftsperson from '../Pops/Craftsperson';
+import Craftsperson from '../Pops/Crafter';
 
 class Map {
   context: any;

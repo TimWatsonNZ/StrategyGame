@@ -47,18 +47,14 @@ Version .3 - Resources/Economics update
             - cities own nearby tiles. - done
             - turn button. - done
             - implement crafter - done
-            - resource flow to the city - food should end up in the city center, food should decay over time. - in progress
-            - population growth should be based on how satisfied needs are and on health of pop. - in progress.
-            - implement trading of resources - in progress
-            - perform transactions between pop groups. - in progress.
-            - implement a form of taxation, doesn't need to be a large amount but just get the system working.
-            - pops currently bottom out on goods that they want - they should still desire to buy things they need but have lots of.
-            - goods can give bonuses to production - done
-            - goods can give bonuses to health or fertility.
-            - get a stable economy running.
+            - resource flow to the city - food should end up in the city center, food should decay over time. - done
+            - implement trading of resources - done
+            - perform transactions between pop groups. - done.
            
+            - goods can give bonuses to production - done
 Version .35 Mother of all Refactors
-        - Remove all resource references by string, type data structures.
+
+        - Remove all resource references by string, type data structures. - done
         - Keep collections of entities outside of tiles - maybe index these by tile id. In this way I can remove a lot of references
           from the tiles and I can selectively render them.
         - properly do tiles.
@@ -68,6 +64,14 @@ Version .35 Mother of all Refactors
         - make improvements nicer - very roughly done atm.
         - refactor tile - it's becoming ropey.
         - Perform some performance tests - I think we should be ok for performance but I'm concerned pop transactions might be slow.
+
+Version .38     Pop system improvements and bug fixes
+        
+            - goods can give bonuses to health or fertility.
+            - population growth should be based on how satisfied needs are and on health of pop. - in progress.
+            - implement a form of taxation, doesn't need to be a large amount but just get the system working.
+            - pops currently bottom out on goods that they want - they should still desire to buy things they need but have lots of.
+            - get a stable economy running.
         
 Version .4 - Combat/Basic AI update
           - Goal is to be able to set destinations for units.

@@ -5,6 +5,7 @@ import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 import Tile from '../Map/Tiles/Tile';
 import TileType from '../Map/Tiles/TileType';
+import EntityTypes from './EntityTypes';
 
 const Shapes = {
   isolated: 'isolated',
@@ -37,7 +38,7 @@ class Road {
   static remove: (gridTile: Tile, road: Road) => void;
   static findConnectivity: (roads: any) => void;
   constructor(tile: Tile) {
-    this.type = 'road';
+    this.type = EntityTypes.Road;
     this.id = generateGuid();
     this.tile = tile;
 

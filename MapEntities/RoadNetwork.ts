@@ -2,6 +2,7 @@ import generateGuid from '../generateGuid';
 import { gridService } from '../Grid/GridService';
 import Road from './Road';
 import City from './City';
+import EntityTypes from './EntityTypes';
 
 class RoadNetwork {
   id: string;
@@ -65,7 +66,7 @@ class RoadNetwork {
     while(neighbours.length !== 0) {
       //  visit each neighbour
       const neighbour = neighbours.pop();
-      if (neighbour.node.type === 'city') {
+      if (neighbour.node.type === EntityTypes.City) {
         distances.push({city, distance: neighbour.distance });
       } else {
         visited[neighbour.node.id] = true;
